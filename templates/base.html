@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>{% block title %}{% endblock %} - beepboard</title>
+		<meta charset="UTF-8">
+		<meta name="description" content="a bulletin board for beepbox songs">
+		<meta name="keywords" content="beepbox, ultrabox, bulletin board, songs, social network,
+		chiptune, instrumental, music, song, melody, composition, tool, free, online, square wave, NES, NSF, ultrabox, beepbox, jummbox, pandorasbox, modbox, sandbox, goldbox, wackybox, todbox">
+		<meta name="application-name" content="beepboard">
+		<meta name="author" content="fmixolydian">
+		<title>beepboard</title>
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	
+	<body>
+		<header>
+			<div class="left">
+				<h1>beepboard</h1>
+				<p>0.5</p>
+				<search>
+					<input type="text">
+					<img src="/assets/search.png">
+				</search>
+			</div>
+			
+			<div class="right">
+				<p>
+{% if userdata == None %}
+	You're not logged in.
+{% else %}
+	Hello, <strong>{{ userdata['username'] }}</strong>!
+{% endif %}
+</p>
+			</div>
+		</header>
+		
+		<nav>
+			<a class="orange"  href="/">home</a>
+			<a class="red"     href="/Jams">jams</a>
+			<a class="magenta" href="/Users">users</a>
+			<a class="purple"  href="/Songs">songs</a>
+			<a class="blue"    href="/Roadmap">roadmap</a>
+		</nav>
+		
+		<div class="content">
+			<aside>
+				{% block aside %}
+				{% endblock %}
+			</aside>
+			<main>
+				{% block main %}
+				{% endblock %}
+			</main>
+		</div>
+		
+		<footer>
+			<p>(c) fmixolydian 2025 - licensed under AGPL3.0</p>
+		</footer>
+	</body>
+</html>

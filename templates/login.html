@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} login {% endblock %}
+
+{% block aside %}
+		
+{% endblock %}
+
+{% block main %}
+	<article>
+		<h2>beepboard login form</h2>
+		<form action="/api/Account/login" method="POST">
+		
+			<div class="flex-vertical">
+				<div class="form-item">
+					<label class="flex-u1" for="username">username</label>
+					<input class="flex-u3" type="text" name="username">
+				</div>
+				
+				<div class="form-item">
+					<label class="flex-u1" for="password">password</label>
+					<input class="flex-u3" type="text" name="password">
+				</div>
+				
+				<button>LOGIN</button>
+			</div>
+			
+		</form>
+	</article>
+{% endblock %}

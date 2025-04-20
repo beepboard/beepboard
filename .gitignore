@@ -1,0 +1,4 @@
+__pycache__
+config.json
+data/testing.db
+data/beepboard.db

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %} user list {% endblock %}
+
+{% block aside %}
+		
+{% endblock %}
+
+{% block main %}
+<article>
+	<h2>Top users</h2>
+	<div class="sortby">
+		<p class="title">Sort by</p>
+		<div class="options">
+			<p class="sort"><a href="/Users?after={{after}}&sort=popular">popular</a></p>
+			<p class="sort"><a href="/Users?after={{after}}&sort=newest">newest</a></p>
+		</div>
+	</div>
+	<div class="users">
+		{% for user in users %}
+			<div class="user">
+				<img class="pfp" src="{{ user.profile.pfp }}">
+				<div class="data">
+					<h3><a href="/User/{{ user.id }}">{{ user.username }}</a></h3>
+					<p>(the user's bio, which hasn't been implemented yet)</p>
+				</div>
+				<div class="footer">
+					<p><small>
+					{{ user.created_date }} ·
+					user {{ user.id }} </small></p>
+				</div>
+			</div>
+		{% else %}
+			<p><em>no users found ¯\_(ツ)_/¯</em></p>
+		{% endfor %}
+	</div>
+</article>
+{% endblock %}

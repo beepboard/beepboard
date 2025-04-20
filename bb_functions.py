@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
+import markdown
 import json
 from typing import *
 from datetime import datetime
@@ -15,6 +16,9 @@ def bb_datetime(timestamp):
 	return datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 def bb_date(timestamp):
 	return datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d")
+
+def bb_render_markdown(s):
+	return markdown.markdown(s)
 
 def bb_filter_user(user):
 	if not user:
@@ -41,7 +45,11 @@ def bb_filter_user(user):
 			'views':     user['profileviews'],
 			'followers': user['followers'],
 			'pfp': user['pfp'],
-			'bio': user['bio']
+			
+			'bio': {
+				'raw': user['bio']
+				'html': bb_render_markdown(user['bio'])
+			}
 		}
 	}
 

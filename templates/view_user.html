@@ -14,10 +14,10 @@
 				<img class="pfp" src="{{ user.profile.pfp }}">
 				<div class="desc">
 					<h2>{{ user.username }}</h2>
-					<p>Joined {{ user.created_date }}</p>
+					<p>Joined {{ user.created.date }}</p>
 				</div>
 			</div>
-			<p>{{ user.profile.bio }}</p>
+			{{ user.profile.bio.html | safe}}
 		</div>
 	{% else %}
 		<p>User not found.</p>

@@ -9,7 +9,30 @@ from bb_config   import *
 from bb_database import *
 from bb_functions import *
 
-@app.route('/api/v1/Account/login', methods=['POST'])
+@app.route('/api/v1/Account/Logout', methods=['POST'])
+def bb_api_logout():
+	# check if auth details are actually present
+	if not request.cookies.get('token'):
+		return (
+			"You're not logged in, <strong>BOZO</strong>",
+			400
+		)
+	
+	with sqlite3.connect(CONFIG['db']) as conn:
+		conn.row_factory = bb_rowfactory
+		db = conn.cursor()
+		
+		# remove cookie from db
+		db.execute("UPDATE users SET token = NULL WHERE token = ?",
+		           (request.cookies.get('token'),)
+		           )
+		
+		# remove cookie from client
+		res = redirect('/Account/Logout')
+		res.set_cookie('token', '', expires=0)
+		return res
+
+@app.route('/api/v1/Account/Login', methods=['POST'])
 def bb_api_login():
 	# check if auth details are actually present
 	if    not ('username' in request.form) \
@@ -25,7 +48,7 @@ def bb_api_login():
 		
 		# get password hash
 		userdata = db.execute(
-			"SELECT password from users WHERE username = ?",
+			"SELECT password FROM users WHERE username = ?",
 			(request.form['username'],)
 		).fetchone()
 		
@@ -57,11 +80,60 @@ def bb_api_login():
 					<p>Wrong password.</p>
 					""", 403)
 
+@app.route('/api/v1/Song/search', methods=['GET'])
+def bb_api_searchsongs():
+	sort   = request.args.get('sort')
+	after  = request.args.get('after')
+	author = request.args.get('author')
+	tags   = request.args.get('tags')
+	query  = request.args.get('q')
+	if not sort:
+		sort = 'newest'
+	if not after:
+		after = '0'
+	if not after.isdigit():
+		after = '0'
+		
+	songs = bb_search_songs(sort, after, author, tags, query)
+	if songs:
+		return songs
+	else:
+		return []
+
+@app.route('/api/v1/User/search', methods=['GET'])
+def bb_api_searchusers():
+	# set default values for parameters
+	sort  = request.args.get('sort')
+	after = request.args.get('after')
+	query  = request.args.get('q')
+	if not sort:
+		sort = 'popular'
+	if not after:
+		after = '0'
+	if not after.isdigit():
+		after = '0'
+	
+	users = bb_search_users(sort, after, query)
+	
+	if users:
+		return users
+	else:
+		return []
+
 @app.route('/api/v1/User/<int:id>', methods=['GET'])
 def bb_api_getuser(id):
 	data = bb_get_userdata_by_id(id)
 	if data:
 		return bb_filter_user(data)
 	else:
-		return {'error': 'no such userid'}, 404
+		return {'error': 'no such user'}, 404
+	
+
+@app.route('/api/v1/Song/<int:id>', methods=['GET'])
+def bb_api_getsong(id):
+	data = bb_get_songdata_by_id(id)
+	if data:
+		return bb_filter_song(data)
+	else:
+		return {'error': 'no such song'}, 404
 	

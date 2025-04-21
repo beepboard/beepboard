@@ -7,6 +7,17 @@ from datetime import datetime
 from enum import StrEnum
 from bb_config import *
 from bb_database import *
+from html_sanitizer import Sanitizer
+import re
+
+def bb_sql_regexp(pattern, item):
+    return re.search(pattern, item) is not None
+
+def bb_connect_db():
+	conn = sqlite3.connect(CONFIG['db'])
+	conn.row_factory = bb_rowfactory
+	conn.create_function("REGEXP", 2, bb_sql_regexp)
+	return conn
 
 def bb_rowfactory(cursor, row):
     fields = [column[0] for column in cursor.description]
@@ -21,15 +32,19 @@ def bb_render_markdown(s):
 	return markdown.markdown(s)
 
 def bb_filter_user(user):
+	sanitizer = Sanitizer()
+	
 	if not user:
 		return None
 	return {
 		'id':   user['userid'],
 		'username': user['username'],
 		
-		'created_time':      user['timestamp'],
-		'created_date':      bb_date(user['timestamp']),
-		'created_datetime':  bb_datetime(user['timestamp']),
+		'created': {
+			'time':      user['timestamp'],
+			'date':      bb_date(user['timestamp']),
+			'datetime':  bb_datetime(user['timestamp']),
+		},
 		
 		'totalstats': {
 			'views':  user['views'],
@@ -47,15 +62,56 @@ def bb_filter_user(user):
 			'pfp': user['pfp'],
 			
 			'bio': {
-				'raw': user['bio']
-				'html': bb_render_markdown(user['bio'])
+				'raw': user['bio'],
+				'html': sanitizer.sanitize(bb_render_markdown(user['bio']))
 			}
 		}
 	}
 
+def bb_filter_song(song):
+	sanitizer = Sanitizer()
+	
+	if not song:
+		return None
+	return {
+		'id':   song['songid'],
+		'author': song['author'],
+		
+		'stats': {
+			'clicks': song['downloads'],
+			'likes': song['likes'],
+			'views': song['views']
+		},
+		
+		'flags': {
+			'deleted':  bool(song['isdeleted']),
+			'featured': bool(song['isfeatured'])
+		},
+		
+		'content': {
+			'name': song['name'],
+			'tags': song['tags'],
+			
+			'descrition': {
+				'raw':  song['description'],
+				'html': sanitizer.sanitize(bb_render_markdown(song['description']))
+			},
+			
+			'url': {
+				'data': song['songdata'],
+				'mod': song['songmod']
+			}
+		},
+		
+		'created': {
+			'time':      song['timestamp'],
+			'date':      bb_date(song['timestamp']),
+			'datetime':  bb_datetime(song['timestamp']),
+		},
+	}
+
 def bb_get_userdata_by_id(id):
-	with sqlite3.connect(CONFIG['db']) as conn:
-		conn.row_factory = bb_rowfactory
+	with bb_connect_db() as conn:
 		db = conn.cursor()
 		
 		if not id:
@@ -64,11 +120,23 @@ def bb_get_userdata_by_id(id):
 			return db.execute(
 					"SELECT * FROM users WHERE userid = ?", (str(id),)
 				).fetchone()
+				
+def bb_get_songdata_by_id(id):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		if not id:
+			return None
+		else:
+			songdata =  db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
+			if songdata:
+				songdata['author'] = db.execute("SELECT * FROM users WHERE userid = ?", (str(songdata['userid']),)).fetchone()
+			else:
+				return None
 
 
 def bb_get_userdata_by_token(token):
-	with sqlite3.connect(CONFIG['db']) as conn:
-		conn.row_factory = bb_rowfactory
+	with bb_connect_db() as conn:
 		db = conn.cursor()
 		
 		if not token:
@@ -79,7 +147,87 @@ def bb_get_userdata_by_token(token):
 				).fetchone()
 
 
-def bb_search_users(sort, after):
+def bb_search_songs(sort, after, author, tags, query):
+	#stmt = StatementSelect(
+	#	{ValueColumnName('*')},
+	#	{ClauseFrom(ValueTableName('users')),
+	#	 ClauseLimit(10)}
+	#)
+	
+	clauses = {ClauseFrom(ValueTableName('songs', 'S')),
+	           ClauseJoin(ValueTableName('users', 'U'),
+	           	ConditionEQ(ValueColumnName('userid', 'S'),
+	           	            ValueColumnName('userid', 'U'))
+	           	      ),
+	           ClauseOffset(after),
+			   ClauseLimit(10)
+			   }
+	
+	params = {}
+	
+	if author:
+		params['author'] = author
+		clauses.update([
+			ClauseWhere(ConditionEQ(
+				Function('LOWER', ValueColumnName('username', 'U')),
+				Function('LOWER', ':author')
+			))
+		])
+	
+	if tags:
+		params['tags_exp'] = f"%,{tags},%"
+		clauses.update([
+			ClauseWhere(ConditionLIKE(
+				Function('LOWER', ValueColumnName('tags', 'S')),
+				Function('LOWER', ':tags_exp')
+			))
+		])
+	
+	if query:
+		params['query_exp'] = f"%{query}%"
+		clauses.update([
+			ClauseWhere(ConditionLIKE(
+				Function('LOWER', ValueColumnName('name', 'S')),
+				Function('LOWER', ':query_exp')
+			))
+		])
+	
+	if sort == "popular":
+		clauses.update([
+			ClauseOrder({ValueColumnName('downloads', 'S'): OrderEnum.DESC,
+			             ValueColumnName('likes', 'S'):     OrderEnum.DESC,
+			             ValueColumnName('views', 'S'):     OrderEnum.DESC})
+		])
+	elif sort == "newest":
+		clauses.update([
+			ClauseOrder({ValueColumnName('timestamp', 'S'): OrderEnum.DESC})
+		])
+	else:
+		return None
+	
+	song_statement = str(StatementSelect(
+		{ValueColumnName('*', 'S')},
+		 clauses
+	))
+	
+	user_statement = str(StatementSelect(
+		{ValueColumnName('*', 'U')},
+		 clauses
+	))
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		songs   = db.execute(song_statement, params).fetchall()
+		authors = db.execute(user_statement, params).fetchall()
+		
+		songs = [(song | {'author': bb_filter_user(author)})
+					for song, author in zip(songs, authors)]
+		
+		results = [bb_filter_song(song) for song in songs]
+	
+	return results
+		
+def bb_search_users(sort, after, query):
 	#stmt = StatementSelect(
 	#	{ValueColumnName('*')},
 	#	{ClauseFrom(ValueTableName('users')),
@@ -87,7 +235,10 @@ def bb_search_users(sort, after):
 	#)
 	
 	clauses = {ClauseFrom(ValueTableName('users')),
+	           ClauseOffset(after),
 			   ClauseLimit(10)}
+	
+	params = {}
 	
 	if sort == "popular":
 		clauses.update([
@@ -99,18 +250,23 @@ def bb_search_users(sort, after):
 		clauses.update([
 			ClauseOrder({ValueColumnName('timestamp'): OrderEnum.DESC})
 		])
-	else:
-		return None
 	
-	with sqlite3.connect(CONFIG['db']) as conn:
-		conn.row_factory = bb_rowfactory
+	if query:
+		params['query_exp'] = f"%{query}%"
+		clauses.update([
+			ClauseWhere(ConditionLIKE(
+				Function('LOWER', ValueColumnName('username')),
+				Function('LOWER', ':query_exp')
+			))
+		])
+		
+	with bb_connect_db() as conn:
 		db = conn.cursor()
 		q = db.execute(str(StatementSelect(
 			{ValueColumnName('*')},
 			clauses
-		)))
+		)), params)
 		
 		# return filtered result
 		results = [bb_filter_user(user) for user in q.fetchall()]
-		
 		return results

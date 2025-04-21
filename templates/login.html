@@ -9,7 +9,7 @@
 {% block main %}
 	<article>
 		<h2>beepboard login form</h2>
-		<form action="/api/Account/login" method="POST">
+		<form action="/api/v1/Account/Login" method="POST">
 		
 			<div class="flex-vertical">
 				<div class="form-item">
@@ -19,7 +19,7 @@
 				
 				<div class="form-item">
 					<label class="flex-u1" for="password">password</label>
-					<input class="flex-u3" type="text" name="password">
+					<input class="flex-u3" type="password" name="password">
 				</div>
 				
 				<button>LOGIN</button>

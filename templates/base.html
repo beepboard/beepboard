@@ -11,9 +11,12 @@
 		<meta name="author" content="fmixolydian">
 		<title>beepboard</title>
 		<link rel="stylesheet" href="/style.css">
+		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
+		{% block head %}{% endblock %}
 	</head>
 	
 	<body>
+		<form name="logout_form" action="/api/v1/Account/Logout" method="post"></form> <!-- gosh darn it html -->
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
@@ -22,11 +25,18 @@
 					<input type="text">
 					<img src="/assets/search.png">
 				</search>
+				<p class="account-text">
+				  {% if userdata %}
+				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
+				  {% else %}
+				  	<a href="/Account/Login">Login</a> or <a href="/Account/Register">Register</a>
+				  {% endif %}
+				</p>
 			</div>
 			
 			<div class="right">
 				<p>
-{% if userdata == None %}
+{% if not userdata %}
 	You're not logged in.
 {% else %}
 	Hello, <strong>{{ userdata['username'] }}</strong>!
@@ -40,7 +50,7 @@
 			<a class="red"     href="/Jams">jams</a>
 			<a class="magenta" href="/Users">users</a>
 			<a class="purple"  href="/Songs">songs</a>
-			<a class="blue"    href="/Roadmap">roadmap</a>
+			<a class="blue"    href="/Wiki/MainPage">wiki</a>
 		</nav>
 		
 		<div class="content">

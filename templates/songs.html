@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} index {% endblock %}
+{% block title %} song list {% endblock %}
 
 {% block aside %}
 		
@@ -8,6 +8,106 @@
 
 {% block main %}
 <article>
-	<p>Under construction. Sorry!</p>
+	<h2>Songs</h2>
+	<form action="/Songs" onsubmit="return prepare_search(this)">
+		<div class="flex-vertical">
+			<div class="sortby">
+				<p class="title">Sort by</p>
+				<div class="options">
+				
+					<input class="sort" {{ 'checked' if GET.sort == 'popular' else ''}}
+						id="sortPopular" type="radio" name="sort" value="popular"/>
+					<label for="sortPopular">popular</label>
+					
+					<input class="sort" {{ 'checked' if GET.sort == 'newest' else ''}}
+						id="sortNewest" type="radio" name="sort" value="newest"/>
+					<label for="sortNewest">newest</label>
+					
+				</div>
+				<div class="queries">
+					<input name="q" type="text" placeholder="search by name" class="query" value="{{GET.q if GET.q else ''}}"/>
+					<input name="author" type="text" placeholder="search by author" class="query" value="{{GET.author if GET.author else ''}}"/>
+				</div>
+			</div>
+			<div class="formtags">
+				<p class="title">Tags</p>
+				<div class="tags">
+					<div class="left" id="tags">
+					</div>
+					<div class="right">
+						<input type="text" placeholder="tag name" id="tagname">
+						<button type="button" onclick="add_tag()">+</button>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="tags"> <!-- tags are computed onsubmit-->
+			<button>SEARCH</button>
+		</div>
+	</form>
+	
+	
+	<div class="songs">
+		{% for song in songs %}
+			<div class="song">
+				<div class="left">
+					<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+					<div class="meta">
+						<p class="name">
+							{{ song.content.name }}
+						</p>
+						<div class="songtags">
+							{% if song.content.tags %}
+								{{ ' · '.join(song.content.tags.split(',')) }}
+							{% else %}
+								(no tags)
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="right">
+					<address class="author">
+						 by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
+					</address>
+				</div>
+			</div>
+		{% else %}
+			<p><em>no songs found ¯\_(ツ)_/¯</em></p>
+		{% endfor %}
+	</div>
+	
+	<script>
+		html_tags = document.getElementById('tags');
+		html_tagname = document.getElementById('tagname')
+		function add_tag() {
+			if (html_tagname.value.length > 2) {
+				html_tags.appendChild(
+					HTML.p(
+						html_tagname.value,
+						HTML.sup(
+							'x',
+							{'class': 'delete',
+							 'onclick': 'this.parentNode.remove()'}
+						),
+						{'class': 'tag'}
+					)
+				);
+				html_tagname.value = "";
+			} else {
+				alert("Tag is too short! Minimum length: 3");
+			}
+		}
+		
+		function prepare_search(form) {
+			data = new FormData(form)
+			
+			let tags = [];
+			for (let tag of html_tags.children) {
+				tags += tag.childNodes[0].data;
+			}
+			console.log(tags)
+			
+			return false
+		}
+	</script>
 </article>
 {% endblock %}

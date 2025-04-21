@@ -3,30 +3,44 @@
 {% block title %} user list {% endblock %}
 
 {% block aside %}
-		
 {% endblock %}
 
 {% block main %}
 <article>
-	<h2>Top users</h2>
-	<div class="sortby">
-		<p class="title">Sort by</p>
-		<div class="options">
-			<p class="sort"><a href="/Users?after={{after}}&sort=popular">popular</a></p>
-			<p class="sort"><a href="/Users?after={{after}}&sort=newest">newest</a></p>
+	<h2>Users</h2>
+	<form action="/Users">
+		<div class="flex-vertical">
+			<div class="sortby">
+				<p class="title">Sort by</p>
+				<div class="options">
+					
+					<input class="sort" {{ 'checked' if GET.sort == 'popular' else ''}}
+						id="sortPopular" type="radio" name="sort" value="popular"/>
+					<label for="sortPopular">popular</label>
+					
+					<input class="sort" {{ 'checked' if GET.sort == 'newest' else ''}}
+						id="sortNewest" type="radio" name="sort" value="newest"/>
+					<label for="sortNewest">newest</label>
+					
+				</div>
+				<div class="queries">
+					<input name="q" type="text" placeholder="search by name" class="query"/>
+				</div>
+			</div>
+			<button>SEARCH</button>
 		</div>
-	</div>
+	</form>
 	<div class="users">
 		{% for user in users %}
 			<div class="user">
 				<img class="pfp" src="{{ user.profile.pfp }}">
 				<div class="data">
 					<h3><a href="/User/{{ user.id }}">{{ user.username }}</a></h3>
-					<p>(the user's bio, which hasn't been implemented yet)</p>
+					<p>other info</p>
 				</div>
 				<div class="footer">
 					<p><small>
-					{{ user.created_date }} ·
+					{{ user.created.date }} ·
 					user {{ user.id }} </small></p>
 				</div>
 			</div>

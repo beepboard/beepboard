@@ -49,6 +49,10 @@ body {
 		margin-top:    0px;
 		margin-bottom: 0px;
 	}
+	
+	.account-text {
+		margin-left: 20px;
+	}
 
 /* NAVBAR */
 	nav {
@@ -202,10 +206,19 @@ body {
 			.user {
 				width: 100%;
 			}
+			
+			.song {
+				width: 100%;
+			}
 		}
 		
 		@media screen and (min-width: 1601px) {
 			.user {
+				flex: 1;
+				flex-basis: 48%;
+			}
+			
+			.song {
 				flex: 1;
 				flex-basis: 48%;
 			}
@@ -235,37 +248,166 @@ body {
 			bottom: 0px;
 			left: calc(128px + 20px);
 		}
+	
+	/* SONGS */
+		.songs {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 5px;
+		}
 		
-	/* SORT BY */
-		.sortby {
+		.song {
+			background-color: #333;
 			display: flex;
 			flex-direction: row;
 			gap: 5px;
 		}
 		
+		.song .left {
+			padding: 15px;
+			margin-right: auto;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		
+		.song .left .mod {
+			width: 32px;
+			height: 32px;
+		}
+		
+		.song .left .meta {
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.song .left .meta .name {
+			margin: 0px;
+		}
+		
+		.song .right {
+			padding: 15px;
+			margin-left: auto;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 10px;
+		}
+		
+		.song .right .author {
+			margin: 0px;
+		}
+	
+	/* SORT BY */
+		.sortby {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			align-items: center;
+		}
+		
 		.sortby .title {
 			margin-right: 10px;
 			padding: 5px;
+			margin: 0px;
 		}
 		
 		.sortby .options {
 			display: flex;
 			flex-direction: row;
 			gap: 5px;
+			margin-right: 10px;
+		}
+			
+		.sort + label {
+			margin: 0px;
+		}
+		
+	/* TAGS */
+		.formtags {
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+			align-items: center;
+		}
+		
+		.formtags .title {
+			margin: 0px;
+			margin-right: 10px;
+		}
+		
+		.formtags .tags {
+			background-color: #111;
+			padding: 10px;
+			margin-top: 5px;
+			height: 30px;
+			
+			display: flex;
+			flex-direction: row;
 			flex: 1;
 		}
 		
-		.sortby .options .sort {
-			background-color: #333;
-			padding: 5px;
-			padding-left: 10px;
-			padding-right: 10px;
-		}
-		.sortby .options .sort a {
-			color: white;
-			text-decoration: none;
+		.formtags .tags .left {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			margin-right: auto;
 		}
 		
+		.formtags .tags .right {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			margin-left: auto;
+		}
+		
+		.formtags .tags .right input {
+			background-color: #222;
+			height: 100%;
+			width: 100px;
+		}
+		
+		.formtags .tags .right button {
+			background-color: #222;
+			padding: 5px;
+			margin: 0px;
+			height: 100%;
+			width: 30px;
+			aspect-ratio: 1/1;
+			font-size: 12pt;
+			font-weight: bold;
+		}
+		
+		.formtags .tags .left .tag {
+			background-color: #222;
+			padding: 5px;
+			margin: 0px;
+		}
+		
+		.formtags  .tags .left .tag .delete {
+			margin-left: 5px;
+		}
+		
+		.songtags {
+			color: lightgray;
+			font-size: 0.7em;
+		}
+	
+	/* QUERIES */
+		.queries {
+			display: flex;
+			flex-direction: row;
+			gap: 5px;
+			flex: 1;
+		}
+		
+		.query {
+			flex: 1;
+		}
 
 /* FOOTER */
 	footer {
@@ -286,18 +428,52 @@ body {
 		flex-direction: row;
 	}
 	
-	input[type=text] {
+	input[type=text], input[type=password] {
 		height: 24px;
 		border: none;
 		background-color: #444;
 		color: white;
 	}
 	
-	button {
+	input[type=text]::placeholder {
+		color: #888;
+		font-style: italic;
+	}
+	
+	input:focus {
+		outline: none;
+	}
+	
+	button, input[type=submit] {
 		height: 24px;
 		border: none;
 		background-color: #444;
 		color: white;
+	}
+	
+	input[type="radio"] {
+		opacity: 0;
+		position: fixed;
+		width: 0;
+	}
+	
+	input[type="radio"] + label {
+		background-color: #333;
+		padding: 5px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	
+	input[type="radio"]:hover + label {
+		background-color: #444;
+	}
+	
+	input[type="radio"]:checked + label {
+		background-color: #80f;
+	}
+	
+	.flex-vertical button {
+		margin-top: 5px;
 	}
 
 /* GENERAL */

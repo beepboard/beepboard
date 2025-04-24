@@ -17,7 +17,10 @@
 					<p>Joined {{ user.created.date }}</p>
 				</div>
 			</div>
-			{{ user.profile.bio.html | safe}}
+			
+			<div class="bio">
+				{{ user.profile.bio.html | safe}}
+			</div>
 		</div>
 	{% else %}
 		<p>User not found.</p>

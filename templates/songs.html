@@ -25,8 +25,8 @@
 					
 				</div>
 				<div class="queries">
-					<input name="q" type="text" placeholder="search by name" class="query" value="{{GET.q if GET.q else ''}}"/>
-					<input name="author" type="text" placeholder="search by author" class="query" value="{{GET.author if GET.author else ''}}"/>
+					<input name="q" type="text" placeholder="search by name" class="query" value="{{GET.q}}"/>
+					<input name="author" type="text" placeholder="search by author" class="query" value="{{GET.author}}"/>
 				</div>
 			</div>
 			<div class="formtags">
@@ -50,10 +50,12 @@
 		{% for song in songs %}
 			<div class="song">
 				<div class="left">
-					<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+					<a target=_blank href="/Song/{{song.id}}/play">
+						<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+					</a>
 					<div class="meta">
 						<p class="name">
-							{{ song.content.name }}
+							<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
 						</p>
 						<div class="songtags">
 							{% if song.content.tags %}
@@ -65,15 +67,40 @@
 					</div>
 				</div>
 				<div class="right">
-					<address class="author">
+					<p class="author">
 						 by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
-					</address>
+					</p>
+					<small>
+						{{ song.created.date }}
+						· {{ song.stats.likes  }} likes
+						· {{ song.stats.clicks }} clicks
+						· {{ song.stats.views  }} views
+					</small>
 				</div>
 			</div>
 		{% else %}
 			<p><em>no songs found ¯\_(ツ)_/¯</em></p>
 		{% endfor %}
 	</div>
+	
+	<p class="text-centered">
+		<a href="{{
+'/Songs?sort=' + GET.sort
+               + ('&q='      + GET.q)
+               + ('&author=' + GET.author)
+               + ('&tags='   + GET.tags)
+               + ('&after='  + [GET.after | int - 10, 0] | max | string)
+}}">&lt;</a>
+		page {{ (GET.after | int) // 10 + 1}}
+		<a href="{{
+'/Songs?sort=' + GET.sort
+               + ('&q='      + GET.q)
+               + ('&author=' + GET.author)
+               + ('&tags='   + GET.tags)
+               + ('&after='  + ((GET.after | int + 10) | string))
+}}">&gt;</a>
+
+	</p>
 	
 	<script>
 		html_tags = document.getElementById('tags');
@@ -106,7 +133,7 @@
 			}
 			console.log(tags)
 			
-			return false
+			return true
 		}
 	</script>
 </article>

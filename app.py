@@ -6,6 +6,7 @@ from bb_config    import *
 from bb_database  import *
 from bb_api       import *
 from bb_users     import *
+from bb_songs     import *
 from bb_functions import *
 
 @app.route('/')
@@ -25,6 +26,7 @@ def bb_list_songs():
 	query  = request.args.get('q')
 	if not sort:
 		sort = 'newest'
+		
 	if not after:
 		after = '0'
 	if not after.isdigit():
@@ -32,6 +34,13 @@ def bb_list_songs():
 	
 	songs = bb_search_songs(sort, after, author, tags, query)
 	
+	if not author:
+		author = ''
+	if not tags:
+		tags = ''
+	if not query:
+		query = ''
+		
 	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
 	return render_template("songs.html",
 		userdata=userdata,
@@ -72,9 +81,10 @@ def bb_list_users():
 		     'after':after,
 		     'q':query}
 	)
-	
-	
-	
+
+@app.route('/Song/')
+
+
 @app.route('/Jams')
 @app.route('/Wiki')
 def bb_under_construction():

@@ -10,6 +10,19 @@ from bb_database import *
 from html_sanitizer import Sanitizer
 import re
 
+MODS = {
+	"abyssbox":    {'url': 'https://choptop84.github.io/abyssbox-app/'},
+	"beepbox":     {'url': 'https://www.beepbox.co'},
+	"goldbox":     {'url': 'https://aurysystem.github.io/goldbox/'},
+	"jummbox":     {'url': 'https://jummb.us'},
+	"modbox":      {'url': 'https://moddedbeepbox.github.io/3.0/'},
+	"pandorasbox": {'url': 'https://paandorasbox.github.io/'},
+	"sandbox":     {'url': 'https://fillygroove.github.io/sandbox-3.1/'},
+	"slarmoosbox": {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
+	"ultrabox":    {'url': 'https://ultraabox.github.io/'},
+	"wackybox":    {'url': 'https://bluecatgamer.github.io/Wackybox/'}
+}
+
 def bb_sql_regexp(pattern, item):
     return re.search(pattern, item) is not None
 
@@ -69,7 +82,7 @@ def bb_filter_user(user):
 	}
 
 def bb_filter_song(song):
-	sanitizer = Sanitizer()
+	sanitizer = Sanitizer('')
 	
 	if not song:
 		return None
@@ -92,12 +105,13 @@ def bb_filter_song(song):
 			'name': song['name'],
 			'tags': song['tags'],
 			
-			'descrition': {
+			'desc': {
 				'raw':  song['description'],
-				'html': sanitizer.sanitize(bb_render_markdown(song['description']))
+				'html': (bb_render_markdown(song['description']))
 			},
 			
 			'url': {
+				'url': MODS[song['songmod']]['url'] + "#" + song['songdata'],
 				'data': song['songdata'],
 				'mod': song['songmod']
 			}
@@ -126,12 +140,19 @@ def bb_get_songdata_by_id(id):
 		db = conn.cursor()
 		
 		if not id:
+			print("no id")
 			return None
 		else:
-			songdata =  db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
+			songdata = db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
 			if songdata:
-				songdata['author'] = db.execute("SELECT * FROM users WHERE userid = ?", (str(songdata['userid']),)).fetchone()
+				songdata['author'] = bb_filter_user(
+										db.execute("SELECT * FROM users WHERE userid = ?",
+											(str(songdata['userid']),)
+											).fetchone()
+										) # filtered to beautify data and hide sensitive details (e.g. token)
+				return songdata
 			else:
+				print("unable to get songdata for songid", id)
 				return None
 
 
@@ -270,3 +291,10 @@ def bb_search_users(sort, after, query):
 		# return filtered result
 		results = [bb_filter_user(user) for user in q.fetchall()]
 		return results
+
+def bb_get_interaction(type, userid, songid):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		q = db.execute("SELECT interactionid FROM interactions WHERE type = ? AND userid = ? AND songid = ?",
+						(type, userid, songid))
+		return q.fetchone()

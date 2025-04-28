@@ -14,8 +14,6 @@ def bb_index():
 	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 	return render_template("index.html", myself=myself)
 
-
-
 @app.route('/Songs')
 def bb_list_songs():
 	# set default values for parameters

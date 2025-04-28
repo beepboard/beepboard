@@ -101,3 +101,6 @@ def bb_account_register():
 @app.route('/Account/Logout')
 def bb_account_logout():
 	return render_template("logout.html")
+
+if __name__ == '__main__':
+	app.run(debug = False, port=5000)

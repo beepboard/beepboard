@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 	
 	ismod        INTEGER NOT NULL DEFAULT 0,
 	
-	bio         TEXT NOT NULL,
+	bio         TEXT NOT NULL DEFAULT '',
 	username    TEXT NOT NULL,
 	password    TEXT NOT NULL,
 	token       TEXT,

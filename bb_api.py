@@ -61,7 +61,19 @@ def bb_api_register():
 		db.execute("INSERT INTO users (username, password, timestamp) VALUES (?,?,?)",
 		           (request.form['username'], hash, time.time()))
 		
-		return redirect('/welcome')
+		# gen token
+		token = binascii.hexlify(os.urandom(16)).decode()
+		
+		res = redirect('/welcome')
+		
+		# add token cookie
+		res.set_cookie('token', token, 86400 * 30)
+		
+		# add token to DB
+		db.execute("UPDATE users SET token = ? WHERE username = ?",
+				   (token, request.form['username']))
+		
+		return res
 					
 @app.route('/api/v1/Account/login', methods=['POST'])
 def bb_api_login():
@@ -141,7 +153,14 @@ def bb_api_songsubmit():
 				"Bad request.",
 				400
 			)
-		songid = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'songs'").fetchone()['seq']
+		
+		# grab first free songid
+		seq = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'songs'").fetchone()
+		if seq:
+			songid = seq['seq']
+		else:
+			songid = 1
+			
 		db.execute("INSERT INTO SONGS (userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?)",
 		            (
 		             user["id"],
@@ -152,6 +171,8 @@ def bb_api_songsubmit():
 		             request.form["desc"],
 		             time.time()
 		             ))
+		
+	# login user as well
 	return redirect("/Song/" + str(songid))
 
 @app.route('/api/v1/Song/search', methods=['GET'])

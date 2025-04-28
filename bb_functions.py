@@ -97,8 +97,8 @@ def bb_filter_song(song):
 		},
 		
 		'flags': {
-			'deleted':  bool(song['isdeleted']),
-			'featured': bool(song['isfeatured'])
+			'deleted':  bool(song['deleted']),
+			'featured': bool(song['featured'])
 		},
 		
 		'content': {

@@ -13,11 +13,17 @@
 		<link rel="stylesheet" href="/style.css">
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
 		
+		<style>
+			html, body {
+				background-color: #220026;
+			}
+		</style>
+		
 		{% block head %}{% endblock %}
 	</head>
 	
 	<body>
-		<form name="logout_form" action="/api/v1/Account/Logout" method="post"></form> <!-- gosh darn it html -->
+		<form name="logout_form" action="/api/v1/Account/logout" method="post"></form> <!-- gosh darn it html -->
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
@@ -30,7 +36,7 @@
 				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
 				  {% else %}
-				  	<a href="/Account/Login">Login</a> or <a href="/Account/Register">Register</a>
+				  	<a href="/Account/login">Login</a> or <a href="/Account/register">Register</a>
 				  {% endif %}
 				</p>
 			</div>

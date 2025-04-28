@@ -10,7 +10,7 @@ from bb_config   import *
 from bb_database import *
 from bb_functions import *
 
-@app.route('/api/v1/Account/Logout', methods=['POST'])
+@app.route('/api/v1/Account/logout', methods=['POST'])
 def bb_api_logout():
 	# check if auth details are actually present
 	if not request.cookies.get('token'):
@@ -28,11 +28,42 @@ def bb_api_logout():
 		           )
 		
 		# remove cookie from client
-		res = redirect('/Account/Logout')
+		res = redirect('/Account/logout')
 		res.set_cookie('token', '', expires=0)
 		return res
 
-@app.route('/api/v1/Account/Login', methods=['POST'])
+@app.route('/api/v1/Account/register', methods=['POST'])
+def bb_api_register():
+	# check if auth details are actually present
+	if    not ('username' in request.form) \
+	   or not ('password' in request.form):
+		return (
+			"Must include fields <code>username</code>, <code>password</code>",
+			400
+		)
+		
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		# check if user already exists
+		userdata = db.execute(
+			"SELECT * FROM users WHERE username = ?",
+			(request.form['username'],)
+		).fetchone()
+		
+		# if there is no such username then return 403
+		if userdata:
+			return (f"{request.form['username']} already exists!", 400)
+		
+		hash = werkzeug.security.generate_password_hash(request.form['password'])
+		
+		# create the user
+		db.execute("INSERT INTO users (username, password, timestamp) VALUES (?,?,?)",
+		           (request.form['username'], hash, time.time()))
+		
+		return redirect('/welcome')
+					
+@app.route('/api/v1/Account/login', methods=['POST'])
 def bb_api_login():
 	# check if auth details are actually present
 	if    not ('username' in request.form) \
@@ -54,7 +85,7 @@ def bb_api_login():
 		# if there is no such username then return 403
 		if userdata == None:
 			return (f"""
-					<meta http-equiv='refresh' content='0; /Account/Login'>
+					<meta http-equiv='refresh' content='0; /Account/login'>
 					<p>User <code>{request.form['username']}</code> doesn't exist.</p>
 					""", 403)
 		
@@ -75,7 +106,7 @@ def bb_api_login():
 			return res
 		else:
 			return ("""
-					<meta http-equiv='refresh' content='0; /Account/Login'>
+					<meta http-equiv='refresh' content='0; /Account/login'>
 					<p>Wrong password.</p>
 					""", 403)
 

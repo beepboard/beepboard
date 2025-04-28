@@ -57,7 +57,7 @@ def bb_song_play(id):
 def bb_song_upvote(id):
 	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 	if not myself:
-		return redirect('/Account/Login')
+		return redirect('/Account/login')
 	
 	song = bb_filter_song(bb_get_songdata_by_id(id))
 	if not song:
@@ -82,7 +82,7 @@ def bb_song_upvote(id):
 def bb_song_downvote(id):
 	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 	if not myself:
-		return redirect('/Account/Login')
+		return redirect('/Account/login')
 	
 	song = bb_filter_song(bb_get_songdata_by_id(id))
 	if not song:

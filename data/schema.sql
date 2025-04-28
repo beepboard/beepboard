@@ -11,8 +11,9 @@ CREATE TABLE IF NOT EXISTS users (
 	downloads    INTEGER NOT NULL DEFAULT 0,
 	profileviews INTEGER NOT NULL DEFAULT 0,
 	
-	ismod   INTEGER NOT NULL DEFAULT 0,
+	ismod        INTEGER NOT NULL DEFAULT 0,
 	
+	bio         TEXT NOT NULL,
 	username    TEXT NOT NULL,
 	password    TEXT NOT NULL,
 	token       TEXT,
@@ -32,11 +33,11 @@ CREATE TABLE IF NOT EXISTS songs (
 	deleted     INTEGER NOT NULL DEFAULT 0,
 	featured    INTEGER NOT NULL DEFAULT 0,
 	
-	songurl     TEXT NOT NULL,
-	tags        TEXT,
-	name        TEXT,
-	summary     TEXT,
-	description TEXT,
+	songdata    TEXT NOT NULL,
+	songmod     TEXT NOT NULL,
+	tags        TEXT NOT NULL,
+	name        TEXT NOT NULL,
+	description TEXT NOT NULL,
 	
 	timestamp   INTEGER NOT NULL,
 	

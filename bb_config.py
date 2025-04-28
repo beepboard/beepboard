@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
 import json
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 def bb_validate_config(config):
 	if not ('db' in config):

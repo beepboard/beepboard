@@ -3,17 +3,15 @@
 {% block title %} login {% endblock %}
 
 {% block head %}
-	<style>
-		
-	</style>
+	<link rel="stylesheet" href="/styles/register.css">
 {% endblock %}
 
 {% block main %}
 	<article>
 		<h2>beepboard registration form</h2>
-		<form action="/api/v1/Account/Register" method="POST">
+		<form action="/api/v1/Account/register" method="POST">
 		
-			<div class="flex-vertical">
+			<div class="registerform">
 				<div class="form-item">
 					<label class="flex-u1" for="username">username</label>
 					<input class="flex-u3" type="text" name="username">

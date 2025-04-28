@@ -1,3 +1,8 @@
+.searchform {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
 
 .songs {
 	display: flex;

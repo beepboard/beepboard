@@ -11,8 +11,8 @@ from bb_functions import *
 
 @app.route('/')
 def bb_index():
-	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
-	return render_template("index.html", userdata=userdata)
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	return render_template("index.html", myself=myself)
 
 
 
@@ -41,9 +41,9 @@ def bb_list_songs():
 	if not query:
 		query = ''
 		
-	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 	return render_template("songs.html",
-		userdata=userdata,
+		myself=myself,
 		songs=songs,
 		GET={'sort':sort,
 		     'after':after,
@@ -71,10 +71,10 @@ def bb_list_users():
 	
 	#filter users
 	
-	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 	
 	return render_template("users.html",
-		userdata=userdata,
+		myself=myself,
 		users=users,
 		after=after,
 		GET={'sort':sort,
@@ -82,21 +82,23 @@ def bb_list_users():
 		     'q':query}
 	)
 
-@app.route('/Song/')
-
-
 @app.route('/Jams')
 @app.route('/Wiki')
 def bb_under_construction():
-	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
-	return render_template("workinprogress.html", userdata=userdata)
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	return render_template("workinprogress.html", myself=myself)
 
 
 
 @app.route('/Account/Login')
 def bb_account_login():
-	userdata = bb_get_userdata_by_token(request.cookies.get('token'))
-	return render_template("login.html", userdata=userdata)
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	return render_template("login.html", myself=myself)
+	
+@app.route('/Account/Register')
+def bb_account_register():
+	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	return render_template("register.html", myself=myself)
 
 @app.route('/Account/Logout')
 def bb_account_logout():

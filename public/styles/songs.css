@@ -1,0 +1,54 @@
+
+.songs {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 5px;
+}
+
+.song {
+	background-color: #333;
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+}
+
+.song .left {
+	padding: 15px;
+	margin-right: auto;
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+
+.song .left .mod {
+	width: 32px;
+	height: 32px;
+}
+
+.song .left .meta {
+	display: flex;
+	flex-direction: column;
+}
+
+.song .left .meta .name {
+	margin: 0px;
+}
+
+.song .right {
+	padding: 15px;
+	margin-left: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: right;
+}
+
+.song .right .author {
+	margin: 0px;
+}
+
+.song {
+	width: 100%;
+}

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %} user {{user.username}} {% endblock %}
-
-{% block aside %}
-		
+{% block head %}
+	<link rel="stylesheet" href="/styles/view-user.css">
+	<link rel="stylesheet" href="/styles/songs.css">
 {% endblock %}
+
+{% block title %} user {{user.username}} {% endblock %}
 
 {% block main %}
 <article>
@@ -15,11 +16,68 @@
 				<div class="desc">
 					<h2>{{ user.username }}</h2>
 					<p>Joined {{ user.created.date }}</p>
+					
+					{% if myself %}
+						<div class="actions">
+							{% if myself.id == user.id %}
+								<a title="edit"          href="/Profile/edit" class="action"><img class="edit" src="/assets/trans.png"></a>
+							{% else %}
+								<a title="report" href="/User/{{user.id}}/report"><img class="action" src="/assets/report.png"></a>
+							{% endif %}
+						</div>
+					{% endif %}
 				</div>
 			</div>
 			
 			<div class="bio">
 				{{ user.profile.bio.html | safe}}
+			</div>
+			
+			<h2>
+				Songs
+				{% if myself.id == user.id %}
+					<a title="upload a song" href="/Song/submit"><img class="submit" src="/assets/trans.png"></a>
+				{% endif %}
+			</h2>
+			<div class="songs">
+				{% for song in songs %}
+					<div class="song">
+						<div class="left">
+							<a target=_blank href="/Song/{{song.id}}/play">
+								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+							</a>
+							<div class="meta">
+								<p class="name">
+									<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
+								</p>
+								<div class="songtags">
+									{% if song.content.tags %}
+										{{ ' · '.join(song.content.tags.split(',')) }}
+									{% else %}
+										(no tags)
+									{% endif %}
+								</div>
+							</div>
+						</div>
+						<div class="right">
+							<p class="author">
+								 by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
+							</p>
+							<small>
+								{{ song.created.date }}
+								· {{ song.stats.likes  }} likes
+								· {{ song.stats.clicks }} clicks
+								· {{ song.stats.views  }} views
+							</small>
+						</div>
+					</div>
+				{% else %}
+					{% if myself.id == user.id %}
+						<p><em>no songs found ¯\_(ツ)_/¯ · try <a href="/Song/submit">uploading</a> some songs!</em></p>
+					{% else %}
+						<p><em>no songs found ¯\_(ツ)_/¯</em></p>
+					{% endif %}
+				{% endfor %}
 			</div>
 		</div>
 	{% else %}

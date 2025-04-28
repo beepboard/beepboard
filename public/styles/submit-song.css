@@ -1,0 +1,16 @@
+
+.submitform {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.songdesc {
+	height: 200px;
+	resize: none;
+}
+
+.songdata {
+	height: 100px;
+	resize: none;
+}

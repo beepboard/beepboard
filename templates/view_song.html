@@ -2,8 +2,8 @@
 
 {% block title %} song {{song.name}} {% endblock %}
 
-{% block aside %}
-		
+{% block head %}
+	<link rel="stylesheet" href="/styles/view-song.css">
 {% endblock %}
 
 {% block main %}
@@ -28,7 +28,7 @@
 			<div class="stats">
 				<div class="stat">
 					<img class="icon"     src="/assets/likes.png">
-					{% if userdata and not has_interacted %}
+					{% if myself and not has_interacted %}
 						<a href="/Song/{{song.id}}/upvote">
 							<img class="interact" src="/assets/upvote.png">
 						</a>
@@ -40,12 +40,12 @@
 					<p>{{song.stats.likes}}</p>
 				</div>
 				<div class="stat">
-					<img class="icon"     src="/assets/views.png">
-					<p>{{song.stats.views}}</p>
+					<img class="icon"     src="/assets/clicks.png">
+					<p>{{song.stats.clicks}}</p>
 				</div>
 				<div class="stat">
-					<img class="icon"     src="/assets/downloads.png">
-					<p>{{song.stats.clicks}}</p>
+					<img class="icon"     src="/assets/views.png">
+					<p>{{song.stats.views}}</p>
 				</div>
 			</div>
 		</div>

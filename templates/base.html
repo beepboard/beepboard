@@ -12,6 +12,7 @@
 		<title>beepboard</title>
 		<link rel="stylesheet" href="/style.css">
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
+		
 		{% block head %}{% endblock %}
 	</head>
 	
@@ -26,7 +27,7 @@
 					<img src="/assets/search.png">
 				</search>
 				<p class="account-text">
-				  {% if userdata %}
+				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
 				  {% else %}
 				  	<a href="/Account/Login">Login</a> or <a href="/Account/Register">Register</a>
@@ -36,27 +37,32 @@
 			
 			<div class="right">
 				<p>
-{% if not userdata %}
+{% if not myself %}
 	You're not logged in.
 {% else %}
-	Hello, <strong>{{ userdata['username'] }}</strong>!
+	Hello, <strong><a href="/User/{{myself.id}}">{{ myself.username }}</a></strong>!
 {% endif %}
 </p>
 			</div>
 		</header>
 		
 		<nav>
-			<a class="orange"  href="/">home</a>
-			<a class="red"     href="/Jams">jams</a>
-			<a class="magenta" href="/Users">users</a>
-			<a class="purple"  href="/Songs">songs</a>
-			<a class="blue"    href="/Wiki/MainPage">wiki</a>
+			<div class="links">
+				<div class="link orange">  <img class="icon" src="/assets/trans.png"> <a href="/">home</a>              </div>
+				<div class="link red">     <img class="icon" src="/assets/trans.png"> <a href="/Jams">jams</a>          </div>
+				<div class="link magenta"> <img class="icon" src="/assets/trans.png"> <a href="/Users">users</a>        </div>
+				<div class="link purple">  <img class="icon" src="/assets/trans.png"> <a href="/Songs">songs</a>        </div>
+				<div class="link blue">    <img class="icon" src="/assets/trans.png"> <a href="/Wiki/MainPage">wiki</a> </div>
+			</div>
 		</nav>
 		
 		<div class="content">
 			<aside>
-				{% block aside %}
-				{% endblock %}
+				<article>
+					<div class="item">
+						<p>placeholder</p>
+					</div>
+				</article>
 			</aside>
 			<main>
 				{% block main %}

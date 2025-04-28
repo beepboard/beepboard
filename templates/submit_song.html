@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %} submit song {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/submit-song.css">
+{% endblock %}
+
+{% block main %}
+<article>
+	<div class="submit">
+		<h2>submit song</h2>
+		<form name="form" action="/api/v1/Song/submit" method="POST" onsubmit="return prepare_search(this)">
+		
+			<div class="submitform">
+				<div class="form-item">
+					<label class="flex-u1" for="title">song title</label>
+					<input class="flex-u3" minlength=3 maxlength=100 type="text" name="title">
+				</div>
+				
+				<div class="form-item">
+					<label class="flex-u1" for="desc">description</label>
+					<textarea maxlength=1000 class="flex-u3 songdesc" name="desc"></textarea>
+				</div>
+				
+				<div class="form-item">
+					<label class="flex-u1" for="mod">beepmod used</label>
+					<select class="flex-u3 songmod" name="mod" id="mod">
+						<option value="abyssbox">abyssbox</option>
+						<option value="beepbox">beepbox</option>
+						<option value="goldbox">goldbox</option>
+						<option value="jummbox">jummbox</option>
+						<option value="modbox">modbox</option>
+						<option value="pandorasbox">pandorasbox</option>
+						<option value="sandbox">sandbox</option>
+						<option value="slarmoosbox">slarmoosbox</option>
+						<option value="ultrabox">ultrabox</option>
+						<option value="wackybox">wackybox</option>
+					</select>
+				</div>
+				
+				<div class="form-item">
+					<label class="flex-u1" for="data" title="the data after the '#' in the URL.">song data</label>
+					<textarea class="flex-u3 songdata" name="data"></textarea>
+				</div>
+				
+				<div class="formtags">
+					<p class="title">Tags</p>
+					<div class="tags">
+						<div class="left" id="tags">
+						</div>
+						<div class="right">
+							<input type="text" placeholder="tag name" id="tagname">
+							<button type="button" onclick="add_tag()">+</button>
+						</div>
+					</div>
+				</div>
+				
+				<button>SUBMIT</button>
+			</div>
+			
+			<input type="hidden" name="tags"> <!-- tags are computed onsubmit-->
+			
+		</form>
+	</div>
+	<script>
+		html_tags = document.getElementById('tags');
+		html_tagname = document.getElementById('tagname')
+		function add_tag() {
+			if (html_tagname.value.length > 2) {
+				html_tags.appendChild(
+					HTML.p(
+						html_tagname.value,
+						HTML.sup(
+							'x',
+							{'class': 'delete',
+							 'onclick': 'this.parentNode.remove()'}
+						),
+						{'class': 'tag'}
+					)
+				);
+				html_tagname.value = "";
+			} else {
+				alert("Tag is too short! Minimum length: 3");
+			}
+		}
+		
+		function prepare_search(form) {
+			data = new FormData(form)
+			
+			let tags = "";
+			for (let tag of html_tags.children) {
+				tags += tag.childNodes[0].data + ",";
+			}
+			
+			document.form.tags.value = tags
+			
+			console.log(tags)
+			
+			return true
+		}
+	</script>
+</article>
+{% endblock %}

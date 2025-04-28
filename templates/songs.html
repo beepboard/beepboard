@@ -2,14 +2,14 @@
 
 {% block title %} song list {% endblock %}
 
-{% block aside %}
-		
+{% block head %}
+	<link rel="stylesheet" href="/styles/songs.css">
 {% endblock %}
 
 {% block main %}
 <article>
 	<h2>Songs</h2>
-	<form action="/Songs" onsubmit="return prepare_search(this)">
+	<form name="form" action="/Songs" onsubmit="return prepare_search(this)">
 		<div class="flex-vertical">
 			<div class="sortby">
 				<p class="title">Sort by</p>
@@ -127,10 +127,13 @@
 		function prepare_search(form) {
 			data = new FormData(form)
 			
-			let tags = [];
+			let tags = "";
 			for (let tag of html_tags.children) {
-				tags += tag.childNodes[0].data;
+				tags += tag.childNodes[0].data + ",";
 			}
+			
+			document.form.tags.value = tags
+			
 			console.log(tags)
 			
 			return true

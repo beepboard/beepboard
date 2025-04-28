@@ -1,0 +1,77 @@
+
+.viewuser {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.viewuser .head {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.viewuser .head .pfp {
+
+}
+
+.viewuser .head .desc {
+	width: 100%;
+}
+
+.viewuser .head .desc h2 {
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 10px;
+}
+
+.viewuser .head .desc p {
+	margin: 0px;
+	padding: 0px;
+}
+
+.viewuser .head .stats {
+	display: flex;
+	flex-direction: row;
+	margin: 5px;
+	gap: 5px;
+}
+
+.viewuser .head .stats .stat {
+	flex: 1;
+}
+
+.viewuser .head .desc .actions {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+	margin-top: 10px;
+}
+
+.viewuser .head .desc .actions .action {
+	padding: 4px;
+	padding-bottom: 0px;
+	background-color: #444;
+}
+
+.viewuser .head .desc .actions .action img {
+	width: 16px;
+	height: 16px;
+}
+
+.viewuser .head .desc .actions .action img.edit   {background: url("/assets/icons.png")   0px -16px;}
+
+.submit {
+	width: 16px;
+	height: 16px;
+	position: relative;
+	left: 0px;
+	background: url("/assets/icons.png") -16px -16px;
+}
+
+.viewuser .bio {
+	margin-left: 15px;
+	border-left: 5px solid #333;
+	padding-left: 10px;
+}

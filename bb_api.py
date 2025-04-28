@@ -3,6 +3,7 @@ import werkzeug
 import sqlite3
 import os
 import binascii
+import time
 import json
 
 from bb_config   import *
@@ -18,8 +19,7 @@ def bb_api_logout():
 			400
 		)
 	
-	with sqlite3.connect(CONFIG['db']) as conn:
-		conn.row_factory = bb_rowfactory
+	with bb_connect_db() as conn:
 		db = conn.cursor()
 		
 		# remove cookie from db
@@ -42,8 +42,7 @@ def bb_api_login():
 			400
 		)
 		
-	with sqlite3.connect(CONFIG['db']) as conn:
-		conn.row_factory = bb_rowfactory
+	with bb_connect_db() as conn:
 		db = conn.cursor()
 		
 		# get password hash
@@ -79,6 +78,50 @@ def bb_api_login():
 					<meta http-equiv='refresh' content='0; /Account/Login'>
 					<p>Wrong password.</p>
 					""", 403)
+
+@app.route('/api/v1/Song/submit', methods=['POST'])
+def bb_api_songsubmit():
+	if    not ('title' in request.form) \
+	   or not ('desc' in request.form) \
+	   or not ('mod' in request.form) \
+	   or not ('data' in request.form) \
+	   or not ('tags' in request.form):
+		return (
+			"Bad parameters!",
+			400
+		)
+	# vaildate params
+	if len(request.form["title"]) > 100 \
+	or len(request.form["title"]) < 3   \
+	or request.form["mod"] not in MODS  \
+	or len(request.form["desc"]) > 1000:
+		return (
+			"Bad request.",
+			400
+		)
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		#check if user is logged in
+		user = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+		if not user:
+			return (
+				"Bad request.",
+				400
+			)
+		songid = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'songs'").fetchone()['seq']
+		db.execute("INSERT INTO SONGS (userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?)",
+		            (
+		             user["id"],
+		             request.form["data"],
+		             request.form["mod"],
+		             request.form["tags"].strip(","),
+		             request.form["title"],
+		             request.form["desc"],
+		             time.time()
+		             ))
+	return redirect("/Song/" + str(songid))
 
 @app.route('/api/v1/Song/search', methods=['GET'])
 def bb_api_searchsongs():

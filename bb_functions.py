@@ -88,7 +88,7 @@ def bb_filter_song(song):
 		return None
 	return {
 		'id':   song['songid'],
-		'author': song['author'],
+		'author': bb_filter_user(bb_get_userdata_by_id(song['userid'])),
 		
 		'stats': {
 			'clicks': song['downloads'],
@@ -145,11 +145,6 @@ def bb_get_songdata_by_id(id):
 		else:
 			songdata = db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
 			if songdata:
-				songdata['author'] = bb_filter_user(
-										db.execute("SELECT * FROM users WHERE userid = ?",
-											(str(songdata['userid']),)
-											).fetchone()
-										) # filtered to beautify data and hide sensitive details (e.g. token)
 				return songdata
 			else:
 				print("unable to get songdata for songid", id)

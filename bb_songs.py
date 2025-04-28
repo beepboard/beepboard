@@ -73,7 +73,7 @@ def bb_song_upvote(id):
 		           (id,)
 		           )
 		db.execute("INSERT INTO interactions (type, songid, userid, timestamp) VALUES (?,?,?,?)",
-		           ("like", song["id"], myself['userid'], time.time())
+		           ("like", song["id"], myself['id'], time.time())
 		           )
 	return redirect(f"/Song/{song['id']}")
 
@@ -88,7 +88,7 @@ def bb_song_downvote(id):
 	if not song:
 		return "Song not found", 404
 	
-	if not bb_get_interaction("like", myself['userid'], song['id']):
+	if not bb_get_interaction("like", myself['id'], song['id']):
 		return "You did not already like this song.", 400
 	
 	# update song views
@@ -98,6 +98,6 @@ def bb_song_downvote(id):
 		           (id,)
 		           )
 		db.execute("DELETE FROM interactions WHERE type = ? AND userid = ? AND songid = ?",
-		           ("like", myself['userid'], song["id"])
+		           ("like", myself['id'], song["id"])
 		           )
 	return redirect(f"/Song/{song['id']}")

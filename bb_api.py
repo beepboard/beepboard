@@ -137,9 +137,10 @@ def bb_api_songsubmit():
 	if len(request.form["title"]) > 100 \
 	or len(request.form["title"]) < 3   \
 	or request.form["mod"] not in MODS  \
+	or request.form["data"].startswith('http')  \
 	or len(request.form["desc"]) > 1000:
 		return (
-			"Bad request.",
+			"Bad request. Click <a href='/Song/submit'>here</a> to return to the previous page.",
 			400
 		)
 	

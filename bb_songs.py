@@ -48,7 +48,11 @@ def bb_song_play(id):
 		           (id,)
 		           )
 	if song:
-		return redirect(song['content']['url']['url']);
+		url = song['content']['url']['url']
+		if len(url) > CONFIG['redirect_threshold']:
+			return "<meta http-equiv=>"
+		else:
+			return redirect(song['content']['url']['url']);
 	else:
 		return "Song not found.", 404
 

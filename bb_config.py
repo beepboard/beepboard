@@ -8,6 +8,8 @@ import logging
 def bb_validate_config(config):
 	if not ('db' in config):
 		raise Exception("invalid config ('db' missing)")
+	if not ('redirect_threshold' in config):
+		config['redirect_threshold'] = 4096
 	return config
 
 with open('config.json') as fp:

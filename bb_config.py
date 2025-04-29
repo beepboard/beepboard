@@ -13,7 +13,7 @@ def bb_validate_config(config):
 with open('config.json') as fp:
 	CONFIG = json.load(fp)
 	CONFIG = bb_validate_config(CONFIG)
-	if CONFIG['error_log']:
+	if 'error_log' in CONFIG:
 		logging.basicConfig(filename = CONFIG['error_log'], level=logging.DEBUG)
 
 app = Flask(__name__, static_url_path='',

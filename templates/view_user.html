@@ -52,7 +52,7 @@
 								</p>
 								<div class="songtags">
 									{% if song.content.tags %}
-										{{ ' · '.join(song.content.tags.split(',')) }}
+										{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
 									{% else %}
 										(no tags)
 									{% endif %}
@@ -61,7 +61,7 @@
 						</div>
 						<div class="right">
 							<p class="author">
-								 by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
+								 by <a href="/User/{{song.author.id}}">{{ user.username }}</a>
 							</p>
 							<small>
 								{{ song.created.date }}

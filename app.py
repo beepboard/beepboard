@@ -7,6 +7,7 @@ from bb_database  import *
 from bb_api       import *
 from bb_users     import *
 from bb_songs     import *
+from bb_wiki      import *
 from bb_functions import *
 
 @app.route('/')
@@ -27,15 +28,22 @@ def bb_list_songs():
 	author = request.args.get('author')
 	tags   = request.args.get('tags')
 	query  = request.args.get('q')
+	limit  = request.args.get('limit')
 	if not sort:
 		sort = 'newest'
+	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
 		
 	if not after:
 		after = '0'
 	if not after.isdigit():
 		after = '0'
 	
-	songs = bb_search_songs(sort, after, author, tags, query)
+	songs = bb_search_songs(sort, after, author, tags, query, limit)
 	
 	if not author:
 		author = ''
@@ -52,6 +60,7 @@ def bb_list_songs():
 		     'after':after,
 		     'author':author,
 		     'tags':tags,
+		     'limit':limit,
 		     'q':query},
 	)
 
@@ -63,14 +72,22 @@ def bb_list_users():
 	sort  = request.args.get('sort')
 	after = request.args.get('after')
 	query = request.args.get('q')
+	limit  = request.args.get('limit')
 	if not sort:
 		sort = 'popular'
+	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
+	
 	if not after:
 		after = '0'
 	if not after.isdigit():
 		after = '0'
 	
-	users = bb_search_users(sort, after, query)
+	users = bb_search_users(sort, after, query, limit)
 	
 	#filter users
 	
@@ -82,6 +99,7 @@ def bb_list_users():
 		after=after,
 		GET={'sort':sort,
 		     'after':after,
+		     'limit':limit,
 		     'q':query}
 	)
 

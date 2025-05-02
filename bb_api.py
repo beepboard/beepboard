@@ -167,7 +167,7 @@ def bb_api_songsubmit():
 		             user["id"],
 		             request.form["data"],
 		             request.form["mod"],
-		             request.form["tags"].strip(","),
+		             "," + request.form["tags"].strip(",") + ",",
 		             request.form["title"],
 		             request.form["desc"],
 		             time.time()
@@ -220,7 +220,7 @@ def bb_api_searchusers():
 def bb_api_getuser(id):
 	data = bb_get_userdata_by_id(id)
 	if data:
-		return bb_filter_user(data)
+		return bb_filter_user(data, request.args.to_dict().keys())
 	else:
 		return {'error': 'no such user'}, 404
 	
@@ -229,7 +229,7 @@ def bb_api_getuser(id):
 def bb_api_getsong(id):
 	data = bb_get_songdata_by_id(id)
 	if data:
-		return bb_filter_song(data)
+		return bb_filter_song(data, request.args.to_dict().keys())
 	else:
 		return {'error': 'no such song'}, 404
 	

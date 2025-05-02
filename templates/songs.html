@@ -89,15 +89,17 @@
                + ('&q='      + GET.q)
                + ('&author=' + GET.author)
                + ('&tags='   + GET.tags)
-               + ('&after='  + [GET.after | int - 10, 0] | max | string)
+               + ('&limit='  + (GET.limit | string))
+               + ('&after='  + [GET.after | int - GET.limit, 0] | max | string)
 }}">&lt;</a>
-		page {{ (GET.after | int) // 10 + 1}}
+		page {{ (GET.after | int) // GET.limit + 1}}
 		<a href="{{
 '/Songs?sort=' + GET.sort
                + ('&q='      + GET.q)
                + ('&author=' + GET.author)
                + ('&tags='   + GET.tags)
-               + ('&after='  + ((GET.after | int + 10) | string))
+               + ('&limit='  + (GET.limit | string))
+               + ('&after='  + ((GET.after | int + GET.limit) | string))
 }}">&gt;</a>
 
 	</p>
@@ -109,7 +111,7 @@
 			if (html_tagname.value.length > 2) {
 				html_tags.appendChild(
 					HTML.p(
-						html_tagname.value,
+						html_tagname.value.trim().toLowerCase(),
 						HTML.sup(
 							'x',
 							{'class': 'delete',
@@ -131,6 +133,8 @@
 			for (let tag of html_tags.children) {
 				tags += tag.childNodes[0].data + ",";
 			}
+			
+			tags = tags.slice(0, -1)
 			
 			document.form.tags.value = tags
 			

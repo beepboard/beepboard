@@ -10,7 +10,7 @@
 <article>
 	<div class="submit">
 		<h2>submit song</h2>
-		<form name="form" action="/api/v1/Song/submit" method="POST" onsubmit="return prepare_search(this)">
+		<form name="form" action="/api/v1/Song/submit" method="POST" onsubmit="return prepare_submit(this)">
 		
 			<div class="submitform">
 				<div class="form-item">
@@ -72,7 +72,7 @@
 			if (html_tagname.value.length > 2) {
 				html_tags.appendChild(
 					HTML.p(
-						html_tagname.value,
+						html_tagname.value.trim().toLowerCase(),
 						HTML.sup(
 							'x',
 							{'class': 'delete',
@@ -87,7 +87,7 @@
 			}
 		}
 		
-		function prepare_search(form) {
+		function prepare_submit(form) {
 			data = new FormData(form)
 			
 			let tags = "";
@@ -95,11 +95,13 @@
 				tags += tag.childNodes[0].data + ",";
 			}
 			
+			tags = tags.substring(tags.length - 1)
+			
 			document.form.tags.value = tags
 			
 			console.log(tags)
 			
-			return true
+			return false
 		}
 	</script>
 </article>

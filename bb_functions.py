@@ -44,7 +44,35 @@ def bb_date(timestamp):
 def bb_render_markdown(s):
 	return markdown.markdown(s)
 
-def bb_filter_user(user):
+def bb_filter_comment(comment, detail = []):
+	return {
+		'id': comment['commentid'],
+		
+		'song': comment['songid'],
+		'user': comment['userid'],
+		
+		'created': {
+			'time':      comment['timestamp'],
+			'date':      bb_date(comment['timestamp']),
+			'datetime':  bb_datetime(comment['timestamp']),
+		},
+		
+		'content': comment['content']
+		
+		# 'likes': comment['likes']
+	}
+
+def bb_get_comments_by_songid(song):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
+		comments = q.fetchall()
+		if not comments:
+			comments = []
+		return [bb_filter_comment(comment) for comment in comments]
+
+def bb_filter_user(user, detail = []):
+	# detail: list ("songs")
 	sanitizer = Sanitizer()
 	
 	if not user:
@@ -78,17 +106,20 @@ def bb_filter_user(user):
 				'raw': user['bio'],
 				'html': sanitizer.sanitize(bb_render_markdown(user['bio']))
 			}
-		}
+		},
+		
+		'songs': bb_search_songs("newest", author = user['username'], filter = []) if "songs" in detail else None
 	}
 
-def bb_filter_song(song):
+def bb_filter_song(song, detail = []):
+	# detail: list ("author")
 	sanitizer = Sanitizer('')
 	
 	if not song:
 		return None
 	return {
 		'id':   song['songid'],
-		'author': bb_filter_user(bb_get_userdata_by_id(song['userid'])),
+		'author': bb_filter_user(bb_get_userdata_by_id(song['userid'])) if "author" in detail else song['userid'],
 		
 		'stats': {
 			'clicks': song['downloads'],
@@ -122,6 +153,8 @@ def bb_filter_song(song):
 			'date':      bb_date(song['timestamp']),
 			'datetime':  bb_datetime(song['timestamp']),
 		},
+		
+		'comments': bb_get_comments_by_songid(song['songid']) if "comments" in detail else None
 	}
 
 def bb_get_userdata_by_id(id):
@@ -163,7 +196,7 @@ def bb_get_userdata_by_token(token):
 				).fetchone()
 
 
-def bb_search_songs(sort, after, author, tags, query):
+def bb_search_songs(sort, after = 0, author = None, tags = None, query = None, limit = 3, filter = ["author"]):
 	#stmt = StatementSelect(
 	#	{ValueColumnName('*')},
 	#	{ClauseFrom(ValueTableName('users')),
@@ -175,9 +208,10 @@ def bb_search_songs(sort, after, author, tags, query):
 	           	ConditionEQ(ValueColumnName('userid', 'S'),
 	           	            ValueColumnName('userid', 'U'))
 	           	      ),
-	           ClauseOffset(after),
-			   ClauseLimit(10)
+	           ClauseOffset(after)
 			   }
+	if limit > 0:
+		clauses.add(ClauseLimit(limit))
 	
 	params = {}
 	
@@ -239,11 +273,11 @@ def bb_search_songs(sort, after, author, tags, query):
 		songs = [(song | {'author': bb_filter_user(author)})
 					for song, author in zip(songs, authors)]
 		
-		results = [bb_filter_song(song) for song in songs]
+		results = [bb_filter_song(song, filter) for song in songs]
 	
 	return results
 		
-def bb_search_users(sort, after, query):
+def bb_search_users(sort, after, query, limit):
 	#stmt = StatementSelect(
 	#	{ValueColumnName('*')},
 	#	{ClauseFrom(ValueTableName('users')),
@@ -251,8 +285,9 @@ def bb_search_users(sort, after, query):
 	#)
 	
 	clauses = {ClauseFrom(ValueTableName('users')),
-	           ClauseOffset(after),
-			   ClauseLimit(10)}
+	           ClauseOffset(after)}
+	if limit > 0:
+		clauses.add(ClauseLimit(limit))
 	
 	params = {}
 	

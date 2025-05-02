@@ -13,7 +13,7 @@ from bb_functions import *
 @app.route('/Song/<int:id>')
 def bb_song_view(id):
 	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
-	song = bb_filter_song(bb_get_songdata_by_id(id))
+	song = bb_filter_song(bb_get_songdata_by_id(id), ['author', 'comments'])
 	if myself and song:
 		has_interacted = bb_get_interaction("like", myself["id"], song['id'])
 	else:
@@ -25,6 +25,7 @@ def bb_song_view(id):
 		db.execute("UPDATE songs SET views = views + 1 WHERE songid = :id",
 		           (id,)
 		           )
+	
 	if not song:
 		return render_template("view_song.html", myself=myself, song=song), 404
 	return render_template("view_song.html", myself=myself, song=song, has_interacted = has_interacted)

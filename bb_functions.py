@@ -48,8 +48,15 @@ def bb_filter_comment(comment, detail = []):
 	return {
 		'id': comment['commentid'],
 		
-		'song': comment['songid'],
-		'user': comment['userid'],
+		'song': bb_filter_song(
+					bb_get_songdata_by_id(comment['songid']),
+					['author']
+				) if 'song' in detail else comment['songid'],
+		
+		'user': bb_filter_user(
+					bb_get_userdata_by_id(comment['songid']),
+					[]
+				) if 'user' in detail else comment['userid'],
 		
 		'created': {
 			'time':      comment['timestamp'],
@@ -57,11 +64,64 @@ def bb_filter_comment(comment, detail = []):
 			'datetime':  bb_datetime(comment['timestamp']),
 		},
 		
-		'content': comment['content']
+		'content': comment['content'],
+		
+		'replies': [bb_filter_comment(comment) for comment in
+						bb_get_comments_by_parent(comment['commentid'])]
+						if 'replies' in detail else None
+						
 		
 		# 'likes': comment['likes']
 	}
 
+def bb_filter_comments(comments, parent = None, detail = []):
+	
+	result = []
+	for comment in [comment for comment in comments if comment["parent"] == parent]:
+		result.append({
+			'id': comment['commentid'],
+			
+			'song': bb_filter_song(
+						bb_get_songdata_by_id(comment['songid']),
+						['author']
+					) if 'song' in detail else comment['songid'],
+			
+			'user': bb_filter_user(
+						bb_get_songdata_by_id(comment['songid']),
+						[]
+					) if 'user' in detail else comment['userid'],
+			
+			'created': {
+				'time':      comment['timestamp'],
+				'date':      bb_date(comment['timestamp']),
+				'datetime':  bb_datetime(comment['timestamp']),
+			},
+			
+			'content': comment['content'],
+			
+			'replies': bb_filter_comments(comments, comment['commentid'], detail)
+			# 'likes': comment['likes']
+		})
+	return result
+
+def bb_get_comments_by_parent(parent):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		q = db.execute("SELECT * FROM comments WHERE parent = ?", (parent,))
+		comments = q.fetchall()
+		if not comments:
+			comments = []
+		return comments
+		
+def bb_get_comment_by_id(id):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
+		comment = q.fetchone()
+		if not comment:
+			comment = {}
+		return comment
+		
 def bb_get_comments_by_songid(song):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
@@ -69,7 +129,7 @@ def bb_get_comments_by_songid(song):
 		comments = q.fetchall()
 		if not comments:
 			comments = []
-		return [bb_filter_comment(comment) for comment in comments]
+		return comments
 
 def bb_filter_user(user, detail = []):
 	# detail: list ("songs")
@@ -154,7 +214,9 @@ def bb_filter_song(song, detail = []):
 			'datetime':  bb_datetime(song['timestamp']),
 		},
 		
-		'comments': bb_get_comments_by_songid(song['songid']) if "comments" in detail else None
+		'comments': bb_filter_comments(
+						bb_get_comments_by_songid(song['songid'])
+					) if "comments" in detail else None
 	}
 
 def bb_get_userdata_by_id(id):

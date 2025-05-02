@@ -74,7 +74,7 @@ def bb_api_register():
 				   (token, request.form['username']))
 		
 		return res
-					
+	
 @app.route('/api/v1/Account/login', methods=['POST'])
 def bb_api_login():
 	# check if auth details are actually present
@@ -232,4 +232,12 @@ def bb_api_getsong(id):
 		return bb_filter_song(data, request.args.to_dict().keys())
 	else:
 		return {'error': 'no such song'}, 404
+	
+@app.route('/api/v1/Comment/<int:id>', methods=['GET'])
+def bb_api_getcomment(id):
+	comment = bb_get_comment_by_id(id)
+	if comment:
+		return bb_filter_comment(comment, request.args.to_dict().keys())
+	else:
+		return {'error': 'no such comment'}, 404
 	

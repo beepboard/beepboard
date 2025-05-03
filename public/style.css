@@ -133,7 +133,7 @@ body {
 	}
 
 /* MAIN */
-	.content {
+	body > .content {
 		padding: 10px;
 		
 		display: flex;

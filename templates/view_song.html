@@ -16,7 +16,12 @@
 						<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
 					</a>
 					<h2>{{song.content.name}}
-						<br><small> by <em>{{song.author.username}}</em> · {{song.created.date}}</small>
+						<br>
+						<small>
+							by <em>{{song.author.username}}</em> ·
+						    {{song.created.date}} ·
+						    song #{{song.id}}
+						</small>
 					</h2>
 				</div>
 			</div>
@@ -47,6 +52,36 @@
 					<img class="icon"     src="/assets/views.png">
 					<p>{{song.stats.views}}</p>
 				</div>
+			</div>
+			
+			<h2>Comments</h2>
+			
+			<div class="comments">
+				{% for comment in song.comments recursive %}
+					<div class="comment">
+						<img class="pfp" src="{{comment.user.profile.pfp}}">
+						<div class="content">
+							<div class="info">
+								<p class="poster">
+									{{comment.user.username}}
+								</p>
+								<small class="misc">
+									{{comment.created.date}} ·
+									comment #{{comment.id}}
+								</small>
+							</div>
+							<p class="text">
+								{{comment.content}}
+							</p>
+						</div>
+					</div>
+					
+					<div class="replies">
+						<div class="comments">
+							{{ loop(comment.replies) }}
+						</div>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 	{% else %}

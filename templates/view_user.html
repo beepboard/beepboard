@@ -14,15 +14,22 @@
 			<div class="head">
 				<img class="pfp" src="{{ user.profile.pfp }}">
 				<div class="desc">
-					<h2>{{ user.username }}</h2>
-					<p>Joined {{ user.created.date }}</p>
+					<h2>
+						{{ user.username }} <br>
+						<small>{{ user.created.date }} · user #{{user.id}}</small>
+					</h2>
+					
 					
 					{% if myself %}
 						<div class="actions">
 							{% if myself.id == user.id %}
-								<a title="edit"          href="/Profile/edit" class="action"><img class="edit" src="/assets/trans.png"></a>
+								<a title="edit"   href="/Profile/edit" class="action">
+									<img class="edit" src="/assets/trans.png">
+								</a>
 							{% else %}
-								<a title="report" href="/User/{{user.id}}/report"><img class="action" src="/assets/report.png"></a>
+								<a title="report" href="/User/{{user.id}}/report" class="action">
+									<img class="report" src="/assets/report.png">
+								</a>
 							{% endif %}
 						</div>
 					{% endif %}

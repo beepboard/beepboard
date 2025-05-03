@@ -54,7 +54,7 @@ def bb_filter_comment(comment, detail = []):
 				) if 'song' in detail else comment['songid'],
 		
 		'user': bb_filter_user(
-					bb_get_userdata_by_id(comment['songid']),
+					bb_get_userdata_by_id(comment['userid']),
 					[]
 				) if 'user' in detail else comment['userid'],
 		
@@ -87,7 +87,7 @@ def bb_filter_comments(comments, parent = None, detail = []):
 					) if 'song' in detail else comment['songid'],
 			
 			'user': bb_filter_user(
-						bb_get_songdata_by_id(comment['songid']),
+						bb_get_userdata_by_id(comment['songid']),
 						[]
 					) if 'user' in detail else comment['userid'],
 			
@@ -215,7 +215,8 @@ def bb_filter_song(song, detail = []):
 		},
 		
 		'comments': bb_filter_comments(
-						bb_get_comments_by_songid(song['songid'])
+						bb_get_comments_by_songid(song['songid']),
+						detail = ['user']
 					) if "comments" in detail else None
 	}
 

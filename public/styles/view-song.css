@@ -63,3 +63,48 @@
 	width: 16px;
 	height: 16px;
 }
+
+.comments {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comment {
+	display: flex;
+	flex-direction: row;
+}
+
+.comment .pfp {
+	width: 128px;
+	height: 128px;
+}
+
+.comment .content {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	border: 2px solid #333;
+	flex: 1;
+}
+
+.comment .content .info {
+}
+
+.comment .content .info .poster {
+	margin: 0px;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+.comment .content .text {
+	margin: 0px;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+.replies {
+	padding-left: 10px;
+	margin-left: 20px;
+	border-left: 5px solid #333;
+}

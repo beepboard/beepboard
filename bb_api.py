@@ -373,7 +373,7 @@ def bb_api_editprofile():
 		# save image
 		pfpid = str(uuid.uuid4())
 		frames[0].save(
-			f"{CONFIG['images']}/{pfpid}.png",
+			f"{CONFIG['images']}/{pfpid}.gif",
 			save_all = True,
 			append_images = frames[1:],
 			format = "GIF",

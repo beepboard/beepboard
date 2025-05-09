@@ -128,7 +128,7 @@ def bb_account_logout():
 
 @app.route('/Picture/<uuid:id>')
 def bb_picture_get(id):
-	path = f"{CONFIG['images']}/{id}.png"
+	path = f"{CONFIG['images']}/{id}.gif"
 	if not os.path.isfile(path):
 		return ("Image not found.", 404)
 	return send_file(path, mimetype='image/gif')

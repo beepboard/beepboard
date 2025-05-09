@@ -1,3 +1,4 @@
 {
-	"db": "data/testing.db"
+	"db": "data/testing.db",
+	"images": "data/img/"
 }

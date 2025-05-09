@@ -175,12 +175,18 @@ def bb_filter_user(user, detail = []):
 		'profile': {
 			'views':     user['profileviews'],
 			'followers': user['followers'],
-			'pfp': user['pfp'],
+			'pfp':       {
+				'id': user['pfp'],
+				'url': '/Picture/' + user['pfp']
+			},
 			
 			'bio': {
 				'raw': user['bio'],
 				'html': sanitizer.sanitize(bb_render_markdown(user['bio']))
-			}
+			},
+			
+			'country': user['country'],
+			'discordhandle': user['discordhandle']
 		},
 		
 		'songs': bb_search_songs("newest", author = user['username'], filter = []) if "songs" in detail else None

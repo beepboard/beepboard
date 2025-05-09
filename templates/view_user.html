@@ -12,7 +12,7 @@
 	{% if user %}
 		<div class="viewuser">
 			<div class="head">
-				<img class="pfp" src="{{ user.profile.pfp }}">
+				<img class="pfp" src="{{ user.profile.pfp.url }}">
 				<div class="desc">
 					<h2>
 						{{ user.username }} <br>
@@ -63,6 +63,7 @@
 									{% else %}
 										(no tags)
 									{% endif %}
+									&nbsp;
 								</div>
 							</div>
 						</div>

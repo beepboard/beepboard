@@ -34,7 +34,7 @@
 	<div class="users">
 		{% for user in users %}
 			<div class="user">
-				<img class="pfp" src="{{ user.profile.pfp }}">
+				<img class="pfp" src="{{ user.profile.pfp.url }}">
 				<div class="data">
 					<h3><a href="/User/{{ user.id }}">{{ user.username }}</a></h3>
 					<p>other info</p>

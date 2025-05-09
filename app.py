@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
+from io import BytesIO
 import json
 
 from bb_config    import *
@@ -124,6 +125,13 @@ def bb_account_register():
 @app.route('/Account/logout')
 def bb_account_logout():
 	return render_template("logout.html")
+
+@app.route('/Picture/<uuid:id>')
+def bb_picture_get(id):
+	path = f"{CONFIG['images']}/{id}.png"
+	if not os.path.isfile(path):
+		return ("Image not found.", 404)
+	return send_file(path, mimetype='image/gif')
 
 if __name__ == '__main__':
 	app.run(debug = False, port=5000)

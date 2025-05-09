@@ -5,6 +5,9 @@ import os
 import binascii
 import time
 import json
+from io import BytesIO
+import uuid
+from PIL import Image, ImageSequence
 
 from bb_config   import *
 from bb_database import *
@@ -151,16 +154,12 @@ def bb_api_songsubmit():
 		user = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
 		if not user:
 			return (
-				"Bad request.",
+				"You're not authenticated.",
 				400
 			)
 		
 		# grab first free songid
 		seq = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'songs'").fetchone()
-		if seq:
-			songid = seq['seq']
-		else:
-			songid = 1
 			
 		db.execute("INSERT INTO SONGS (userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?)",
 		            (
@@ -174,7 +173,7 @@ def bb_api_songsubmit():
 		             ))
 		
 	# login user as well
-	return redirect("/Song/" + str(songid))
+	return redirect("/User/" + str(user['id']))
 
 @app.route('/api/v1/Song/search', methods=['GET'])
 def bb_api_searchsongs():
@@ -314,3 +313,94 @@ def bb_api_getcomment(id):
 		return bb_filter_comment(comment, request.args.to_dict().keys())
 	else:
 		return {'error': 'no such comment'}, 404
+
+@app.route('/api/v1/Profile/edit', methods=['POST'])
+def bb_api_editprofile():
+	print(request.form.to_dict(), request.files)
+	print(request.content_type)
+	
+	if not request.content_type.startswith('multipart/form-data'):
+		return ("invalid content type", 400)
+	
+	# check if user is authenticated
+	token = request.cookies.get('token')
+	if not token:
+		return redirect('/Account/login')
+	user = bb_filter_user(bb_get_userdata_by_token(token))
+	if not user:
+		return redirect('/Account/login')
+	
+	bio     = request.form['bio']
+	country = request.form['country']
+	handle  = request.form['discordhandle']
+	pfp     = request.files['pfp']
+	
+	# validate data
+	if len(bio     if bio     else '') > 1024 or \
+	   len(country if country else '') > 2    or \
+	   len(handle  if handle  else '') > 32:
+		return ("Invalid parameters!", 400)
+	
+	if pfp:
+		# the profile picture requires a bit of special logic,
+		# because we need to store both the file itself separately
+		# and a reference to the file in the database
+		print("FILE TYPE", request.files['pfp'].content_type)
+		if not (request.files['pfp'].content_type == 'image/png' or
+		        request.files['pfp'].content_type == 'image/gif'):
+			return ("Invalid image format!", 400)
+		
+		# load image in pillow
+		img = Image.open(request.files['pfp'])
+		w, h = img.size
+		size = min(w, h)
+		fmt = img.format
+		
+		frames = []
+		
+		# crop image to square
+		# (using ImageSequence both for PNGs and GIFs to make the code simpler)
+		for frame in ImageSequence.Iterator(img):
+			frame = frame.crop((w / 2 - size / 2,
+			                    h / 2 - size / 2,
+			                    w / 2 + size / 2,
+			                    h / 2 + size / 2)
+			                  )
+			frame = frame.copy()
+			frame = frame.resize((128, 128), Image.NEAREST)
+			frames.append(frame)
+		
+		# save image
+		pfpid = str(uuid.uuid4())
+		frames[0].save(
+			f"{CONFIG['images']}/{pfpid}.png",
+			save_all = True,
+			append_images = frames[1:],
+			format = "GIF",
+			**img.info
+		)
+	
+	# update data
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		# we must set each field, one by one,
+		# since the request could have partial arguments
+		if bio:
+			db.execute("UPDATE users SET bio = ?           WHERE userid = ?",
+			 (bio, user['id']))
+		
+		if country:
+			db.execute("UPDATE users SET country = ?       WHERE userid = ?",
+			 (country, user['id']))
+		
+		if handle:
+			db.execute("UPDATE users SET discordhandle = ? WHERE userid = ?",
+			 (handle, user['id']))
+		
+		if pfp:
+			db.execute("UPDATE users SET pfp           = ? WHERE userid = ?",
+			 (pfpid, user['id']))
+		
+	
+	return redirect('/User/' + str(user['id']))

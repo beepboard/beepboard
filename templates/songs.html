@@ -59,10 +59,11 @@
 						</p>
 						<div class="songtags">
 							{% if song.content.tags %}
-								{{ ' · '.join(song.content.tags.split(',')) }}
+								{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
 							{% else %}
 								(no tags)
 							{% endif %}
+							&nbsp;
 						</div>
 					</div>
 				</div>

@@ -2,3 +2,7 @@ __pycache__
 config.json
 data/*.db
 logs
+data/img/*.png
+data/img/*.gif
+!data/img/ae3728e6-3a0a-41ce-99fa-3b6650518de7.png
+!data/img/c667a899-b4c8-4ae6-bca9-504e9e20bd0e.png

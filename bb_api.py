@@ -216,6 +216,79 @@ def bb_api_searchusers():
 	else:
 		return []
 
+@app.route('/api/v1/Song/<int:songid>/comment', methods=['POST'])
+def bb_api_postcomment(songid):
+	if    not ('content' in request.form) \
+	   or not ('parent' in request.form):
+		return (
+			"Bad parameters!",
+			400
+		)
+	
+	content  = request.form['content']
+	parentid = request.form['parent']
+	
+	# validate content
+	if len(content) < 1 or \
+	   len(content) > 1024:
+		return ("Invalid parameters!", 400)
+	
+	# check if song exists
+	song = bb_filter_song(bb_get_songdata_by_id(songid))
+	if not song:
+		return ("Song doesn't exist!", 400)
+	
+	# check if parent actually exists
+	if len(parentid) > 0: # exclude NULL parent
+		parent = bb_filter_comment(bb_get_comment_by_id(parentid))
+		if not parent:
+			return ("No such parent comment!", 400)
+	else:
+		parentid = None
+	
+	# get poster
+	token = request.cookies.get('token')
+	if not token:
+		return redirect('/Account/login')
+	user = bb_filter_user(bb_get_userdata_by_token(token))
+	if not user:
+		return redirect('/Account/login')
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		db.execute('INSERT INTO comments (parent, songid, userid, content, timestamp) VALUES (?, ?,?,?,?)',
+		           (parentid, songid, user["id"], content, time.time()))
+	
+	return redirect('/Song/' + str(song["id"]))
+
+@app.route('/api/v1/Comment/<int:id>/delete', methods=['GET'])
+def bb_api_deletecomment(id):
+	# check if comment exists
+	comment = bb_filter_comment(bb_get_comment_by_id(id))
+	
+	if not comment:
+		return ("This comment doesn't exist.", 400)
+	
+	# check if comment belongs to user
+	token = request.cookies.get('token')
+	if not token:
+		return redirect('/Account/login')
+	user = bb_filter_user(bb_get_userdata_by_token(token))
+	if not user:
+		return redirect('/Account/login')
+	
+	if not user["id"] == comment["user"]:
+		return ("You're not allowed to delete this comment!", 403)
+	
+	# delete comments
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		db.execute("DELETE FROM comments WHERE commentid = ?", (comment['id'],))
+	
+	# should i delete the orphaned children?
+	
+	return redirect("/Song/" + str(comment["song"]))
+
 @app.route('/api/v1/User/<int:id>', methods=['GET'])
 def bb_api_getuser(id):
 	data = bb_get_userdata_by_id(id)
@@ -240,4 +313,3 @@ def bb_api_getcomment(id):
 		return bb_filter_comment(comment, request.args.to_dict().keys())
 	else:
 		return {'error': 'no such comment'}, 404
-	

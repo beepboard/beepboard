@@ -328,7 +328,7 @@ body {
 		color: white;
 	}
 	
-	input[type=text]::placeholder {
+	input[type=text]::placeholder, textarea::placeholder {
 		color: #888;
 		font-style: italic;
 	}
@@ -418,4 +418,11 @@ body {
 		image-rendering: -o-crisp-edges !important;
 		image-rendering: pixelated !important;
 		image-rendering: optimizeSpeed !important;
+	}
+	
+	.markdown {
+		width: 16px;
+		height: 16px;
+		background: url("/assets/icons.png") -64px -16px;
+		opacity: 0.5;
 	}

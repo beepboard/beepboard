@@ -45,6 +45,11 @@ def bb_render_markdown(s):
 	return markdown.markdown(s)
 
 def bb_filter_comment(comment, detail = []):
+	sanitizer = Sanitizer()
+	
+	if not comment:
+		return None
+	
 	return {
 		'id': comment['commentid'],
 		
@@ -64,7 +69,10 @@ def bb_filter_comment(comment, detail = []):
 			'datetime':  bb_datetime(comment['timestamp']),
 		},
 		
-		'content': comment['content'],
+		'content': {
+			'raw':  comment['content'],
+			'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
+		},
 		
 		'replies': [bb_filter_comment(comment) for comment in
 						bb_get_comments_by_parent(comment['commentid'])]
@@ -75,8 +83,12 @@ def bb_filter_comment(comment, detail = []):
 	}
 
 def bb_filter_comments(comments, parent = None, detail = []):
-	
+	sanitizer = Sanitizer()
 	result = []
+	
+	if not comments:
+		return []
+	
 	for comment in [comment for comment in comments if comment["parent"] == parent]:
 		result.append({
 			'id': comment['commentid'],
@@ -87,7 +99,7 @@ def bb_filter_comments(comments, parent = None, detail = []):
 					) if 'song' in detail else comment['songid'],
 			
 			'user': bb_filter_user(
-						bb_get_userdata_by_id(comment['songid']),
+						bb_get_userdata_by_id(comment['userid']),
 						[]
 					) if 'user' in detail else comment['userid'],
 			
@@ -97,7 +109,10 @@ def bb_filter_comments(comments, parent = None, detail = []):
 				'datetime':  bb_datetime(comment['timestamp']),
 			},
 			
-			'content': comment['content'],
+			'content': {
+				'raw':  comment['content'],
+				'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
+			},
 			
 			'replies': bb_filter_comments(comments, comment['commentid'], detail)
 			# 'likes': comment['likes']
@@ -119,7 +134,7 @@ def bb_get_comment_by_id(id):
 		q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
 		comment = q.fetchone()
 		if not comment:
-			comment = {}
+			comment = None
 		return comment
 		
 def bb_get_comments_by_songid(song):
@@ -240,11 +255,7 @@ def bb_get_songdata_by_id(id):
 			return None
 		else:
 			songdata = db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
-			if songdata:
-				return songdata
-			else:
-				print("unable to get songdata for songid", id)
-				return None
+			return songdata
 
 
 def bb_get_userdata_by_token(token):

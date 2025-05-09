@@ -59,6 +59,8 @@
 			<div class="comments">
 				{% for comment in song.comments recursive %}
 					<div class="comment">
+						<input type="hidden" class="id" value="{{comment.id}}">
+						
 						<img class="pfp" src="{{comment.user.profile.pfp}}">
 						<div class="content">
 							<div class="info">
@@ -70,12 +72,30 @@
 									comment #{{comment.id}}
 								</small>
 							</div>
-							<p class="text">
-								{{comment.content}}
-							</p>
+							
+							<div class="text">
+								{{comment.content.html | safe}}
+							</div>
+							
+							<div class="interact">
+								<small>
+									{% if myself %}
+										<a href="javascript:void(0)"
+											onclick="comment_box(this.closest('.comment'))">
+											add reply
+										</a>
+										
+										{% if comment.user.id == myself.id %}
+											· <a href="/api/v1/Comment/{{comment.id}}/delete">
+												delete
+											</a>
+										{% endif %}
+									{% endif %}
+								</small>
+							</div>
 						</div>
 					</div>
-					
+					 
 					<div class="replies">
 						<div class="comments">
 							{{ loop(comment.replies) }}
@@ -83,9 +103,60 @@
 					</div>
 				{% endfor %}
 			</div>
+			
+			{% if myself %}
+				<form action="/api/v1/Song/{{song.id}}/comment" class="submit-comment" method="post">
+					<input type="hidden" name="parent" value="">
+					<textarea class="content" name="content" value=""></textarea>
+					<img title="supports markdown :]" class="markdown" src="/assets/trans.png">
+					<button>Post comment</button>
+				</form>
+			{% else %}
+				<p>You need to <a href="/Account/login">login</a> to post comments and replies.</p>
+			{% endif %}
 		</div>
 	{% else %}
 		<p>Song not found.</p>
 	{% endif %}
+	
+	<script>
+		function comment_box(e) {
+			if (e.nextElementSibling.querySelector('.submit-comment')) {
+				e.nextElementSibling.querySelector('.submit-comment').remove()
+			} else {
+				e.nextElementSibling.appendChild(HTML.form(
+					{'action': '/api/v1/Song/{{song.id}}/comment',
+					 'class': 'submit-comment',
+					 'method': 'post'},
+					
+					HTML.input(
+						{'type': 'hidden',
+						 'name': 'parent',
+						 'value': e.querySelector('.id').value
+						}
+					),
+					
+					HTML.textarea(
+						{'class': 'content',
+						 'name': 'content',
+						 'value': ''
+						}
+					),
+					
+					HTML.img(
+						{'title': 'supports markdown :]',
+						 'class': 'markdown',
+						 'src': '/assets/trans.png'
+						}
+					),
+					
+					HTML.button(
+						'Post comment'
+					)
+				))
+			}
+			/*e.appendChild(HTML.p('eiaobul'))*/
+		}
+	</script>
 </article>
 {% endblock %}

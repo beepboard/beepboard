@@ -264,7 +264,7 @@ def bb_api_postcomment(songid):
 @app.route('/api/v1/Comment/<int:id>/delete', methods=['GET'])
 def bb_api_deletecomment(id):
 	# check if comment exists
-	comment = bb_filter_comment(bb_get_comment_by_id(id))
+	comment = bb_filter_comment(bb_get_comment_by_id(id), ['replies'])
 	
 	if not comment:
 		return ("This comment doesn't exist.", 400)
@@ -284,8 +284,9 @@ def bb_api_deletecomment(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		db.execute("DELETE FROM comments WHERE commentid = ?", (comment['id'],))
-	
-	# should i delete the orphaned children?
+		
+		# delete the orphans
+		db.execute("DELETE FROM comments WHERE parent = ?", (comment['id'],))
 	
 	return redirect("/Song/" + str(comment["song"]))
 

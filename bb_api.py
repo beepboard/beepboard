@@ -101,16 +101,16 @@ def bb_api_login():
 		# if there is no such username then return 403
 		if userdata == None:
 			return (f"""
-					<meta http-equiv='refresh' content='0; /Account/login'>
+					<meta http-equiv='refresh' content='1; /Account/login'>
 					<p>User <code>{request.form['username']}</code> doesn't exist.</p>
 					""", 403)
 		
 		# verify password hash
 		# bcrypt
 		
-		if userdata['password'].startswith('$2b'):
+		if userdata['password'].startswith('$2'):
 			password_valid = bcrypt.checkpw(
-				reuqest.form['password'].encode('utf-8'),
+				request.form['password'].encode('utf-8'),
 				userdata['password'].encode('utf-8')
 			)
 		else:
@@ -135,7 +135,7 @@ def bb_api_login():
 			return res
 		else:
 			return ("""
-					<meta http-equiv='refresh' content='0; /Account/login'>
+					<meta http-equiv='refresh' content='1; /Account/login'>
 					<p>Wrong password.</p>
 					""", 403)
 

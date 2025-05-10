@@ -8,6 +8,7 @@ import json
 from io import BytesIO
 import uuid
 from PIL import Image, ImageSequence
+import bcrypt
 
 from bb_config   import *
 from bb_database import *
@@ -105,7 +106,20 @@ def bb_api_login():
 					""", 403)
 		
 		# verify password hash
-		if werkzeug.security.check_password_hash(userdata['password'], request.form['password']):
+		# bcrypt
+		
+		if userdata['password'].startswith('$2b'):
+			password_valid = bcrypt.checkpw(
+				reuqest.form['password'].encode('utf-8'),
+				userdata['password'].encode('utf-8')
+			)
+		else:
+			password_valid = werkzeug.security.check_password_hash(
+				userdata['password'],
+				request.form['password']
+			)
+		
+		if password_valid:
 			res = redirect('/')
 			
 			# correct password; generate a token

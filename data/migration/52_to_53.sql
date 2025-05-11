@@ -1,0 +1,2 @@
+ALTER TABLE users ADD isveteran INT NOT NULL DEFAULT 0;
+ALTER TABLE users ADD lastlogin INT;

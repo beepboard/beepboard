@@ -4,7 +4,7 @@ import markdown
 import json
 from typing import *
 from datetime import datetime
-from enum import StrEnum
+from enum import Enum
 from bb_config import *
 from bb_database import *
 from html_sanitizer import Sanitizer
@@ -23,13 +23,14 @@ MODS = {
 	"wackybox":    {'url': 'https://bluecatgamer.github.io/Wackybox/'}
 }
 
-def bb_sql_regexp(pattern, item):
-    return re.search(pattern, item) is not None
+def bb_flags(f):
+	return sorted([
+		n for n in f.keys() if f[n]
+	])
 
 def bb_connect_db():
 	conn = sqlite3.connect(CONFIG['db'])
 	conn.row_factory = bb_rowfactory
-	conn.create_function("REGEXP", 2, bb_sql_regexp)
 	return conn
 
 def bb_rowfactory(cursor, row):
@@ -168,9 +169,10 @@ def bb_filter_user(user, detail = []):
 			'clicks': user['downloads']
 		},
 		
-		'flags': {
-			'moderator': bool(user['ismod'])
-		},
+		'badges': bb_flags({
+			'moderator': user['ismod'],
+			'veteran':   user['isveteran']
+		}),
 		
 		'profile': {
 			'views':     user['profileviews'],
@@ -345,12 +347,14 @@ def bb_search_songs(sort, after = 0, author = None, tags = None, query = None, l
 		 clauses
 	))
 	
+	print(song_statement, user_statement)
+	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		songs   = db.execute(song_statement, params).fetchall()
 		authors = db.execute(user_statement, params).fetchall()
 		
-		songs = [(song | {'author': bb_filter_user(author)})
+		songs = [({**song, 'author': bb_filter_user(author)})
 					for song, author in zip(songs, authors)]
 		
 		results = [bb_filter_song(song, filter) for song in songs]

@@ -1,11 +1,18 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
+import sys
 import json
 from typing import *
-from enum import StrEnum
+from enum import Enum
 from bb_config import *
 
-# other shit
+if sys.version_info.minor < 11:
+	class StrEnum(str, Enum):
+		def __str__(self):
+			return self.value
+else:
+	from enum import StrEnum
+
 class OrderEnum(StrEnum):
 	DESC = "DESC"
 	ASC = "ASC"
@@ -73,7 +80,7 @@ class Condition:
 		self.col = col
 	
 class Condition2OP(Condition):
-	val: ValueColumnName | ValueConstant
+	val: Union[ValueColumnName, ValueConstant]
 
 	def __init__(self, col, val):
 		super().__init__(col)
@@ -123,7 +130,7 @@ class ConditionLIKE(Condition):
 	
 class ConditionIN(Condition):
 	op = 'IN'
-	vals: set[ValueConstant]
+	vals: Set[ValueConstant]
 	
 	def __init__(self, col, vals):
 		super().__init__(col)
@@ -235,8 +242,8 @@ class Statement:
 
 class StatementSelect(Statement):
 	name = 'SELECT'
-	clauses: set[Clause]
-	columns: set[ValueColumnName]
+	clauses: Set[Clause]
+	columns: Set[ValueColumnName]
 	distinct: bool
 
 	def __init__(self, columns, clauses, distinct = False):

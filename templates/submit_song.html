@@ -15,7 +15,7 @@
 			<div class="submitform">
 				<div class="form-item">
 					<label class="flex-u1" for="title">song title</label>
-					<input class="flex-u3" minlength=3 maxlength=100 type="text" name="title">
+					<input class="flex-u3" placeholder="song title" minlength=3 maxlength=100 type="text" name="title">
 				</div>
 				
 				<div class="form-item">
@@ -23,7 +23,10 @@
 					<textarea maxlength=1000 class="flex-u3 songdesc" name="desc"></textarea>
 				</div>
 				
-				<div class="form-item">
+				<input type="hidden" name="mod" id="mod">
+				<input type="hidden" name="data" id="data">
+				
+				<!--<div class="form-item">
 					<label class="flex-u1" for="mod">beepmod used</label>
 					<select class="flex-u3 songmod" name="mod" id="mod">
 						<option value="abyssbox">abyssbox</option>
@@ -37,11 +40,11 @@
 						<option value="ultrabox">ultrabox</option>
 						<option value="wackybox">wackybox</option>
 					</select>
-				</div>
+				</div>-->
 				
 				<div class="form-item">
-					<label class="flex-u1" for="data" title="the data after the '#' in the URL, when viewed in the beepmod's mainpage.">song data (?)</label>
-					<textarea class="flex-u3 songdata" name="data"></textarea>
+					<label class="flex-u1" for="songurl">song url</label>
+					<textarea class="flex-u3 songdata" name="songurl" id="songurl"></textarea>
 				</div>
 				
 				<div class="formtags">
@@ -56,8 +59,6 @@
 					</div>
 				</div>
 				
-				<p>Note: DO NOT submit the full song url (nor the data in the song player's URL) as the song data! It will result in an undefined song.</p>
-				
 				<button>SUBMIT</button>
 			</div>
 			
@@ -68,6 +69,7 @@
 	<script>
 		html_tags = document.getElementById('tags');
 		html_tagname = document.getElementById('tagname')
+		
 		function add_tag() {
 			if (html_tagname.value.length > 2) {
 				html_tags.appendChild(
@@ -90,6 +92,7 @@
 		function prepare_submit(form) {
 			data = new FormData(form)
 			
+			// tags
 			let tags = "";
 			for (let tag of html_tags.children) {
 				tags += tag.childNodes[0].data + ",";
@@ -99,7 +102,43 @@
 			
 			document.form.tags.value = tags
 			
-			console.log(tags)
+			if (document.form.songurl.value.startsWith('https://tinyurl.com') ||
+			    document.form.songurl.value.startsWith('https://pastelink.net')
+			    ) {
+				alert('url shorteners are not supported')
+				return false
+			}
+			
+			// song data & mod
+			song = document.form.songurl.value.split('#')
+			
+			if (song[1] == undefined) {
+				alert('malformed song url')
+				return false;
+			}
+			
+			switch (song[1][0]) {
+				case '6':  mod = 'modbox'; break;
+				case '8':  mod = 'sandbox'; break;
+				case '9':  mod = 'beepbox'; break;
+				case 'a':  mod = 'abyssbox'; break;
+				case 'g':  mod = 'goldbox'; break;
+				case 'j':  mod = 'jummbox'; break;
+				case 's':  mod = 'slarmoosbox'; break;
+				case 'u':  mod = 'ultrabox'; break;
+					
+				default:
+					alert('invalid song url (song version is invalid, or mod is unsupported)')
+					return false
+			}
+			
+			document.form.data.value = song[1]
+			document.form.mod.value  = mod
+			
+			if (document.form.title.value.length < 3)    {alert('song title is too short');      return false}
+			if (document.form.title.value.length > 100)  {alert('song title is too long');       return false}
+			if (document.form.desc.value.length  > 1000) {alert('song description is too long'); return false}
+			if (html_tags.children.length        > 8)    {alert('too many tags');                return false}
 			
 			return true
 		}

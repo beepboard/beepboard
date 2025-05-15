@@ -13,6 +13,7 @@ import re
 MODS = {
 	"abyssbox":     {'url': 'https://choptop84.github.io/abyssbox-app/'},
 	"beepbox":      {'url': 'https://www.beepbox.co'},
+	"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'},
 	"goldbox":      {'url': 'https://aurysystem.github.io/goldbox/'},
 	"jummbox":      {'url': 'https://jummb.us'},
 	"modbox":       {'url': 'https://moddedbeepbox.github.io/3.0/'},
@@ -21,7 +22,6 @@ MODS = {
 	"slarmoosbox":  {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
 	"ultrabox":     {'url': 'https://ultraabox.github.io/'},
 	"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'},
-	"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'}
 }
 
 def bb_flags(f):

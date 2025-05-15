@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ssh http@beepboard.xyz '/srv/sync-beepboard'

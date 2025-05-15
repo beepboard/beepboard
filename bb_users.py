@@ -15,6 +15,7 @@ def bb_user_view(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 		user = bb_filter_user(db, bb_get_userdata_by_id(db, id))
 		
 		# update user profile views
@@ -35,6 +36,7 @@ def bb_profile_edit():
 	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
+		trending = bb_get_trending(db)
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	
 	if not myself:

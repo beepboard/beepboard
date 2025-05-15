@@ -194,9 +194,11 @@ def bb_api_songsubmit():
 def bb_api_searchsongs():
 	sort   = request.args.get('sort')
 	after  = request.args.get('after')
+	limit  = request.args.get('limit')
 	author = request.args.get('author')
 	tags   = request.args.get('tags')
 	query  = request.args.get('q')
+	
 	if not sort:
 		sort = 'newest'
 	if not after:
@@ -204,9 +206,15 @@ def bb_api_searchsongs():
 	if not after.isdigit():
 		after = '0'
 	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
+	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
-		songs = bb_search_songs(db, sort, after, author, tags, query)
+		songs = bb_search_songs(db, sort, after, author, tags, query, limit)
 	
 	if songs:
 		return songs
@@ -218,6 +226,7 @@ def bb_api_searchusers():
 	# set default values for parameters
 	sort  = request.args.get('sort')
 	after = request.args.get('after')
+	limit = request.args.get('limit')
 	query  = request.args.get('q')
 	if not sort:
 		sort = 'popular'
@@ -226,9 +235,15 @@ def bb_api_searchusers():
 	if not after.isdigit():
 		after = '0'
 	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
+	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
-		users = bb_search_users(db, sort, after, query)
+		users = bb_search_users(db, sort, after, query, limit)
 	
 	if users:
 		return users

@@ -16,6 +16,7 @@ def bb_song_view(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id), ['author', 'comments'])
 		if myself and song:
 			has_interacted = bb_get_interaction(db, "like", myself["id"], song['id'])
@@ -36,7 +37,7 @@ def bb_song_submit():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		
+		trending = bb_get_trending(db)
 		if not myself:
 			return redirect("/Account/login")
 		return render_template("submit_song.html", myself=myself)

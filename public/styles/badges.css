@@ -1,0 +1,15 @@
+.badge {
+	width: 24px;
+	height: 24px;
+	background-color: #333;
+	transform: translateY(5px);
+	margin-top: -5px;
+}
+
+.badge.moderator {
+	background: url('/assets/icons.png') 0px -32px;
+}
+
+.badge.veteran {
+	background: url('/assets/icons.png') -48px -32px;
+}

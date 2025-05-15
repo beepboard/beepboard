@@ -17,9 +17,9 @@
 				<div class="desc">
 					<h2>
 						{{ user.username }}
-						{% for badge in user.badges | sort %}
-							<img class="badge {{badge}}" src="/assets/trans.png">
-						{% endfor %}
+						{% for badge in user.badges | sort %}<img class="badge {{badge}}"
+						                                          title="{{BADGES[badge].name}} ({{BADGES[badge].desc}})"
+						                                          src="/assets/trans.png">{% endfor %}
 						<br>
 						<small>{{ user.created.date }} · user #{{user.id}}</small>
 					</h2>
@@ -61,7 +61,6 @@
 							<div class="meta">
 								<p class="name">
 									<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
-									<img class="" src="/assets/trans.png">
 								</p>
 								<div class="songtags">
 									{% if song.content.tags %}

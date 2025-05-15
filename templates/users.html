@@ -4,6 +4,7 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/styles/users.css">
+	<link rel="stylesheet" href="/styles/badges.css">
 {% endblock %}
 
 {% block main %}
@@ -36,7 +37,12 @@
 			<div class="user">
 				<img class="pfp" src="{{ user.profile.pfp.url }}">
 				<div class="data">
-					<h3><a href="/User/{{ user.id }}">{{ user.username }}</a></h3>
+					<h3>
+						<a href="/User/{{ user.id }}">{{ user.username }}</a>
+						{% for badge in user.badges | sort %}<img class="badge {{badge}}"
+						                                          title="{{BADGES[badge].name}} ({{BADGES[badge].desc}})"
+						                                          src="/assets/trans.png">{% endfor %}
+					</h3>
 					<p>other info</p>
 				</div>
 				<div class="footer">

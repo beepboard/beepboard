@@ -16,6 +16,7 @@ def bb_index():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	return render_template("index.html", myself=myself)
 	
 @app.route('/welcome')
@@ -24,6 +25,7 @@ def bb_welcome():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	return render_template("welcome.html", myself=myself)
 
 @app.route('/Songs')
@@ -61,6 +63,7 @@ def bb_list_songs():
 			query = ''
 		
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	
 	return render_template("songs.html",
 		myself=myself,
@@ -102,6 +105,7 @@ def bb_list_users():
 		
 		#filter users
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	
 	return render_template("users.html",
 		myself=myself,
@@ -120,6 +124,7 @@ def bb_under_construction():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	return render_template("workinprogress.html", myself=myself)
 
 
@@ -129,6 +134,7 @@ def bb_account_login():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
 	return render_template("login.html", myself=myself)
 	
 @app.route('/Account/register')

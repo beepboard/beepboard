@@ -20,6 +20,33 @@
 		</style>
 		
 		{% block head %}{% endblock %}
+		
+		{# global data #}
+		
+		{% 
+			set MODS = {
+				"abyssbox":     {'url': 'https://choptop84.github.io/abyssbox-app/'},
+				"beepbox":      {'url': 'https://www.beepbox.co'},
+				"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'},
+				"goldbox":      {'url': 'https://aurysystem.github.io/goldbox/'},
+				"jummbox":      {'url': 'https://jummb.us'},
+				"lemmbox":      {'url': 'https://lemmbox.github.io/'},
+				"modbox":       {'url': 'https://moddedbeepbox.github.io/3.0/'},
+				"pandorasbox":  {'url': 'https://paandorasbox.github.io/'},
+				"sandbox":      {'url': 'https://fillygroove.github.io/sandbox-3.1/'},
+				"slarmoosbox":  {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
+				"ultrabox":     {'url': 'https://ultraabox.github.io/'},
+				"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'}
+			}
+		%}
+		
+		{% 
+			set BADGES = {
+				"moderator": {'name': 'Moderator', 'desc': 'a user who moderates and develops the site'},
+				"veteran":   {'name': 'Veteran',   'desc': 'a user who created an account before version 0.5'}
+			}
+		%}
+		
 	</head>
 	
 	<body>
@@ -27,7 +54,7 @@
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
-				<p>0.5.3</p>
+				<p>0.6.0</p>
 				<!--
 				<search>
 					<input type="text">

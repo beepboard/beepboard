@@ -16,6 +16,7 @@ MODS = {
 	"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'},
 	"goldbox":      {'url': 'https://aurysystem.github.io/goldbox/'},
 	"jummbox":      {'url': 'https://jummb.us'},
+	"lemmbox":      {'url': 'https://lemmbox.github.io/'},
 	"modbox":       {'url': 'https://moddedbeepbox.github.io/3.0/'},
 	"pandorasbox":  {'url': 'https://paandorasbox.github.io/'},
 	"sandbox":      {'url': 'https://fillygroove.github.io/sandbox-3.1/'},

@@ -13,12 +13,17 @@ from bb_functions import *
 
 @app.route('/')
 def bb_index():
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("index.html", myself=myself)
 	
 @app.route('/welcome')
 def bb_welcome():
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("welcome.html", myself=myself)
 
 @app.route('/Songs')
@@ -44,16 +49,19 @@ def bb_list_songs():
 	if not after.isdigit():
 		after = '0'
 	
-	songs = bb_search_songs(sort, after, author, tags, query, limit)
-	
-	if not author:
-		author = ''
-	if not tags:
-		tags = ''
-	if not query:
-		query = ''
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		songs = bb_search_songs(db, sort, after, author, tags, query, limit)
 		
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+		if not author:
+			author = ''
+		if not tags:
+			tags = ''
+		if not query:
+			query = ''
+		
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+	
 	return render_template("songs.html",
 		myself=myself,
 		songs=songs,
@@ -88,11 +96,12 @@ def bb_list_users():
 	if not after.isdigit():
 		after = '0'
 	
-	users = bb_search_users(sort, after, query, limit)
-	
-	#filter users
-	
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		users = bb_search_users(db, sort, after, query, limit)
+		
+		#filter users
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	
 	return render_template("users.html",
 		myself=myself,
@@ -107,19 +116,26 @@ def bb_list_users():
 @app.route('/Jams')
 @app.route('/Wiki')
 def bb_under_construction():
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("workinprogress.html", myself=myself)
 
 
 
 @app.route('/Account/login')
 def bb_account_login():
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("login.html", myself=myself)
 	
 @app.route('/Account/register')
 def bb_account_register():
-	myself = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("register.html", myself=myself)
 
 @app.route('/Account/logout')

@@ -45,7 +45,7 @@ def bb_date(timestamp):
 def bb_render_markdown(s):
 	return markdown.markdown(s)
 
-def bb_filter_comment(comment, detail = []):
+def bb_filter_comment(db, comment, detail = []):
 	sanitizer = Sanitizer()
 	
 	if not comment:
@@ -55,12 +55,14 @@ def bb_filter_comment(comment, detail = []):
 		'id': comment['commentid'],
 		
 		'song': bb_filter_song(
-					bb_get_songdata_by_id(comment['songid']),
+		            db,
+					bb_get_songdata_by_id(db, comment['songid']),
 					['author']
 				) if 'song' in detail else comment['songid'],
 		
 		'user': bb_filter_user(
-					bb_get_userdata_by_id(comment['userid']),
+		            db,
+					bb_get_userdata_by_id(db, comment['userid']),
 					[]
 				) if 'user' in detail else comment['userid'],
 		
@@ -75,15 +77,15 @@ def bb_filter_comment(comment, detail = []):
 			'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
 		},
 		
-		'replies': [bb_filter_comment(comment) for comment in
-						bb_get_comments_by_parent(comment['commentid'])]
+		'replies': [bb_filter_comment(db, comment) for comment in
+						bb_get_comments_by_parent(db, comment['commentid'])]
 						if 'replies' in detail else None
 						
 		
 		# 'likes': comment['likes']
 	}
 
-def bb_filter_comments(comments, parent = None, detail = []):
+def bb_filter_comments(db, comments, parent = None, detail = []):
 	sanitizer = Sanitizer()
 	result = []
 	
@@ -95,12 +97,14 @@ def bb_filter_comments(comments, parent = None, detail = []):
 			'id': comment['commentid'],
 			
 			'song': bb_filter_song(
-						bb_get_songdata_by_id(comment['songid']),
+			            db,
+						bb_get_songdata_by_id(db, comment['songid']),
 						['author']
 					) if 'song' in detail else comment['songid'],
 			
 			'user': bb_filter_user(
-						bb_get_userdata_by_id(comment['userid']),
+			            db,
+						bb_get_userdata_by_id(db, comment['userid']),
 						[]
 					) if 'user' in detail else comment['userid'],
 			
@@ -115,39 +119,33 @@ def bb_filter_comments(comments, parent = None, detail = []):
 				'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
 			},
 			
-			'replies': bb_filter_comments(comments, comment['commentid'], detail)
+			'replies': bb_filter_comments(db, comments, comment['commentid'], detail)
 			# 'likes': comment['likes']
 		})
 	return result
 
-def bb_get_comments_by_parent(parent):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		q = db.execute("SELECT * FROM comments WHERE parent = ?", (parent,))
-		comments = q.fetchall()
-		if not comments:
-			comments = []
-		return comments
+def bb_get_comments_by_parent(db, parent):
+	q = db.execute("SELECT * FROM comments WHERE parent = ?", (parent,))
+	comments = q.fetchall()
+	if not comments:
+		comments = []
+	return comments
 		
-def bb_get_comment_by_id(id):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
-		comment = q.fetchone()
-		if not comment:
-			comment = None
-		return comment
+def bb_get_comment_by_id(db, id):
+	q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
+	comment = q.fetchone()
+	if not comment:
+		comment = None
+	return comment
 		
-def bb_get_comments_by_songid(song):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
-		comments = q.fetchall()
-		if not comments:
-			comments = []
-		return comments
+def bb_get_comments_by_songid(db, song):
+	q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
+	comments = q.fetchall()
+	if not comments:
+		comments = []
+	return comments
 
-def bb_filter_user(user, detail = []):
+def bb_filter_user(db, user, detail = []):
 	# detail: list ("songs")
 	sanitizer = Sanitizer()
 	
@@ -191,10 +189,10 @@ def bb_filter_user(user, detail = []):
 			'discordhandle': user['discordhandle']
 		},
 		
-		'songs': bb_search_songs("newest", author = user['username'], filter = []) if "songs" in detail else None
+		'songs': bb_search_songs(db, "newest", author = user['username'], filter = []) if "songs" in detail else None
 	}
 
-def bb_filter_song(song, detail = []):
+def bb_filter_song(db, song, detail = []):
 	# detail: list ("author")
 	sanitizer = Sanitizer('')
 	
@@ -202,7 +200,7 @@ def bb_filter_song(song, detail = []):
 		return None
 	return {
 		'id':   song['songid'],
-		'author': bb_filter_user(bb_get_userdata_by_id(song['userid'])) if "author" in detail else song['userid'],
+		'author': bb_filter_user(db, bb_get_userdata_by_id(db, song['userid'])) if "author" in detail else song['userid'],
 		
 		'stats': {
 			'clicks': song['downloads'],
@@ -238,47 +236,39 @@ def bb_filter_song(song, detail = []):
 		},
 		
 		'comments': bb_filter_comments(
-						bb_get_comments_by_songid(song['songid']),
+		                db,
+						bb_get_comments_by_songid(db, song['songid']),
 						detail = ['user']
 					) if "comments" in detail else None
 	}
 
-def bb_get_userdata_by_id(id):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		
-		if not id:
-			return None
-		else:
-			return db.execute(
-					"SELECT * FROM users WHERE userid = ?", (str(id),)
-				).fetchone()
+def bb_get_userdata_by_id(db, id):
+	if not id:
+		return None
+	else:
+		return db.execute(
+				"SELECT * FROM users WHERE userid = ?", (str(id),)
+			).fetchone()
 				
-def bb_get_songdata_by_id(id):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		
-		if not id:
-			print("no id")
-			return None
-		else:
-			songdata = db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
-			return songdata
+def bb_get_songdata_by_id(db, id):
+	if not id:
+		print("no id")
+		return None
+	else:
+		songdata = db.execute("SELECT * FROM songs WHERE songid = ?", (str(id),)).fetchone()
+		return songdata
 
 
-def bb_get_userdata_by_token(token):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		
-		if not token:
-			return None
-		else:
-			return db.execute(
-					"SELECT * FROM users WHERE token = ?", (token,)
-				).fetchone()
+def bb_get_userdata_by_token(db, token):
+	if not token:
+		return None
+	else:
+		return db.execute(
+				"SELECT * FROM users WHERE token = ?", (token,)
+			).fetchone()
 
 
-def bb_search_songs(sort, after = 0, author = None, tags = None, query = None, limit = 3, filter = ["author"]):
+def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = None, limit = 3, filter = ["author"]):
 	#stmt = StatementSelect(
 	#	{ValueColumnName('*')},
 	#	{ClauseFrom(ValueTableName('users')),
@@ -349,19 +339,17 @@ def bb_search_songs(sort, after = 0, author = None, tags = None, query = None, l
 	
 	print(song_statement, user_statement)
 	
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		songs   = db.execute(song_statement, params).fetchall()
-		authors = db.execute(user_statement, params).fetchall()
-		
-		songs = [({**song, 'author': bb_filter_user(author)})
-					for song, author in zip(songs, authors)]
-		
-		results = [bb_filter_song(song, filter) for song in songs]
+	songs   = db.execute(song_statement, params).fetchall()
+	authors = db.execute(user_statement, params).fetchall()
+	
+	songs = [({**song, 'author': bb_filter_user(db, author)})
+				for song, author in zip(songs, authors)]
+	
+	results = [bb_filter_song(db, song, filter) for song in songs]
 	
 	return results
 		
-def bb_search_users(sort, after, query, limit):
+def bb_search_users(db, sort, after, query, limit):
 	#stmt = StatementSelect(
 	#	{ValueColumnName('*')},
 	#	{ClauseFrom(ValueTableName('users')),
@@ -394,21 +382,17 @@ def bb_search_users(sort, after, query, limit):
 				Function('LOWER', ':query_exp')
 			))
 		])
-		
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		q = db.execute(str(StatementSelect(
-			{ValueColumnName('*')},
-			clauses
-		)), params)
-		
-		# return filtered result
-		results = [bb_filter_user(user) for user in q.fetchall()]
-		return results
+	
+	q = db.execute(str(StatementSelect(
+		{ValueColumnName('*')},
+		clauses
+	)), params)
+	
+	# return filtered result
+	results = [bb_filter_user(db, user) for user in q.fetchall()]
+	return results
 
-def bb_get_interaction(type, userid, songid):
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		q = db.execute("SELECT interactionid FROM interactions WHERE type = ? AND userid = ? AND songid = ?",
-						(type, userid, songid))
-		return q.fetchone()
+def bb_get_interaction(db, type, userid, songid):
+	q = db.execute("SELECT interactionid FROM interactions WHERE type = ? AND userid = ? AND songid = ?",
+					(type, userid, songid))
+	return q.fetchone()

@@ -166,7 +166,7 @@ def bb_api_songsubmit():
 		db = conn.cursor()
 		
 		#check if user is logged in
-		user = bb_filter_user(bb_get_userdata_by_token(request.cookies.get('token')))
+		user = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		if not user:
 			return (
 				"You're not authenticated.",
@@ -203,8 +203,11 @@ def bb_api_searchsongs():
 		after = '0'
 	if not after.isdigit():
 		after = '0'
-		
-	songs = bb_search_songs(sort, after, author, tags, query)
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		songs = bb_search_songs(db, sort, after, author, tags, query)
+	
 	if songs:
 		return songs
 	else:
@@ -223,7 +226,9 @@ def bb_api_searchusers():
 	if not after.isdigit():
 		after = '0'
 	
-	users = bb_search_users(sort, after, query)
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		users = bb_search_users(db, sort, after, query)
 	
 	if users:
 		return users
@@ -247,29 +252,31 @@ def bb_api_postcomment(songid):
 	   len(content) > 1024:
 		return ("Invalid parameters!", 400)
 	
-	# check if song exists
-	song = bb_filter_song(bb_get_songdata_by_id(songid))
-	if not song:
-		return ("Song doesn't exist!", 400)
-	
-	# check if parent actually exists
-	if len(parentid) > 0: # exclude NULL parent
-		parent = bb_filter_comment(bb_get_comment_by_id(parentid))
-		if not parent:
-			return ("No such parent comment!", 400)
-	else:
-		parentid = None
-	
-	# get poster
-	token = request.cookies.get('token')
-	if not token:
-		return redirect('/Account/login')
-	user = bb_filter_user(bb_get_userdata_by_token(token))
-	if not user:
-		return redirect('/Account/login')
-	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
+		
+		# check if song exists
+		song = bb_filter_song(db, bb_get_songdata_by_id(db, songid))
+		if not song:
+			return ("Song doesn't exist!", 400)
+		
+		# check if parent actually exists
+		if len(parentid) > 0: # exclude NULL parent
+			parent = bb_filter_comment(db, bb_get_comment_by_id(db, parentid))
+			if not parent:
+				return ("No such parent comment!", 400)
+		else:
+			parentid = None
+		
+		# get poster
+		token = request.cookies.get('token')
+		if not token:
+			return redirect('/Account/login')
+		
+		user = bb_filter_user(db, bb_get_userdata_by_token(db, token))
+		if not user:
+			return redirect('/Account/login')
+		
 		db.execute('INSERT INTO comments (parent, songid, userid, content, timestamp) VALUES (?, ?,?,?,?)',
 		           (parentid, songid, user["id"], content, time.time()))
 	
@@ -278,25 +285,25 @@ def bb_api_postcomment(songid):
 @app.route('/api/v1/Comment/<int:id>/delete', methods=['GET'])
 def bb_api_deletecomment(id):
 	# check if comment exists
-	comment = bb_filter_comment(bb_get_comment_by_id(id), ['replies'])
 	
-	if not comment:
-		return ("This comment doesn't exist.", 400)
-	
-	# check if comment belongs to user
-	token = request.cookies.get('token')
-	if not token:
-		return redirect('/Account/login')
-	user = bb_filter_user(bb_get_userdata_by_token(token))
-	if not user:
-		return redirect('/Account/login')
-	
-	if not user["id"] == comment["user"]:
-		return ("You're not allowed to delete this comment!", 403)
-	
-	# delete comments
 	with bb_connect_db() as conn:
 		db = conn.cursor()
+		comment = bb_filter_comment(db, bb_get_comment_by_id(db, id), ['replies'])
+		
+		if not comment:
+			return ("This comment doesn't exist.", 400)
+		
+		# check if comment belongs to user
+		token = request.cookies.get('token')
+		if not token:
+			return redirect('/Account/login')
+		user = bb_filter_user(db, bb_get_userdata_by_token(db, token))
+		if not user:
+			return redirect('/Account/login')
+		
+		if not user["id"] == comment["user"]:
+			return ("You're not allowed to delete this comment!", 403)
+		
 		db.execute("DELETE FROM comments WHERE commentid = ?", (comment['id'],))
 		
 		# delete the orphans
@@ -306,28 +313,37 @@ def bb_api_deletecomment(id):
 
 @app.route('/api/v1/User/<int:id>', methods=['GET'])
 def bb_api_getuser(id):
-	data = bb_get_userdata_by_id(id)
-	if data:
-		return bb_filter_user(data, request.args.to_dict().keys())
-	else:
-		return {'error': 'no such user'}, 404
+
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		data = bb_get_userdata_by_id(db, id)
+		if data:
+			return bb_filter_user(db, data, request.args.to_dict().keys())
+		else:
+			return {'error': 'no such user'}, 404
 	
 
 @app.route('/api/v1/Song/<int:id>', methods=['GET'])
 def bb_api_getsong(id):
-	data = bb_get_songdata_by_id(id)
-	if data:
-		return bb_filter_song(data, request.args.to_dict().keys())
-	else:
-		return {'error': 'no such song'}, 404
+
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		data = bb_get_songdata_by_id(db, id)
+		if data:
+			return bb_filter_song(db, data, request.args.to_dict().keys())
+		else:
+			return {'error': 'no such song'}, 404
 	
 @app.route('/api/v1/Comment/<int:id>', methods=['GET'])
 def bb_api_getcomment(id):
-	comment = bb_get_comment_by_id(id)
-	if comment:
-		return bb_filter_comment(comment, request.args.to_dict().keys())
-	else:
-		return {'error': 'no such comment'}, 404
+
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		comment = bb_get_comment_by_id(db, id)
+		if comment:
+			return bb_filter_comment(db, comment, request.args.to_dict().keys())
+		else:
+			return {'error': 'no such comment'}, 404
 
 @app.route('/api/v1/Profile/edit', methods=['POST'])
 def bb_api_editprofile():
@@ -341,63 +357,62 @@ def bb_api_editprofile():
 	token = request.cookies.get('token')
 	if not token:
 		return redirect('/Account/login')
-	user = bb_filter_user(bb_get_userdata_by_token(token))
-	if not user:
-		return redirect('/Account/login')
 	
-	bio     = request.form['bio']
-	country = request.form['country']
-	handle  = request.form['discordhandle']
-	pfp     = request.files['pfp']
-	
-	# validate data
-	if len(bio     if bio     else '') > 1024 or \
-	   len(country if country else '') > 2    or \
-	   len(handle  if handle  else '') > 32:
-		return ("Invalid parameters!", 400)
-	
-	if pfp:
-		# the profile picture requires a bit of special logic,
-		# because we need to store both the file itself separately
-		# and a reference to the file in the database
-		print("FILE TYPE", request.files['pfp'].content_type)
-		if not (request.files['pfp'].content_type == 'image/png' or
-		        request.files['pfp'].content_type == 'image/gif'):
-			return ("Invalid image format!", 400)
-		
-		# load image in pillow
-		img = Image.open(request.files['pfp'])
-		w, h = img.size
-		size = min(w, h)
-		fmt = img.format
-		
-		frames = []
-		
-		# crop image to square
-		# (using ImageSequence both for PNGs and GIFs to make the code simpler)
-		for frame in ImageSequence.Iterator(img):
-			frame = frame.crop((w / 2 - size / 2,
-			                    h / 2 - size / 2,
-			                    w / 2 + size / 2,
-			                    h / 2 + size / 2)
-			                  )
-			frame = frame.copy()
-			frame = frame.resize((128, 128), Image.NEAREST)
-			frames.append(frame)
-		
-		# save image
-		pfpid = str(uuid.uuid4())
-		frames[0].save(
-			f"{CONFIG['images']}/{pfpid}.gif",
-			save_all = True,
-			append_images = frames[1:],
-			format = "GIF",
-			**img.info
-		)
-	
-	# update data
 	with bb_connect_db() as conn:
 		db = conn.cursor()
+		user = bb_filter_user(db, bb_get_userdata_by_token(db, token))
+		if not user:
+			return redirect('/Account/login')
+		
+		bio     = request.form['bio']
+		country = request.form['country']
+		handle  = request.form['discordhandle']
+		pfp     = request.files['pfp']
+		
+		# validate data
+		if len(bio     if bio     else '') > 1024 or \
+		   len(country if country else '') > 2    or \
+		   len(handle  if handle  else '') > 32:
+			return ("Invalid parameters!", 400)
+		
+		if pfp:
+			# the profile picture requires a bit of special logic,
+			# because we need to store both the file itself separately
+			# and a reference to the file in the database
+			print("FILE TYPE", request.files['pfp'].content_type)
+			if not (request.files['pfp'].content_type == 'image/png' or
+			        request.files['pfp'].content_type == 'image/gif'):
+				return ("Invalid image format!", 400)
+			
+			# load image in pillow
+			img = Image.open(request.files['pfp'])
+			w, h = img.size
+			size = min(w, h)
+			fmt = img.format
+			
+			frames = []
+			
+			# crop image to square
+			# (using ImageSequence both for PNGs and GIFs to make the code simpler)
+			for frame in ImageSequence.Iterator(img):
+				frame = frame.crop((w / 2 - size / 2,
+				                    h / 2 - size / 2,
+				                    w / 2 + size / 2,
+				                    h / 2 + size / 2)
+				                  )
+				frame = frame.copy()
+				frame = frame.resize((128, 128), Image.NEAREST)
+				frames.append(frame)
+			
+			# save image
+			pfpid = str(uuid.uuid4())
+			frames[0].save(
+				f"{CONFIG['images']}/{pfpid}.gif",
+				save_all = True,
+				append_images = frames[1:],
+				format = "GIF",
+				**img.info
+			)
 		
 		# we must set each field, one by one,
 		# since the request could have partial arguments

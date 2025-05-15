@@ -150,8 +150,8 @@ def bb_api_songsubmit():
 			"Bad parameters!",
 			400
 		)
-	# vaildate params
 	
+	# vaildate params
 	if request.form["data"].startswith('http') \
 	or len(request.form["title"]) > 100 \
 	or len(request.form["title"]) < 3  \

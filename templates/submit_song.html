@@ -23,10 +23,9 @@
 					<textarea maxlength=1000 class="flex-u3 songdesc" name="desc"></textarea>
 				</div>
 				
-				<input type="hidden" name="mod" id="mod">
 				<input type="hidden" name="data" id="data">
 				
-				<!--<div class="form-item">
+				<div class="form-item">
 					<label class="flex-u1" for="mod">beepmod used</label>
 					<select class="flex-u3 songmod" name="mod" id="mod">
 						<option value="abyssbox">abyssbox</option>
@@ -40,7 +39,7 @@
 						<option value="ultrabox">ultrabox</option>
 						<option value="wackybox">wackybox</option>
 					</select>
-				</div>-->
+				</div>
 				
 				<div class="form-item">
 					<label class="flex-u1" for="songurl">song url</label>
@@ -117,23 +116,7 @@
 				return false;
 			}
 			
-			switch (song[1][0]) {
-				case '6':  mod = 'modbox'; break;
-				case '8':  mod = 'sandbox'; break;
-				case '9':  mod = 'beepbox'; break;
-				case 'a':  mod = 'abyssbox'; break;
-				case 'g':  mod = 'goldbox'; break;
-				case 'j':  mod = 'jummbox'; break;
-				case 's':  mod = 'slarmoosbox'; break;
-				case 'u':  mod = 'ultrabox'; break;
-					
-				default:
-					alert('invalid song url (song version is invalid, or mod is unsupported)')
-					return false
-			}
-			
-			document.form.data.value = song[1]
-			document.form.mod.value  = mod
+			document.form.data.value = song[1];
 			
 			if (document.form.title.value.length < 3)    {alert('song title is too short');      return false}
 			if (document.form.title.value.length > 100)  {alert('song title is too long');       return false}

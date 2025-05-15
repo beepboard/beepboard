@@ -11,16 +11,17 @@ from html_sanitizer import Sanitizer
 import re
 
 MODS = {
-	"abyssbox":    {'url': 'https://choptop84.github.io/abyssbox-app/'},
-	"beepbox":     {'url': 'https://www.beepbox.co'},
-	"goldbox":     {'url': 'https://aurysystem.github.io/goldbox/'},
-	"jummbox":     {'url': 'https://jummb.us'},
-	"modbox":      {'url': 'https://moddedbeepbox.github.io/3.0/'},
-	"pandorasbox": {'url': 'https://paandorasbox.github.io/'},
-	"sandbox":     {'url': 'https://fillygroove.github.io/sandbox-3.1/'},
-	"slarmoosbox": {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
-	"ultrabox":    {'url': 'https://ultraabox.github.io/'},
-	"wackybox":    {'url': 'https://bluecatgamer.github.io/Wackybox/'}
+	"abyssbox":     {'url': 'https://choptop84.github.io/abyssbox-app/'},
+	"beepbox":      {'url': 'https://www.beepbox.co'},
+	"goldbox":      {'url': 'https://aurysystem.github.io/goldbox/'},
+	"jummbox":      {'url': 'https://jummb.us'},
+	"modbox":       {'url': 'https://moddedbeepbox.github.io/3.0/'},
+	"pandorasbox":  {'url': 'https://paandorasbox.github.io/'},
+	"sandbox":      {'url': 'https://fillygroove.github.io/sandbox-3.1/'},
+	"slarmoosbox":  {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
+	"ultrabox":     {'url': 'https://ultraabox.github.io/'},
+	"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'},
+	"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'}
 }
 
 def bb_flags(f):

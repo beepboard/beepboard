@@ -2,6 +2,7 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/styles/view-user.css">
+	<link rel="stylesheet" href="/styles/badges.css">
 	<link rel="stylesheet" href="/styles/songs.css">
 {% endblock %}
 
@@ -15,7 +16,11 @@
 				<img class="pfp" src="{{ user.profile.pfp.url }}">
 				<div class="desc">
 					<h2>
-						{{ user.username }} <br>
+						{{ user.username }}
+						{% for badge in user.badges | sort %}
+							<img class="badge {{badge}}" src="/assets/trans.png">
+						{% endfor %}
+						<br>
 						<small>{{ user.created.date }} · user #{{user.id}}</small>
 					</h2>
 					

@@ -250,6 +250,37 @@ def bb_api_searchusers():
 	else:
 		return []
 
+@app.route('/api/v1/Song/<int:songid>/delete')
+def bb_api_songdelete(songid):
+	token = request.cookies.get('token')
+	if not token:
+		return redirect('/Account/login')
+	
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, token))
+		if not myself:
+			return redirect('/Account/login')
+		
+		songdata = bb_filter_song(db, bb_get_songdata_by_id(db, songid))
+		if not songdata:
+			return "No such song!", 400
+		
+		if not (songdata['author'] == myself['id']):
+			return "You cannot delete another user's song.", 403
+		
+		# delete the song
+		db.execute("DELETE FROM songs WHERE songid = ?", (songid,))
+		
+		# delete all comments
+		db.execute("DELETE FROM comments WHERE songid = ?", (songid,))
+		
+		# delete all interactions
+		db.execute("DELETE FROM interactions WHERE songid = ?", (songid,))
+		
+		return redirect('/User/' + str(myself["id"]))
+
 @app.route('/api/v1/Song/<int:songid>/comment', methods=['POST'])
 def bb_api_postcomment(songid):
 	if    not ('content' in request.form) \

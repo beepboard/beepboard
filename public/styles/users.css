@@ -38,8 +38,16 @@
 	margin-bottom: 5px;
 }
 
-.user .data p {
+.user .data .bio {
 	margin: 0px;
+	line-clamp: 2;
+	-webkit-line-clamp: 2;
+	display: block;
+	word-wrap: break-word;
+	overflow: hidden;
+	max-height: 2.5em;
+	line-height: 1.25em;
+	text-overflow: ellipsis;
 }
 
 .user .footer {

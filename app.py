@@ -143,11 +143,14 @@ def bb_account_login():
 def bb_account_register():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
+		trending = bb_get_trending(db)
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	return render_template("register.html", trending=trending, myself=myself)
 
 @app.route('/Account/logout')
 def bb_account_logout():
+	with bb_connect_db() as conn:
+		trending = bb_get_trending(db)
 	return render_template("logout.html")
 
 @app.route('/Picture/<uuid:id>')

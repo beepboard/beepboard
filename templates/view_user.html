@@ -55,6 +55,11 @@
 				{% for song in songs %}
 					<div class="song">
 						<div class="left">
+							{% if myself.id == user.id %}
+								<a class="delete" href="/api/v1/Song/{{song.id}}/delete" onclick="return confirm('Are you sure you want to delete song \'{{song.content.name}}\' (id {{song.id}})?')">
+									<img src="/assets/trans.png">
+								</a>
+							{% endif %}
 							<a target=_blank href="/Song/{{song.id}}/play">
 								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
 							</a>

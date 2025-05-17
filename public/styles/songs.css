@@ -27,6 +27,19 @@
 	gap: 10px;
 }
 
+.song .left .delete img {
+	width: 16px;
+	height: 16px;
+	background: url('/assets/icons.png') -32px -16px;
+}
+
+.song .left .delete {
+	height: 32px;
+	margin-bottom: 4px;
+	margin-right: 4px;
+	display: flex;
+	align-items: center;
+}
 
 .song .left .mod {
 	width: 32px;

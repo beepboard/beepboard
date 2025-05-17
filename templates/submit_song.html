@@ -99,7 +99,7 @@
 				tags += tag.childNodes[0].data + ",";
 			}
 			
-			tags = tags.substring(tags.length - 1)
+			tags = tags.substring(0, tags.length - 1)
 			
 			document.form.tags.value = tags
 			

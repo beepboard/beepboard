@@ -99,9 +99,10 @@
 					{% for song in trending %}
 						<div class="item song">
 							<p class="songname"><a href="/Song/{{song.id}}">{{song.content.name}}</a></p>
-							<p><small>by {{song.author.username}}</small></p>
+							<p><small>by <a href="/User/{{song.author.id}}">{{song.author.username}}</a></small></p>
 							<p><small>{{song.created.date}} ·
-							          {{song.stats.views}} views</small></p>
+							          {{song.stats.clicks}} clicks ·
+							          song #{{song.id}}</small></p>
 							
 							<a href="/Song/{{song.id}}/play">
 								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">

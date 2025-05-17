@@ -43,7 +43,7 @@
 						                                          title="{{BADGES[badge].name}} ({{BADGES[badge].desc}})"
 						                                          src="/assets/trans.png">{% endfor %}
 					</h3>
-					<p class="bio">{{ user.profile.bio.raw | safe }}</p>
+					<p class="bio">{{ user.profile.bio.sanitized | safe }}</p>
 				</div>
 				<div class="footer">
 					<p><small>

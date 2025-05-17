@@ -74,10 +74,7 @@ def bb_filter_comment(db, comment, detail = []):
 			'datetime':  bb_datetime(comment['timestamp']),
 		},
 		
-		'content': {
-			'raw':  comment['content'],
-			'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
-		},
+		'content': bb_filter_text(comment['content']),
 		
 		'replies': [bb_filter_comment(db, comment) for comment in
 						bb_get_comments_by_parent(db, comment['commentid'])]
@@ -116,10 +113,7 @@ def bb_filter_comments(db, comments, parent = None, detail = []):
 				'datetime':  bb_datetime(comment['timestamp']),
 			},
 			
-			'content': {
-				'raw':  comment['content'],
-				'html': sanitizer.sanitize(bb_render_markdown(comment['content'])),
-			},
+			'content': bb_filter_text(comment['content']),
 			
 			'replies': bb_filter_comments(db, comments, comment['commentid'], detail)
 			# 'likes': comment['likes']
@@ -147,9 +141,20 @@ def bb_get_comments_by_songid(db, song):
 		comments = []
 	return comments
 
+def bb_filter_text(text):
+	sanitizer = Sanitizer()
+	
+	if not text:
+		return None
+	
+	return {
+		'raw': text,
+		'html': sanitizer.sanitize(bb_render_markdown(text)),
+		'sanitized': sanitizer.sanitize(text)
+	}
+
 def bb_filter_user(db, user, detail = []):
 	# detail: list ("songs")
-	sanitizer = Sanitizer()
 	
 	if not user:
 		return None
@@ -182,10 +187,7 @@ def bb_filter_user(db, user, detail = []):
 				'url': '/Picture/' + user['pfp']
 			},
 			
-			'bio': {
-				'raw': user['bio'],
-				'html': sanitizer.sanitize(bb_render_markdown(user['bio']))
-			},
+			'bio': bb_filter_text(user['bio']),
 			
 			'country': user['country'],
 			'discordhandle': user['discordhandle']
@@ -219,10 +221,7 @@ def bb_filter_song(db, song, detail = []):
 			'name': song['name'],
 			'tags': song['tags'],
 			
-			'desc': {
-				'raw':  song['description'],
-				'html': (bb_render_markdown(song['description']))
-			},
+			'desc': bb_filter_text(song['description']),
 			
 			'url': {
 				'url': MODS[song['songmod']]['url'] + "#" + song['songdata'],

@@ -17,7 +17,7 @@ def bb_index():
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		trending = bb_get_trending(db)
-	return render_template("index.html", myself=myself)
+	return render_template("index.html", trending=trending, myself=myself)
 	
 @app.route('/welcome')
 def bb_welcome():
@@ -26,7 +26,7 @@ def bb_welcome():
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		trending = bb_get_trending(db)
-	return render_template("welcome.html", myself=myself)
+	return render_template("welcome.html", trending=trending, myself=myself)
 
 @app.route('/Songs')
 def bb_list_songs():
@@ -67,6 +67,7 @@ def bb_list_songs():
 	
 	return render_template("songs.html",
 		myself=myself,
+		trending=trending,
 		songs=songs,
 		GET={'sort':sort,
 		     'after':after,
@@ -109,6 +110,7 @@ def bb_list_users():
 	
 	return render_template("users.html",
 		myself=myself,
+		trending=trending,
 		users=users,
 		after=after,
 		GET={'sort':sort,
@@ -125,7 +127,7 @@ def bb_under_construction():
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		trending = bb_get_trending(db)
-	return render_template("workinprogress.html", myself=myself)
+	return render_template("workinprogress.html", trending=trending, myself=myself)
 
 
 
@@ -135,14 +137,14 @@ def bb_account_login():
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		trending = bb_get_trending(db)
-	return render_template("login.html", myself=myself)
+	return render_template("login.html", trending=trending, myself=myself)
 	
 @app.route('/Account/register')
 def bb_account_register():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-	return render_template("register.html", myself=myself)
+	return render_template("register.html", trending=trending, myself=myself)
 
 @app.route('/Account/logout')
 def bb_account_logout():

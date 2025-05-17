@@ -61,7 +61,7 @@
 					<img src="/assets/search.png">
 				</search>
 				--->
-				<!--- pst... site wide search is for 0.6! --->
+				<!--- pst... site wide search is for 0.7! --->
 				<p class="account-text">
 				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
@@ -74,7 +74,7 @@
 			<div class="right">
 				<p>
 {% if not myself %}
-	You're not logged in.
+	You&apos;re not logged in.
 {% else %}
 	Hello, <strong><a href="/User/{{myself.id}}">{{ myself.username }}</a></strong>!
 {% endif %}
@@ -95,9 +95,19 @@
 		<div class="content">
 			<aside>
 				<article>
-					<div class="item">
-						<p>placeholder</p>
-					</div>
+					<h3 class="title">trending songs</h3>
+					{% for song in trending %}
+						<div class="item song">
+							<p class="songname"><a href="/Song/{{song.id}}">{{song.content.name}}</a></p>
+							<p><small>by {{song.author.username}}</small></p>
+							<p><small>{{song.created.date}} ·
+							          {{song.stats.views}} views</small></p>
+							
+							<a href="/Song/{{song.id}}/play">
+								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+							</a>
+						</div>
+					{% endfor %}
 				</article>
 			</aside>
 			<main>

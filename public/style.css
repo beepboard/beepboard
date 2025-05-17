@@ -164,6 +164,10 @@ body {
 		min-height: 200px;
 	}
 	
+	aside article .title {
+		
+	}
+	
 	article {
 		background-color: #222;
 		padding-left: 20px;
@@ -281,6 +285,14 @@ body {
 
 /* ASIDE */
 	
+	aside article .title {
+		font-variant: small-caps;
+		margin: 0px;
+		margin-bottom: 10px;
+		text-align: center;
+		font-weight: bold;
+	}
+	
 	aside article {
 		display: flex;
 		flex-direction: column;
@@ -290,17 +302,25 @@ body {
 	
 	aside article .item {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		gap: 5px;
 		background-color: #333;
-		padding-left: 10px;
-		padding-right: 10px;
+		padding: 10px;
+		padding-right: 50px;
+		width: calc(100% - 60px);
+		position: relative;
 	}
-
+	
 	aside article .item p {
-		display: flex;
-		flex-direction: row;
-		gap: 5px;
+		margin: 0px;
+	}
+	
+	aside article .item .mod {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		width: 32px;
+		height: 32px;
 	}
 
 /* FOOTER */

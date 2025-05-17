@@ -28,8 +28,8 @@ def bb_user_view(id):
 		songs = [bb_filter_song(db, song) for song in songs]
 	
 	if not user:
-		return render_template("view_user.html", myself=myself, user=user), 404
-	return render_template("view_user.html", myself=myself, user=user, songs=songs)
+		return render_template("view_user.html", trending=trending, myself=myself, user=user), 404
+	return render_template("view_user.html", trending=trending, myself=myself, user=user, songs=songs)
 
 @app.route("/Profile/edit")
 def bb_profile_edit():
@@ -42,4 +42,4 @@ def bb_profile_edit():
 	if not myself:
 		return redirect("/Account/login")
 	else:
-		return render_template("profile_edit.html", myself=myself)
+		return render_template("profile_edit.html", trending=trending, myself=myself)

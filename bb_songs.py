@@ -28,8 +28,8 @@ def bb_song_view(id):
 		           )
 	
 	if not song:
-		return render_template("view_song.html", myself=myself, song=song), 404
-	return render_template("view_song.html", myself=myself, song=song, has_interacted = has_interacted)
+		return render_template("view_song.html", trending=trending, myself=myself, song=song), 404
+	return render_template("view_song.html", trending=trending, myself=myself, song=song, has_interacted = has_interacted)
 
 @app.route('/Song/submit')
 def bb_song_submit():
@@ -40,7 +40,7 @@ def bb_song_submit():
 		trending = bb_get_trending(db)
 		if not myself:
 			return redirect("/Account/login")
-		return render_template("submit_song.html", myself=myself)
+		return render_template("submit_song.html", trending=trending, myself=myself)
 
 
 @app.route('/Song/<int:id>/play')

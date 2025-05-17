@@ -328,9 +328,9 @@ def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = Non
 		])
 	elif sort == "trending":
 		clauses.update([
-			ClauseOrder({ValueColumnName('timestamp', 'S'): OrderEnum.DESC,
-			             ValueColumnName('downloads', 'S'): OrderEnum.DESC,
+			ClauseOrder({'date(S.timestamp, "unixepoch")': OrderEnum.DESC,
 			             ValueColumnName('likes', 'S'):     OrderEnum.DESC,
+			             ValueColumnName('downloads', 'S'): OrderEnum.DESC,
 			             ValueColumnName('views', 'S'):     OrderEnum.DESC})
 		])
 	else:
@@ -374,8 +374,8 @@ def bb_search_users(db, sort, after, query, limit):
 	
 	if sort == "popular":
 		clauses.update([
-			ClauseOrder({ValueColumnName('downloads'): OrderEnum.DESC,
-			             ValueColumnName('likes'):     OrderEnum.DESC,
+			ClauseOrder({ValueColumnName('likes'):     OrderEnum.DESC,
+			             ValueColumnName('downloads'): OrderEnum.DESC,
 			             ValueColumnName('views'):     OrderEnum.DESC})
 		])
 	elif sort == "newest":
@@ -410,4 +410,4 @@ def bb_get_interaction(db, type, userid, songid):
 
 def bb_get_trending(db):
 	# get 3 most trending songs
-	return bb_search_songs(db, 'trending', 0, '', 3)
+	return bb_search_songs(db, 'trending', 0, None, None, None, 3)

@@ -447,9 +447,6 @@ def bb_api_getcomment(id):
 
 @app.route('/api/v1/Profile/edit', methods=['POST'])
 def bb_api_editprofile():
-	print(request.form.to_dict(), request.files)
-	print(request.content_type)
-	
 	if not request.content_type.startswith('multipart/form-data'):
 		return ("invalid content type", 400)
 	
@@ -464,22 +461,23 @@ def bb_api_editprofile():
 		if not user:
 			return redirect('/Account/login')
 		
-		bio     = request.form['bio']
-		country = request.form['country']
-		handle  = request.form['discordhandle']
-		pfp     = request.files['pfp']
+		name    = request.form.get('username')
+		bio     = request.form.get('bio')
+		country = request.form.get('country')
+		handle  = request.form.get('discordhandle')
+		pfp     = request.files.get('pfp')
 		
 		# validate data
 		if len(bio     if bio     else '') > 1024 or \
 		   len(country if country else '') > 2    or \
-		   len(handle  if handle  else '') > 32:
+		   len(handle  if handle  else '') > 32   or \
+		   len(name    if name    else '') > 32:
 			return ("Invalid parameters!", 400)
 		
 		if pfp:
 			# the profile picture requires a bit of special logic,
 			# because we need to store both the file itself separately
 			# and a reference to the file in the database
-			print("FILE TYPE", request.files['pfp'].content_type)
 			if not (request.files['pfp'].content_type == 'image/png' or
 			        request.files['pfp'].content_type == 'image/gif'):
 				return ("Invalid image format!", 400)
@@ -516,6 +514,10 @@ def bb_api_editprofile():
 		
 		# we must set each field, one by one,
 		# since the request could have partial arguments
+		if name:
+			db.execute("UPDATE users SET username = ?      WHERE userid = ?",
+			 (name, user['id']))
+		
 		if bio:
 			db.execute("UPDATE users SET bio = ?           WHERE userid = ?",
 			 (bio, user['id']))

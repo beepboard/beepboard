@@ -31,6 +31,24 @@ def bb_song_view(id):
 		return render_template("view_song.html", trending=trending, myself=myself, song=song), 404
 	return render_template("view_song.html", trending=trending, myself=myself, song=song, has_interacted = has_interacted)
 
+@app.route('/Song/<int:id>/edit')
+def bb_song_edit(id):
+
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
+		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
+	
+	if not song:
+		return "No such song.", 404
+	if not myself:
+		return redirect('/Account/login')
+	if not (myself['id'] == song['author']):
+		return "You cannot edit this song!", 403
+	
+	return render_template("song_edit.html", trending=trending, myself=myself, song=song)
+
 @app.route('/Song/submit')
 def bb_song_submit():
 

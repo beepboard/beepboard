@@ -150,6 +150,7 @@ def bb_account_register():
 @app.route('/Account/logout')
 def bb_account_logout():
 	with bb_connect_db() as conn:
+		db = conn.cursor()
 		trending = bb_get_trending(db)
 	return render_template("logout.html")
 

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %} edit song "{{song.content.name}}" {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/submit-song.css">
+{% endblock %}
+
+{% block main %}
+	<article>
+		<div class="submit">
+			<h2 title="song id {{song.id}}">edit song "{{song.content.name}}"</h2>
+			<form  name="form" action="/api/v1/Song/{{song.id}}/edit" method="POST" onsubmit="return prepare_submit(this)">
+			
+				<div class="submitform">
+					<div class="form-item">
+						<label class="flex-u1" for="title">song title</label>
+						<input class="flex-u3" placeholder="song title" minlength=3 maxlength=100 type="text" name="title" value="{{song.content.name}}">
+					</div>
+					
+					<div class="form-item">
+						<label class="flex-u1" for="desc">description</label>
+						<textarea maxlength=1000 class="flex-u3 songdesc" name="desc">{{song.content.desc.raw}}</textarea>
+					</div>
+					
+					<input type="hidden" name="data" id="data">
+					
+					<div class="form-item">
+						<label class="flex-u1" for="mod">beepmod used</label>
+						<select class="flex-u3 songmod" name="mod" id="mod" selected="{{song.content.url.mod}}">
+							<option value="abyssbox">AbyssBox</option>
+							<option value="beepbox">BeepBox</option>
+							<option value="cardboardbox">CardboardBox</option>
+							<option value="goldbox">GoldBox</option>
+							<option value="jummbox">JummBox</option>
+							<option value="lemmbox">LemmBox</option>
+							<option value="modbox">ModBox</option>
+							<option value="pandorasbox">Pandora's Box</option>
+							<option value="sandbox">SandBox</option>
+							<option value="slarmoosbox">SlarmoosBox</option>
+							<option value="ultrabox">UltraBox</option>
+							<option value="wackybox">WackyBox</option>
+						</select>
+					</div>
+					
+					<div class="form-item">
+						<label class="flex-u1" for="songurl">song url</label>
+						<textarea class="flex-u3 songdata" name="songurl" id="songurl">{{song.content.url.url}}</textarea>
+					</div>
+					
+					<div class="formtags">
+						<p class="title">Tags</p>
+						<div class="tags">
+							<div class="left" id="tags">
+							</div>
+							<div class="right">
+								<input type="text" placeholder="tag name" id="tagname">
+								<button type="button" onclick="add_tag()">+</button>
+							</div>
+						</div>
+					</div>
+					
+					<button>UPDATE</button>
+				</div>
+				
+				<input type="hidden" name="tags"> <!-- tags are computed onsubmit-->
+				
+			</form>
+		</div>
+		<script>
+			html_tags = document.getElementById('tags');
+			html_tagname = document.getElementById('tagname')
+			
+			function add_tag() {
+				if (html_tagname.value.length > 2) {
+					html_tags.appendChild(
+						HTML.p(
+							html_tagname.value.trim().toLowerCase(),
+							HTML.sup(
+								'x',
+								{'class': 'delete',
+								 'onclick': 'this.parentNode.remove()'}
+							),
+							{'class': 'tag'}
+						)
+					);
+					html_tagname.value = "";
+				} else {
+					alert("Tag is too short! Minimum length: 3");
+				}
+			}
+			
+			function prepare_submit(form) {
+				data = new FormData(form)
+				
+				// tags
+				let tags = "";
+				for (let tag of html_tags.children) {
+					tags += tag.childNodes[0].data + ",";
+				}
+				
+				tags = tags.substring(0, tags.length - 1)
+				
+				document.form.tags.value = tags
+				
+				if (document.form.songurl.value.startsWith('https://tinyurl.com') ||
+				    document.form.songurl.value.startsWith('https://pastelink.net')
+				    ) {
+					alert('url shorteners are not supported')
+					return false
+				}
+				
+				// song data & mod
+				song = document.form.songurl.value.split('#')
+				
+				if (song[1] == undefined) {
+					alert('malformed song url')
+					return false;
+				}
+				
+				document.form.data.value = song[1];
+				
+				if (document.form.title.value.length < 3)    {alert('song title is too short');      return false}
+				if (document.form.title.value.length > 100)  {alert('song title is too long');       return false}
+				if (document.form.desc.value.length  > 1000) {alert('song description is too long'); return false}
+				if (html_tags.children.length        > 8)    {alert('too many tags');                return false}
+				
+				return true
+			}
+		</script>
+	</article>
+{% endblock %}

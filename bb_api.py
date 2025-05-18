@@ -139,6 +139,60 @@ def bb_api_login():
 					<p>Wrong password.</p>
 					""", 403)
 
+@app.route('/api/v1/Song/<int:songid>/edit', methods=['POST'])
+def bb_api_songedit(songid):
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		song = bb_filter_song(db, bb_get_songdata_by_id(db, songid))
+		if not song:
+			return "No such song", 400
+		
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		if not myself:
+			return redirect('/Account/login')
+		
+		# check if song belongs to user
+		if not (song['author'] == myself['id']):
+			return "You may not edit another user's song.", 403
+		
+		# do some data validation
+		songname = None
+		songdesc = None
+		songmod  = None
+		songdata = None
+		if 'title' in request.form:
+			songname = request.form['title']
+			if len(songname) > 100 or \
+			   len(songname) < 3:
+				return "Invalid song name length", 400
+		
+		if 'desc' in request.form:
+			songdesc = request.form['desc']
+			if len(songdesc) > 1000:
+				return "Invalid song description length", 400
+		
+		if 'mod' in request.form:
+			songmod = request.form['mod']
+			if not (songmod in MODS):
+				return "Invalid song mod", 400
+		
+		if 'data' in request.form:
+			songdata = request.form['data']
+		
+		# actually update the values in the db
+		if songname:
+			db.execute("UPDATE songs SET name = ?        WHERE songid = ?", (songname, songid))
+		if songdesc:
+			db.execute("UPDATE songs SET description = ? WHERE songid = ?", (songdesc, songid))
+		if songmod:
+			db.execute("UPDATE songs SET songmod = ?     WHERE songid = ?", (songmod, songid))
+		if songdata:
+			db.execute("UPDATE songs SET songdata = ?    WHERE songid = ?", (songdata, songid))
+	
+	return redirect("/Song/" + str(songid))
+
 @app.route('/api/v1/Song/submit', methods=['POST'])
 def bb_api_songsubmit():
 	if    not ('title' in request.form) \

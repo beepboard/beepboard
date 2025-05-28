@@ -11,7 +11,6 @@ from bb_functions import *
 
 @app.route('/User/<int:id>')
 def bb_user_view(id):
-
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
@@ -43,3 +42,47 @@ def bb_profile_edit():
 		return redirect("/Account/login")
 	else:
 		return render_template("profile_edit.html", trending=trending, myself=myself)
+
+@app.route('/Users')
+def bb_users_list_redirect():
+	return redirect('/User/list', 301)
+
+@app.route('/User/list')
+def bb_user_list():
+	# set default values for parameters
+	sort  = request.args.get('sort')
+	after = request.args.get('after')
+	query = request.args.get('q')
+	limit  = request.args.get('limit')
+	if not sort:
+		sort = 'popular'
+	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
+	
+	if not after:
+		after = '0'
+	if not after.isdigit():
+		after = '0'
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		users = bb_search_users(db, sort, after, query, limit)
+		
+		#filter users
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
+	
+	return render_template("users.html",
+		myself=myself,
+		trending=trending,
+		users=users,
+		after=after,
+		GET={'sort':sort,
+		     'after':after,
+		     'limit':limit,
+		     'q':query}
+	)

@@ -68,12 +68,7 @@ def bb_filter_comment(db, comment, detail = []):
 					[]
 				) if 'user' in detail else comment['userid'],
 		
-		'created': {
-			'time':      comment['timestamp'],
-			'date':      bb_date(comment['timestamp']),
-			'datetime':  bb_datetime(comment['timestamp']),
-		},
-		
+		'created': bb_format_time(comment['timestamp']),
 		'content': bb_filter_text(comment['content']),
 		
 		'replies': [bb_filter_comment(db, comment) for comment in
@@ -107,12 +102,7 @@ def bb_filter_comments(db, comments, parent = None, detail = []):
 						[]
 					) if 'user' in detail else comment['userid'],
 			
-			'created': {
-				'time':      comment['timestamp'],
-				'date':      bb_date(comment['timestamp']),
-				'datetime':  bb_datetime(comment['timestamp']),
-			},
-			
+			'created': bb_format_time(comment['timestamp']),
 			'content': bb_filter_text(comment['content']),
 			
 			'replies': bb_filter_comments(db, comments, comment['commentid'], detail)
@@ -153,6 +143,16 @@ def bb_filter_text(text):
 		'sanitized': sanitizer.sanitize(text)
 	}
 
+def bb_format_time(timestamp):
+	if not timestamp:
+		return None
+	
+	return {
+		'time':      timestamp,
+		'date':      bb_date(timestamp),
+		'datetime':  bb_datetime(timestamp)
+	}
+
 def bb_filter_user(db, user, detail = []):
 	# detail: list ("songs")
 	
@@ -163,9 +163,6 @@ def bb_filter_user(db, user, detail = []):
 		'username': user['username'],
 		
 		'created': {
-			'time':      user['timestamp'],
-			'date':      bb_date(user['timestamp']),
-			'datetime':  bb_datetime(user['timestamp']),
 		},
 		
 		'totalstats': {

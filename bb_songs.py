@@ -131,3 +131,56 @@ def bb_song_downvote(id):
 		           ("like", myself['id'], song["id"])
 		           )
 	return redirect(f"/Song/{song['id']}")
+
+@app.route('/Songs')
+def bb_songs_list_redirect():
+	return redirect('/Song/list', 301)
+
+@app.route('/Song/list')
+def bb_songs_list():
+	# set default values for parameters
+	sort   = request.args.get('sort')
+	after  = request.args.get('after')
+	author = request.args.get('author')
+	tags   = request.args.get('tags')
+	query  = request.args.get('q')
+	limit  = request.args.get('limit')
+	if not sort:
+		sort = 'newest'
+	
+	if not limit:
+		limit = "10"
+	limit = int(limit)
+	if limit > 100 or limit < 1:
+		return "invalid limit", 400
+		
+	if not after:
+		after = '0'
+	if not after.isdigit():
+		after = '0'
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		songs = bb_search_songs(db, sort, after, author, tags, query, limit)
+		
+		if not author:
+			author = ''
+		if not tags:
+			tags = ''
+		if not query:
+			query = ''
+		
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
+	
+	return render_template("songs.html",
+		myself=myself,
+		trending=trending,
+		songs=songs,
+		GET={'sort':sort,
+		     'after':after,
+		     'author':author,
+		     'tags':tags,
+		     'limit':limit,
+		     'q':query},
+	)

@@ -10,6 +10,7 @@ from bb_users     import *
 from bb_songs     import *
 from bb_wiki      import *
 from bb_functions import *
+from bb_errors    import *
 
 @app.route('/')
 def bb_index():
@@ -28,96 +29,6 @@ def bb_welcome():
 		trending = bb_get_trending(db)
 	return render_template("welcome.html", trending=trending, myself=myself)
 
-@app.route('/Songs')
-def bb_list_songs():
-	# set default values for parameters
-	sort   = request.args.get('sort')
-	after  = request.args.get('after')
-	author = request.args.get('author')
-	tags   = request.args.get('tags')
-	query  = request.args.get('q')
-	limit  = request.args.get('limit')
-	if not sort:
-		sort = 'newest'
-	
-	if not limit:
-		limit = "10"
-	limit = int(limit)
-	if limit > 100 or limit < 1:
-		return "invalid limit", 400
-		
-	if not after:
-		after = '0'
-	if not after.isdigit():
-		after = '0'
-	
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		songs = bb_search_songs(db, sort, after, author, tags, query, limit)
-		
-		if not author:
-			author = ''
-		if not tags:
-			tags = ''
-		if not query:
-			query = ''
-		
-		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
-	
-	return render_template("songs.html",
-		myself=myself,
-		trending=trending,
-		songs=songs,
-		GET={'sort':sort,
-		     'after':after,
-		     'author':author,
-		     'tags':tags,
-		     'limit':limit,
-		     'q':query},
-	)
-
-
-
-@app.route('/Users')
-def bb_list_users():
-	# set default values for parameters
-	sort  = request.args.get('sort')
-	after = request.args.get('after')
-	query = request.args.get('q')
-	limit  = request.args.get('limit')
-	if not sort:
-		sort = 'popular'
-	
-	if not limit:
-		limit = "10"
-	limit = int(limit)
-	if limit > 100 or limit < 1:
-		return "invalid limit", 400
-	
-	if not after:
-		after = '0'
-	if not after.isdigit():
-		after = '0'
-	
-	with bb_connect_db() as conn:
-		db = conn.cursor()
-		users = bb_search_users(db, sort, after, query, limit)
-		
-		#filter users
-		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
-	
-	return render_template("users.html",
-		myself=myself,
-		trending=trending,
-		users=users,
-		after=after,
-		GET={'sort':sort,
-		     'after':after,
-		     'limit':limit,
-		     'q':query}
-	)
 
 @app.route('/Jams')
 @app.route('/Wiki')

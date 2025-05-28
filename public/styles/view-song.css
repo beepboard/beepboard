@@ -36,6 +36,9 @@
 	margin-left: 15px;
 	border-left: 5px solid #333;
 	padding-left: 10px;
+	
+	word-break: break-word;
+	width: 600px;
 }
 
 .viewsong .stats {

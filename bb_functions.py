@@ -162,8 +162,7 @@ def bb_filter_user(db, user, detail = []):
 		'id':   user['userid'],
 		'username': user['username'],
 		
-		'created': {
-		},
+		'created': bb_format_time(user['timestamp']),
 		
 		'totalstats': {
 			'views':  user['views'],

@@ -10,7 +10,7 @@
 {% block main %}
 <article>
 	<h2>Users</h2>
-	<form action="/Users">
+	<form action="/User/list">
 		<div class="searchform">
 			<div class="sortby">
 				<p class="title">Sort by</p>
@@ -55,5 +55,17 @@
 			<p><em>no users found ¯\_(ツ)_/¯</em></p>
 		{% endfor %}
 	</div>
+		
+		<p class="text-centered">
+			<a href="{{
+				'/User/list?sort=' + GET.sort
+				               + ('&after='  + [GET.after | int - GET.limit, 0] | max | string)
+				}}">&lt;</a>
+						page {{ (GET.after | int) // GET.limit + 1}}
+						<a href="{{
+				'/User/list?sort=' + GET.sort
+				               + ('&after='  + ((GET.after | int + GET.limit) | string))
+				}}">&gt;</a>
+		</p>
 </article>
 {% endblock %}

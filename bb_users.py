@@ -16,19 +16,28 @@ def bb_user_view(id):
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		trending = bb_get_trending(db)
 		user = bb_filter_user(db, bb_get_userdata_by_id(db, id))
+		after = request.args.get('after')
+		if not after:
+			after = 0
 		
 		# update user profile views
 		db.execute("UPDATE users SET profileviews = profileviews + 1 WHERE userid = :id",
 		           (id,)
 		           )
-		songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY likes DESC LIMIT 5",
-		           (id,)
+		songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY likes DESC LIMIT 5 OFFSET ?",
+		           (id, after)
 		           ).fetchall()
 		songs = [bb_filter_song(db, song) for song in songs]
 	
 	if not user:
 		return render_template("view_user.html", trending=trending, myself=myself, user=user), 404
-	return render_template("view_user.html", trending=trending, myself=myself, user=user, songs=songs)
+	return render_template("view_user.html",
+				trending=trending,
+				myself=myself,
+				user=user,
+				songs=songs,
+				after=after
+				)
 
 @app.route("/Profile/edit")
 def bb_profile_edit():

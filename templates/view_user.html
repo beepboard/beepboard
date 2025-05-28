@@ -93,13 +93,25 @@
 						</div>
 					</div>
 				{% else %}
-					{% if myself.id == user.id %}
+					{% if (myself.id == user.id) and after == 0 %}
 						<p><em>no songs found ¯\_(ツ)_/¯ · try <a href="/Song/submit">uploading</a> some songs!</em></p>
 					{% else %}
 						<p><em>no songs found ¯\_(ツ)_/¯</em></p>
 					{% endif %}
 				{% endfor %}
 			</div>
+			
+			<p class="text-centered">
+				<a href="{{
+					'/User/' + user.id | string
+					         + ('?after='  + [after | int - 5, 0] | max | string)
+					}}">&lt;</a>
+							page {{ (after | int) // 5 + 1}}
+							<a href="{{
+					'/User/' + user.id | string
+					         + ('?after='  + (after | int + 5) | string)
+					}}">&gt;</a>
+			</p>
 		</div>
 	{% else %}
 		<p>User not found.</p>

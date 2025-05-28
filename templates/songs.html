@@ -9,7 +9,7 @@
 {% block main %}
 <article>
 	<h2>Songs</h2>
-	<form name="form" action="/Songs" onsubmit="return prepare_search(this)">
+	<form name="form" action="/Song/list" onsubmit="return prepare_search(this)">
 		<div class="searchform">
 			<div class="sortby">
 				<p class="title">Sort by</p>
@@ -86,7 +86,7 @@
 	
 	<p class="text-centered">
 		<a href="{{
-'/Songs?sort=' + GET.sort
+'/Song/list?sort=' + GET.sort
                + ('&q='      + GET.q)
                + ('&author=' + GET.author)
                + ('&tags='   + GET.tags)
@@ -95,7 +95,7 @@
 }}">&lt;</a>
 		page {{ (GET.after | int) // GET.limit + 1}}
 		<a href="{{
-'/Songs?sort=' + GET.sort
+'/Song/list?sort=' + GET.sort
                + ('&q='      + GET.q)
                + ('&author=' + GET.author)
                + ('&tags='   + GET.tags)

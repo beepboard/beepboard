@@ -324,6 +324,23 @@ body {
 		width: 32px;
 		height: 32px;
 	}
+	
+	aside article .links {
+		padding: 0px;
+		margin: 0px;
+		padding-left: 20px;
+	}
+	
+	aside article .links li {
+		list-style-type: none;
+	}
+	
+	aside article .links li a {
+		text-decoration: none;
+		color: white;
+		font-weight: bold;
+		line-height: 1.5em;
+	}
 
 /* FOOTER */
 	footer {

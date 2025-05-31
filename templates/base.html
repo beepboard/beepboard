@@ -73,18 +73,17 @@
 			
 			<div class="right">
 				<p>
-{% if not myself %}
-	You&apos;re not logged in.
-{% else %}
-	Hello, <strong><a href="/User/{{myself.id}}">{{ myself.username }}</a></strong>!
-{% endif %}
-</p>
+				{% if not myself %}
+					You&apos;re not logged in.
+				{% else %}
+					Hello, <strong><a href="/User/{{myself.id}}">{{ myself.username }}</a></strong>!
+				{% endif %}
+				</p>
 			</div>
 		</header>
 		
 		<nav>
 			<div class="links">
-				<div class="link yellow">  <img class="icon" src="/assets/trans.png"> <a href="https://tools.beepboard.xyz/">tools</a>        </div>
 				<div class="link orange">  <img class="icon" src="/assets/trans.png"> <a href="/">home</a>              </div>
 				<div class="link red">     <img class="icon" src="/assets/trans.png"> <a href="/Jams">jams</a>          </div>
 				<div class="link magenta"> <img class="icon" src="/assets/trans.png"> <a href="/User/list">users</a>    </div>
@@ -110,6 +109,14 @@
 							</a>
 						</div>
 					{% endfor %}
+					
+					<h3 class="title">quick links</h3>
+					
+					<ul class="links">
+						{# <li><a href="https://tools.beepboard.xyz">beeptools</a></li> #}
+						<li><a href="/Song/submit">submit a song</a></li>
+						<li><a href="/Profile/edit">edit your profile</a></li>
+					</ul>
 				</article>
 			</aside>
 			<main>

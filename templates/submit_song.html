@@ -14,6 +14,28 @@
 		
 			<div class="submitform">
 				<div class="form-item">
+					<label class="flex-u1" for="type">song type</label>
+					<select class="flex-u3 songtype" name="type" id="type" oninput="update_songtype()">
+						<option value="original">original</option>
+						<option value="remix"
+							title="remix of a different song on beepboard;
+							       you must provide the song's ID (song #...)">remix</option>
+						<option value="cover"
+							title="cover of a different song, outside of beepboard; 
+									you must provide a link to the original song in the description.">cover</option>
+					</select>
+				</div>
+				
+				<div class="form-item" id="remixof">
+					<label class="flex-u1" for="remixof">remix of</label>
+					<div class="remix-container flex-u3">
+						song #
+						<input onchange="update_remixname()" type="number" name="remixof" placeholder="song id">
+						<a class="name" id="remixof_name"></a>
+					</div>
+				</div>
+				
+				<div class="form-item">
 					<label class="flex-u1" for="title">song title</label>
 					<input class="flex-u3" placeholder="song title" minlength=3 maxlength=100 type="text" name="title">
 				</div>
@@ -70,6 +92,45 @@
 	<script>
 		html_tags = document.getElementById('tags');
 		html_tagname = document.getElementById('tagname')
+		
+		function update_remixname() {
+			let remixname = document.getElementById('remixof_name');
+			let remixof   = document.form.remixof.value;
+			
+			var http = new XMLHttpRequest();
+			http.onreadystatechange = function() {
+				if (this.readyState == 4) {
+					switch (this.status) {
+						case 200:
+							data = JSON.parse(this.responseText)
+							console.log(data)
+							remixname.innerText = data.content.name
+							remixname.href      = "/Song/" + data.id
+							break;
+						
+						case 400:
+						case 403:
+						case 404:
+							remixname.innerText = ""
+							console.log("no such song #" + remixof);
+							break;
+					}
+					
+				}
+			}
+			
+			http.open("GET", "/api/v1/Song/" + remixof, true);
+			http.send();
+		}
+		
+		update_remixname();
+		
+		function update_songtype() {
+			let isaremix = (document.form.type.value == 'remix')
+			document.getElementById('remixof').style = isaremix ? "" : "position: absolute; visibility: hidden"
+		}
+		
+		update_songtype(); // quick hack to hide remixof when page is loaded (fuck you javascript)
 		
 		function add_tag() {
 			if (html_tagname.value.length > 2) {

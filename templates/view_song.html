@@ -12,15 +12,25 @@
 		<div class="viewsong">
 			<div class="head">
 				<div class="title">
-					<a href="/Song/{{song.id}}/play">
+					<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
 						<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+						<img class="modanchor" src="/assets/mods/link.png">
 					</a>
 					<h2>{{song.content.name}}
 						<br>
 						<small>
 							by <a href="/User/{{song.author.id}}"><em>{{song.author.username}}</em></a> ·
-						    {{song.created.date}} ·
-						    song #{{song.id}}
+							{{song.created.date}} ·
+							song #{{song.id}} ·
+							{% if song.type == 'original' %}
+								original
+							{% elif song.type == 'remix' %}
+								remix of #<a href="/Song/{{song.base}}">{{song.base}}</a>
+							{% elif song.type == 'cover' %}
+								cover
+							{% else %}
+								??? {{song.type}}
+							{% endif %}
 						</small>
 					</h2>
 				</div>

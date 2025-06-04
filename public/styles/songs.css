@@ -27,9 +27,21 @@
 	gap: 10px;
 }
 
+.song .left .modcontainer {
+	position: relative;
+}
+
 .song .left .mod {
 	width: 32px;
 	height: 32px;
+}
+
+.song .left .modanchor {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 14px;
+	height: 14px;
 }
 
 .song .left .meta {
@@ -39,6 +51,7 @@
 
 .song .left .meta .name {
 	margin: 0px;
+	word-break: break-all;
 }
 
 .song .right {

@@ -24,7 +24,7 @@ def bb_user_view(id):
 		db.execute("UPDATE users SET profileviews = profileviews + 1 WHERE userid = :id",
 		           (id,)
 		           )
-		songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY likes DESC LIMIT 5 OFFSET ?",
+		songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY timestamp DESC LIMIT 5 OFFSET ?",
 		           (id, after)
 		           ).fetchall()
 		songs = [bb_filter_song(db, song) for song in songs]

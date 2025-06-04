@@ -54,7 +54,7 @@
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
-				<p>0.6.1</p>
+				<p>0.6.2</p>
 				<!--
 				<search>
 					<input type="text">
@@ -84,11 +84,11 @@
 		
 		<nav>
 			<div class="links">
-				<div class="link orange">  <img class="icon" src="/assets/trans.png"> <a href="/">home</a>              </div>
-				<div class="link red">     <img class="icon" src="/assets/trans.png"> <a href="/Jams">jams</a>          </div>
-				<div class="link magenta"> <img class="icon" src="/assets/trans.png"> <a href="/User/list">users</a>    </div>
-				<div class="link purple">  <img class="icon" src="/assets/trans.png"> <a href="/Song/list">songs</a>    </div>
-				<div class="link blue">    <img class="icon" src="/assets/trans.png"> <a href="/Wiki/MainPage">wiki</a> </div>
+				<a href="/">             <div class="link orange">  <img class="icon" src="/assets/trans.png"> home  </div></a>
+				<a href="/Jams">         <div class="link red">     <img class="icon" src="/assets/trans.png"> jams  </div></a>
+				<a href="/User/list">    <div class="link magenta"> <img class="icon" src="/assets/trans.png"> users </div></a>
+				<a href="/Song/list">    <div class="link purple">  <img class="icon" src="/assets/trans.png"> songs </div></a>
+				<a href="/Wiki/MainPage"><div class="link blue">    <img class="icon" src="/assets/trans.png"> wiki  </div></a>
 			</div>
 		</nav>
 		
@@ -104,8 +104,9 @@
 							          {{song.stats.clicks}} clicks ·
 							          song #{{song.id}}</small></p>
 							
-							<a href="/Song/{{song.id}}/play">
-								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+							<a target=_blank href="/Song/{{song.id}}/play">
+								<img class="mod"       src="/assets/mods/{{song.content.url.mod}}.png">
+								<img class="modanchor" src="/assets/mods/link.png">
 							</a>
 						</div>
 					{% endfor %}

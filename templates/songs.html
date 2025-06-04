@@ -50,8 +50,9 @@
 		{% for song in songs %}
 			<div class="song">
 				<div class="left">
-					<a target=_blank href="/Song/{{song.id}}/play">
-						<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+					<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
+						<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+						<img class="modanchor" src="/assets/mods/link.png">
 					</a>
 					<div class="meta">
 						<p class="name">
@@ -76,6 +77,15 @@
 						· {{ song.stats.likes  }} likes
 						· {{ song.stats.clicks }} clicks
 						· {{ song.stats.views  }} views
+						· {% if song.type == 'original' %}
+						  	original
+						  {% elif song.type == 'remix' %}
+						  	remix of #<a href="/Song/{{song.base}}">{{song.base}}</a>
+						  {% elif song.type == 'cover' %}
+						  	cover
+						  {% else %}
+						  	??? {{song.type}}
+						  {% endif %}
 					</small>
 				</div>
 			</div>

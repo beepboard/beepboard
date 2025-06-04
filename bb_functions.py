@@ -25,6 +25,8 @@ MODS = {
 	"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'},
 }
 
+SONGTYPES = ["original", 'remix', 'cover']
+
 def bb_flags(f):
 	return sorted([
 		n for n in f.keys() if f[n]
@@ -198,9 +200,12 @@ def bb_filter_song(db, song, detail = []):
 	
 	if not song:
 		return None
+	
 	return {
 		'id':   song['songid'],
 		'author': bb_filter_user(db, bb_get_userdata_by_id(db, song['userid'])) if "author" in detail else song['userid'],
+		'base':   bb_filter_song(db, bb_get_songdata_by_id(db, song['remixof'])) if 'remix' in detail else song['remixof'],
+		'type': song['songtype'],
 		
 		'stats': {
 			'clicks': song['downloads'],
@@ -233,7 +238,7 @@ def bb_filter_song(db, song, detail = []):
 		},
 		
 		'comments': bb_filter_comments(
-		                db,
+						db,
 						bb_get_comments_by_songid(db, song['songid']),
 						detail = ['user']
 					) if "comments" in detail else None
@@ -405,4 +410,4 @@ def bb_get_interaction(db, type, userid, songid):
 
 def bb_get_trending(db):
 	# get 3 most trending songs
-	return bb_search_songs(db, 'trending', 0, None, None, None, 3)
+	return bb_search_songs(db, 'trending', 0, None, None, None, 5)

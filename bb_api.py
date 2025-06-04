@@ -198,6 +198,7 @@ def bb_api_songsubmit():
 	if    not ('title' in request.form) \
 	   or not ('desc' in request.form) \
 	   or not ('mod' in request.form) \
+	   or not ('type' in request.form) \
 	   or not ('data' in request.form) \
 	   or not ('tags' in request.form):
 		return (
@@ -210,6 +211,7 @@ def bb_api_songsubmit():
 	or len(request.form["title"]) > 100 \
 	or len(request.form["title"]) < 3  \
 	or request.form["mod"] not in MODS \
+	or request.form["type"] not in SONGTYPES \
 	or len(request.form["desc"]) > 1000:
 		return (
 			"Bad request. You're not supposed to see this - if you do, there's a bug. Report it to @fmixolydian",
@@ -227,11 +229,23 @@ def bb_api_songsubmit():
 				400
 			)
 		
-		# grab first free songid
-		seq = db.execute("SELECT seq FROM sqlite_sequence WHERE name = 'songs'").fetchone()
-			
-		db.execute("INSERT INTO SONGS (userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?)",
+		# if the song is a remix, grab the remixed song's data
+		if request.form['type'] == 'remix':
+			if not 'remixof' in request.form:
+				return ("Bad request. Invalid parameters.", 400)
+			original = bb_get_songdata_by_id(db, request.form.get('remixof'))
+			if not original:
+				return ("Bad request. Song doesn't exist.", 400)
+		else:
+			original = None
+		
+		print(original)
+		
+		# store song
+		db.execute("INSERT INTO SONGS (remixof, songtype, userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?,?,?)",
 		            (
+		             original['songid'],
+		             request.form['type'],
 		             user["id"],
 		             request.form["data"],
 		             request.form["mod"],

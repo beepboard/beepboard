@@ -69,8 +69,7 @@ body {
 		margin-right: auto;
 	}
 	
-	nav > .links > .link {
-		flex: 1;
+	nav > .links .link {
 		background-color: #222;
 		padding: 5px;
 		
@@ -80,13 +79,14 @@ body {
 		position: relative;
 	}
 	
-	nav > .links > .link > a {
+	nav > .links a {
+		flex: 1;
 		color: white;
 		text-decoration: none;
 		font-weight: bold;
 	}
 	
-	nav > .links > .link > .icon {
+	nav > .links .link .icon {
 		width: 16px;
 		height: 16px;
 		display: inline-block;
@@ -325,6 +325,18 @@ body {
 		height: 32px;
 	}
 	
+	aside article .item .modanchor {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		width: 14px;
+		height: 14px;
+	}
+	
+	aside article .songname {
+		word-break: break-all;
+	}
+	
 	aside article .links {
 		padding: 0px;
 		margin: 0px;
@@ -360,7 +372,7 @@ body {
 		flex-direction: row;
 	}
 	
-	input[type=text], input[type=password] {
+	input[type=text], input[type=number], input[type=password] {
 		height: 24px;
 		border: none;
 		background-color: #444;

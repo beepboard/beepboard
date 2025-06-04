@@ -23,9 +23,21 @@
 }
 
 
+.viewsong .head .title .modcontainer {
+	position: relative;
+}
+
 .viewsong .head .title .mod {
 	width: 32px;
 	height: 32px;
+}
+
+.viewsong .head .title .modanchor {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 14px;
+	height: 14px;
 }
 
 .viewsong .head .title h2 {

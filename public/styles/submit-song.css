@@ -14,3 +14,18 @@
 	height: 100px;
 	resize: none;
 }
+
+.remix-container {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+	align-items: center;
+}
+
+.remix-container .name {
+	width: 200px;
+	height: 20px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

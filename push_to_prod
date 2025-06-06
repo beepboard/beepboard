@@ -1,3 +1,4 @@
 #!/bin/bash
 
+git push
 ssh http@beepboard.xyz '/srv/sync-beepboard'

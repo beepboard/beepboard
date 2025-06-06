@@ -244,7 +244,7 @@ def bb_api_songsubmit():
 		# store song
 		db.execute("INSERT INTO SONGS (remixof, songtype, userid, songdata, songmod, tags, name, description, timestamp) VALUES (?,?,?,?,?,?,?,?,?)",
 		            (
-		             original['songid'],
+		             original['songid'] if original else None,
 		             request.form['type'],
 		             user["id"],
 		             request.form["data"],

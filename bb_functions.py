@@ -8,6 +8,7 @@ from enum import Enum
 from bb_config import *
 from bb_database import *
 from html_sanitizer import Sanitizer
+import html_sanitizer
 import re
 
 MODS = {
@@ -142,7 +143,8 @@ def bb_filter_text(text):
 	return {
 		'raw': text,
 		'html': sanitizer.sanitize(bb_render_markdown(text)),
-		'sanitized': sanitizer.sanitize(text)
+		'sanitized': sanitizer.sanitize(text),
+		'preview': text.split('\r\n')[0]
 	}
 
 def bb_format_time(timestamp):

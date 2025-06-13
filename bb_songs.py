@@ -132,6 +132,31 @@ def bb_song_downvote(id):
 		           )
 	return redirect(f"/Song/{song['id']}")
 
+@app.route('/Song/<int:id>/playlistadd')
+def bb_song_playlistadd(id):
+
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		if not myself:
+			return redirect('/Account/login')
+		
+		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
+		if not song:
+			return "Song not found", 404
+		
+		trending = bb_get_trending(db)
+		
+		playlists = bb_get_playlists_by_userid(db, myself['id'])
+		if not playlists:
+			return redirect('/Playlist/new')
+		
+	return render_template("playlist_add.html",
+	                       myself=myself,
+	                       trending=trending,
+	                       song=song,
+	                       playlists=playlists)
+
 @app.route('/Songs')
 def bb_songs_list_redirect():
 	return redirect('/Song/list', 301)

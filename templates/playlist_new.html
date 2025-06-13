@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %} create new playlist {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/new-playlist.css">
+	<link rel="stylesheet" href="/styles/songs.css">
+{% endblock %}
+
+{% block main %}
+	<article>
+		<h2>create playlist</h2>
+		<form action="/api/v1/Playlist/new" method="POST">
+		
+			<div class="playlistform">
+				<div class="form-item">
+					<label class="flex-u1" for="name">name</label>
+					<input type="text" class="flex-u3" name="name">
+				</div>
+				
+				<button>create</button>
+			</div>
+			
+		</form>
+	</article>
+{% endblock %}

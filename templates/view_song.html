@@ -43,14 +43,16 @@
 			<div class="stats">
 				<div class="stat">
 					<img class="icon"     src="/assets/likes.png">
-					{% if myself and not has_interacted %}
-						<a href="/Song/{{song.id}}/upvote">
-							<img class="interact" src="/assets/upvote.png">
-						</a>
-					{% else %}
-						<a href="/Song/{{song.id}}/downvote">
-							<img class="interact" src="/assets/downvote.png">
-						</a>
+					{% if myself %}
+						{% if not has_interacted %}
+							<a href="/Song/{{song.id}}/upvote">
+								<img class="interact" src="/assets/upvote.png">
+							</a>
+						{% else %}
+							<a href="/Song/{{song.id}}/downvote">
+								<img class="interact" src="/assets/downvote.png">
+							</a>
+						{% endif %}
 					{% endif %}
 					<p>{{song.stats.likes}}</p>
 				</div>
@@ -61,6 +63,9 @@
 				<div class="stat">
 					<img class="icon"     src="/assets/views.png">
 					<p>{{song.stats.views}}</p>
+				</div>
+				<div class="stat actions">
+					<a href="/Song/{{song.id}}/playlistadd"><img class="icon addplaylist" src="/assets/trans.png"></a>
 				</div>
 			</div>
 			

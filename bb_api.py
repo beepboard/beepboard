@@ -459,6 +459,28 @@ def bb_api_getcomment(id):
 		else:
 			return {'error': 'no such comment'}, 404
 
+@app.route('/api/v1/Playlist/new', methods=['POST'])
+def bb_api_newplaylist():
+	return "e"
+
+@app.route('/api/v1/Playlist/<int:id>')
+def bb_api_viewplaylist(id):
+	args = request.args.to_dict()
+	if not 'limit' in args:
+		args['limit'] = 5
+	
+	if not 'after' in args:
+		args['after'] = 0
+		
+	if args['limit'] > 100:
+		return ("limit too high", 400)
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		playlist = bb_filter_playlist(db, bb_get_playlist_by_id(db, id), args)
+		
+		return playlist
+
 @app.route('/api/v1/Profile/edit', methods=['POST'])
 def bb_api_editprofile():
 	if not request.content_type.startswith('multipart/form-data'):

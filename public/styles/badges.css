@@ -6,7 +6,10 @@
 	margin-top: -5px;
 }
 
-.badge.moderator {
+.badge.moderator,
+.badge.trial,
+.badge.owner,
+.badge.admin {
 	background: url('/assets/icons.png') 0px -32px;
 }
 

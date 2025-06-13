@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %} add song {{song.name}} to playlist {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/add-playlist.css">
+	<link rel="stylesheet" href="/styles/songs.css">
+{% endblock %}
+
+{% block main %}
+	<article>
+		<h2>add {{song.name}} to playlist</h2>
+		<form action="/api/v1/Song/{{song.id}}/playlistadd" method="POST">
+		
+			<div class="playlistform">
+				<div class="form-item">
+					<label class="flex-u1" for="playlist">username</label>
+					<select class="flex-u3" name="playlist">
+						{% for playlist in playlists %}
+						{% endfor %}
+					</select>
+				</div>
+				
+				<button>add</button>
+			</div>
+			
+		</form>
+	</article>
+{% endblock %}

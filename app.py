@@ -41,6 +41,31 @@ def bb_under_construction():
 	return render_template("workinprogress.html", trending=trending, myself=myself)
 
 
+@app.route('/Playlist/new')
+def bb_playlist_new():
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
+	return render_template("playlist_new.html", trending=trending, myself=myself)
+
+@app.route('/Playlist/<int:id>')
+def bb_playlist_view(id):
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		after = request.args.get('after')
+		if not after:
+			after = 0
+		playlist = bb_filter_playlist(db, bb_get_playlist_by_id(db, id),
+		                              {'limit': 5, 'after': after, 'songs': 1}
+		                              )
+		
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+		trending = bb_get_trending(db)
+	return render_template("playlist_view.html", trending=trending,
+	                       myself=myself, playlist=playlist, after=after)
 
 @app.route('/Account/login')
 def bb_account_login():

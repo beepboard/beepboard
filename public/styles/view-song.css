@@ -65,6 +65,12 @@
 	align-items: center;
 }
 
+.viewsong .stat.actions {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+}
+
 .viewsong .stat p {
 	margin-left: 10px;
 }
@@ -77,6 +83,16 @@
 .viewsong .stat .interact {
 	width: 16px;
 	height: 16px;
+}
+
+.viewsong .stat.actions .icon {
+	width: 16px;
+	height: 16px;
+	transform: scale(2, 2);
+}
+
+.viewsong .stat.actions .addplaylist {
+	background: url("/assets/icons.png")   -80px -16px;
 }
 
 .comments {

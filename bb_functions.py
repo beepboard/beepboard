@@ -116,23 +116,22 @@ def bb_filter_comments(db, comments, parent = None, detail = []):
 def bb_get_comments_by_parent(db, parent):
 	q = db.execute("SELECT * FROM comments WHERE parent = ?", (parent,))
 	comments = q.fetchall()
-	if not comments:
-		comments = []
-	return comments
+	return comments if comments else []
 		
 def bb_get_comment_by_id(db, id):
 	q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
 	comment = q.fetchone()
-	if not comment:
-		comment = None
-	return comment
+	return comment if comment else None
 		
 def bb_get_comments_by_songid(db, song):
 	q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
 	comments = q.fetchall()
-	if not comments:
-		comments = []
-	return comments
+	return comments if comments else None
+
+def bb_get_playlists_by_userid(db, userid):
+	q = db.execute("SELECT * FROM playlists WHERE userid = ?", (userid,))
+	lists = q.fetchall()
+	return lists if lists else None
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()
@@ -148,7 +147,7 @@ def bb_filter_text(text):
 	}
 
 def bb_format_time(timestamp):
-	if not timestamp:
+	if timestamp == None:
 		return None
 	
 	return {
@@ -175,8 +174,11 @@ def bb_filter_user(db, user, detail = []):
 		},
 		
 		'badges': bb_flags({
-			'moderator': user['ismod'],
-			'veteran':   user['isveteran']
+			'trial':      user['rank'] == 1,
+			'moderator':  user['rank'] == 2,
+			'admin':      user['rank'] == 3,
+			'owner':      user['rank'] == 10,
+			'veteran':    user['isveteran']
 		}),
 		
 		'profile': {
@@ -233,11 +235,7 @@ def bb_filter_song(db, song, detail = []):
 			}
 		},
 		
-		'created': {
-			'time':      song['timestamp'],
-			'date':      bb_date(song['timestamp']),
-			'datetime':  bb_datetime(song['timestamp']),
-		},
+		'created': bb_format_time(song['timestamp']),
 		
 		'comments': bb_filter_comments(
 						db,
@@ -245,6 +243,38 @@ def bb_filter_song(db, song, detail = []):
 						detail = ['user']
 					) if "comments" in detail else None
 	}
+
+def bb_get_playlistsongs_by_id(db, id, limit, after):
+	if not id:
+		return None
+	else:
+		return db.execute(
+				"SELECT * FROM playlist_songs WHERE playlistid = ? LIMIT ? OFFSET ?",
+				(str(id), limit, after)
+			).fetchall()
+
+def bb_filter_playlist(db, playlist, filter = {'limit': 5}):
+	if not playlist:
+		return None
+	
+	return {
+		'id': playlist['playlistid'],
+		'author': playlist['userid'],
+		'name': playlist['name'],
+		'created': bb_format_time(playlist['timestamp']),
+		'songs': [({**bb_filter_song(db, bb_get_songdata_by_id(db, song['songid']), ['author']),
+		            'added': bb_format_time(song['timestamp'])}
+		           if 'songs' in filter else song['songid'])
+		          for song in bb_get_playlistsongs_by_id(db, playlist['playlistid'], 5, filter['after'])]
+	}
+
+def bb_get_playlist_by_id(db, id):
+	if not id:
+		return None
+	else:
+		return db.execute(
+				"SELECT * FROM playlists WHERE playlistid = ?", (str(id),)
+			).fetchone()
 
 def bb_get_userdata_by_id(db, id):
 	if not id:

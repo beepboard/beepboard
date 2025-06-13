@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %} playlist {{playlist.name}} {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/view-playlist.css">
+	<link rel="stylesheet" href="/styles/songs.css">
+{% endblock %}
+
+{% block main %}
+	<article>
+		<h2>{{playlist.name}}</h2>
+		<div class="songs">
+			{% for song in playlist.songs %}
+				<div class="song">
+					<div class="left">
+						<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
+							<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+							<img class="modanchor" src="/assets/mods/link.png">
+						</a>
+						<div class="meta">
+							<p class="name">
+								<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
+							</p>
+							<div class="songtags">
+								{% if song.content.tags %}
+									{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
+								{% else %}
+									(no tags)
+								{% endif %}
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					<div class="right">
+						<p class="author">
+							 by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
+						</p>
+						<small>
+							{{ song.created.date }}
+							· {{ song.stats.likes  }} likes
+							· {{ song.stats.clicks }} clicks
+							· {{ song.stats.views  }} views
+							· {% if song.type == 'original' %}
+							  	original
+							  {% elif song.type == 'remix' %}
+							  	remix of #<a href="/Song/{{song.base}}">{{song.base}}</a>
+							  {% elif song.type == 'cover' %}
+							  	cover
+							  {% else %}
+							  	??? {{song.type}}
+							  {% endif %}
+						</small>
+					</div>
+				</div>
+			{% else %}
+				<p><em>no songs found ¯\_(ツ)_/¯</em></p>
+			{% endfor %}
+		</div>
+		
+			<p class="text-centered">
+				<a href="{{
+					'/Playlist/' + playlist.id | string
+					             + ('?after='  + [after | int - 5, 0] | max | string)
+					}}">&lt;</a>
+							page {{ (after | int) // 5 + 1}}
+							<a href="{{
+					'/Playlist/' + playlist.id | string
+					             + ('?after='  + (after | int + 5) | string)
+					}}">&gt;</a>
+			</p>
+	</article>
+{% endblock %}

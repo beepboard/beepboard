@@ -28,7 +28,9 @@ def bb_user_view(id):
 		           (id, after)
 		           ).fetchall()
 		songs = [bb_filter_song(db, song) for song in songs]
-	
+		playlists = [bb_filter_playlist(db, p, {'songs': 1, 'after': 0, 'limit': 500})
+		             for p in bb_get_playlists_by_userid(db, user['id'])]
+
 	if not user:
 		return render_template("view_user.html", trending=trending, myself=myself, user=user), 404
 	return render_template("view_user.html",
@@ -36,6 +38,7 @@ def bb_user_view(id):
 				myself=myself,
 				user=user,
 				songs=songs,
+				playlists=playlists,
 				after=after
 				)
 

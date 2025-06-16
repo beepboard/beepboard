@@ -126,12 +126,12 @@ def bb_get_comment_by_id(db, id):
 def bb_get_comments_by_songid(db, song):
 	q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
 	comments = q.fetchall()
-	return comments if comments else None
+	return comments if comments else []
 
 def bb_get_playlists_by_userid(db, userid):
 	q = db.execute("SELECT * FROM playlists WHERE userid = ?", (userid,))
 	lists = q.fetchall()
-	return lists if lists else None
+	return lists if lists else []
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()
@@ -195,6 +195,9 @@ def bb_filter_user(db, user, detail = []):
 			'discordhandle': user['discordhandle']
 		},
 		
+		'playlists': [bb_filter_playlist(db, p) for p in
+		              bb_get_playlists_by_userid(db, user['userid'])]
+					  if "playlists" in detail else None,
 		'songs': bb_search_songs(db, "newest", author = user['username'], filter = []) if "songs" in detail else None
 	}
 
@@ -262,10 +265,11 @@ def bb_filter_playlist(db, playlist, filter = {'limit': 5}):
 		'author': playlist['userid'],
 		'name': playlist['name'],
 		'created': bb_format_time(playlist['timestamp']),
-		'songs': [({**bb_filter_song(db, bb_get_songdata_by_id(db, song['songid']), ['author']),
-		            'added': bb_format_time(song['timestamp'])}
-		           if 'songs' in filter else song['songid'])
-		          for song in bb_get_playlistsongs_by_id(db, playlist['playlistid'], 5, filter['after'])]
+		'songs': [({**bb_filter_song(db, bb_get_songdata_by_id(db, song['songid']), filter),
+		            'added': bb_format_time(song['timestamp'])})
+		          for song in bb_get_playlistsongs_by_id(db,
+				  	playlist['playlistid'], 5, filter['after'])]
+				  if 'songs' in filter else None
 	}
 
 def bb_get_playlist_by_id(db, id):

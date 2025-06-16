@@ -434,7 +434,7 @@ def bb_api_getuser(id):
 		if data:
 			return bb_filter_user(db, data, request.args.to_dict().keys())
 		else:
-			return {'error': 'no such user'}, 404
+			return 'no such user', 404
 	
 
 @app.route('/api/v1/Song/<int:id>', methods=['GET'])
@@ -446,7 +446,7 @@ def bb_api_getsong(id):
 		if data:
 			return bb_filter_song(db, data, request.args.to_dict().keys())
 		else:
-			return {'error': 'no such song'}, 404
+			return 'no such song', 404
 	
 @app.route('/api/v1/Comment/<int:id>', methods=['GET'])
 def bb_api_getcomment(id):
@@ -457,11 +457,29 @@ def bb_api_getcomment(id):
 		if comment:
 			return bb_filter_comment(db, comment, request.args.to_dict().keys())
 		else:
-			return {'error': 'no such comment'}, 404
+			return 'no such comment', 404
 
 @app.route('/api/v1/Playlist/new', methods=['POST'])
 def bb_api_newplaylist():
-	return "e"
+	if not ('name' in request.form):
+		return "bad parameters", 400
+	
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db,
+			bb_get_userdata_by_token(db, request.cookies.get('token'))
+		)
+
+		if not myself:
+			return redirect('/Account/login')
+		
+		if len(request.form['name']) > 100:
+			return "playlist name too long", 400
+
+		db.execute("INSERT INTO playlists (userid, name, timestamp) VALUES (?,?,?)",
+		           (myself['id'], request.form['name'], time.time()))
+	
+	return redirect('/User/' + str(myself['id']))
 
 @app.route('/api/v1/Playlist/<int:id>')
 def bb_api_viewplaylist(id):
@@ -572,3 +590,30 @@ def bb_api_editprofile():
 		
 	
 	return redirect('/User/' + str(user['id']))
+
+@app.route('/api/v1/Song/<int:songid>/playlistadd', methods=['POST'])
+def bb_playlist_add(songid):
+	if not 'playlist' in request.form:
+		return "bad parameters", 400
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		
+		song = bb_filter_song(db, bb_get_songdata_by_id(db, songid))
+		if not song:
+			return "song doesn't exist", 400
+
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db,
+			request.cookies.get('token')))
+		if not myself:
+			return redirect('/Account/login')
+		
+		playlist = bb_filter_playlist(bb_get_playlist_by_id(db, request.form.get('playlist')))
+		if not playlist:
+			return "no such playlist", 400
+		if not playlist['author'] == myself['id']:
+			return "cannot add songs to other user's playlist", 403
+		
+		db.execute("INSERT INTO playlistsongs (playlistid, songid) VALUES (?,?)",
+		           (playlist['id'], songid))
+	
+	return redirect('/Playlist/' + str(playlist['id']))

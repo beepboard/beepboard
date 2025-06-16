@@ -14,9 +14,10 @@
 		
 			<div class="playlistform">
 				<div class="form-item">
-					<label class="flex-u1" for="playlist">username</label>
+					<label class="flex-u1" for="playlist">playlist</label>
 					<select class="flex-u3" name="playlist">
 						{% for playlist in playlists %}
+							<option value="{{playlist.id}}">{{playlist.name}}</option>
 						{% endfor %}
 					</select>
 				</div>

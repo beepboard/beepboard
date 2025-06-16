@@ -147,7 +147,8 @@ def bb_song_playlistadd(id):
 		
 		trending = bb_get_trending(db)
 		
-		playlists = bb_get_playlists_by_userid(db, myself['id'])
+		playlists = [bb_filter_playlist(db, p)
+		             for p in bb_get_playlists_by_userid(db, myself['id'])]
 		if not playlists:
 			return redirect('/Playlist/new')
 		

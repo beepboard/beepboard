@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="/styles/view-user.css">
 	<link rel="stylesheet" href="/styles/badges.css">
 	<link rel="stylesheet" href="/styles/songs.css">
+	<link rel="stylesheet" href="/styles/playlists.css">
 {% endblock %}
 
 {% block title %} user {{user.username}} {% endblock %}
@@ -113,6 +114,28 @@
 					         + ('?after='  + (after | int + 5) | string)
 					}}">&gt;</a>
 			</p>
+
+			<h2>Playlists
+				{% if myself.id == user.id %}
+					<a title="create a new playlist" href="/Playlist/new">
+						<img class="submit" src="/assets/trans.png"></a>
+				{% endif %}
+			</h2>
+
+			<div class="playlists">
+				{% for playlist in playlists %}
+					<div class="playlist">
+						<a href="/Playlist/{{playlist.id}}">
+							<p class="name">{{playlist.name}}</p>
+						</a>
+						<small class="desc">playlist #{{playlist.id}} ·
+							               {{playlist.created.date}}</small>
+					</div>
+					
+				{% else %}
+					<p><em>no playlists found ¯\_(ツ)_/¯</em></p>
+				{% endfor %}
+			</div>
 		</div>
 	{% else %}
 		<p>User not found.</p>

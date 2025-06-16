@@ -67,6 +67,7 @@ def bb_playlist_view(id):
 	return render_template("playlist_view.html", trending=trending,
 	                       myself=myself, playlist=playlist, after=after)
 
+
 @app.route('/Account/login')
 def bb_account_login():
 	with bb_connect_db() as conn:

@@ -162,6 +162,7 @@ def bb_api_songedit(songid):
 		songdesc = None
 		songmod  = None
 		songdata = None
+		songtags = None
 		if 'title' in request.form:
 			songname = request.form['title']
 			if len(songname) > 100 or \
@@ -180,6 +181,11 @@ def bb_api_songedit(songid):
 		
 		if 'data' in request.form:
 			songdata = request.form['data']
+
+		if 'tags' in request.form:
+			if len(request.form['tags'].split(',')) > 8:
+				return "Too many tags", 400
+			songtags = request.form['tags']
 		
 		# actually update the values in the db
 		if songname:
@@ -190,7 +196,9 @@ def bb_api_songedit(songid):
 			db.execute("UPDATE songs SET songmod = ?     WHERE songid = ?", (songmod, songid))
 		if songdata:
 			db.execute("UPDATE songs SET songdata = ?    WHERE songid = ?", (songdata, songid))
-	
+		if songtags:
+			db.execute("UPDATE songs SET tags = ?        WHERE songid = ?", ("," + songtags.strip(",") + ",", songid))
+		
 	return redirect("/Song/" + str(songid))
 
 @app.route('/api/v1/Song/submit', methods=['POST'])

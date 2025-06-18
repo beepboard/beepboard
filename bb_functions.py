@@ -335,13 +335,15 @@ def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = Non
 		])
 	
 	if tags:
-		params['tags_exp'] = f"%,{tags},%"
-		clauses.update([
-			ClauseWhere(ConditionLIKE(
-				Function('LOWER', ValueColumnName('tags', 'S')),
-				Function('LOWER', ':tags_exp')
-			))
-		])
+		for index, tag in enumerate(tags.split(',')):
+			param = f'tags_{index}'
+			params[param] = f"%,{tag},%"
+			clauses.update([
+				ClauseWhere(ConditionLIKE(
+					Function('LOWER', ValueColumnName('tags', 'S')),
+					Function('LOWER', f':{param}')
+				))
+			])
 	
 	if query:
 		params['query_exp'] = f"%{query}%"
@@ -382,7 +384,8 @@ def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = Non
 		 clauses
 	))
 	
-	print(song_statement, user_statement)
+	print(song_statement)
+	print(params)
 	
 	songs   = db.execute(song_statement, params).fetchall()
 	authors = db.execute(user_statement, params).fetchall()

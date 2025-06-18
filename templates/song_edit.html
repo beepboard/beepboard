@@ -70,7 +70,20 @@
 		<script>
 			html_tags = document.getElementById('tags');
 			html_tagname = document.getElementById('tagname')
-			
+			for (let s of "{{song.content.tags}}".slice(1, -1).split(',')) {
+				if (s.length) html_tags.appendChild(
+					HTML.p(
+						s,
+						HTML.sup(
+							'x',
+							{'class': 'delete',
+								'onclick': 'this.parentNode.remove()'}
+						),
+						{'class': 'tag'}
+					)
+				);
+			}
+
 			function add_tag() {
 				if (html_tagname.value.length > 2) {
 					html_tags.appendChild(

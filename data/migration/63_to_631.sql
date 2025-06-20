@@ -1,1 +1,1 @@
-ALTER TABLE playlist_songs ADD timestamp INT NOT NULL;
+ALTER TABLE playlist_songs ADD timestamp INT NOT NULL DEFAULT 0;

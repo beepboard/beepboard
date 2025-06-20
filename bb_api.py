@@ -615,13 +615,13 @@ def bb_playlist_add(songid):
 		if not myself:
 			return redirect('/Account/login')
 		
-		playlist = bb_filter_playlist(bb_get_playlist_by_id(db, request.form.get('playlist')))
+		playlist = bb_filter_playlist(db, bb_get_playlist_by_id(db, request.form.get('playlist')))
 		if not playlist:
 			return "no such playlist", 400
 		if not playlist['author'] == myself['id']:
 			return "cannot add songs to other user's playlist", 403
 		
-		db.execute("INSERT INTO playlistsongs (playlistid, songid) VALUES (?,?)",
+		db.execute("INSERT INTO playlist_songs (playlistid, songid) VALUES (?,?)",
 		           (playlist['id'], songid))
 	
 	return redirect('/Playlist/' + str(playlist['id']))

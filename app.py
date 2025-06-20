@@ -59,7 +59,7 @@ def bb_playlist_view(id):
 		if not after:
 			after = 0
 		playlist = bb_filter_playlist(db, bb_get_playlist_by_id(db, id),
-		                              {'limit': 5, 'after': after, 'songs': 1}
+		                              {'limit': 5, 'after': after, 'songs': 1, 'author': 1}
 		                              )
 		
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))

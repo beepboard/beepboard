@@ -208,6 +208,7 @@ def bb_filter_song(db, song, detail = []):
 	if not song:
 		return None
 	
+
 	return {
 		'id':   song['songid'],
 		'author': bb_filter_user(db, bb_get_userdata_by_id(db, song['userid'])) if "author" in detail else song['userid'],
@@ -259,7 +260,6 @@ def bb_get_playlistsongs_by_id(db, id, limit, after):
 def bb_filter_playlist(db, playlist, filter = {'limit': 5}):
 	if not playlist:
 		return None
-	
 	return {
 		'id': playlist['playlistid'],
 		'author': playlist['userid'],

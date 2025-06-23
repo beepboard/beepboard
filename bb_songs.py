@@ -73,7 +73,8 @@ def bb_song_play(id):
 	if song:
 		url = song['content']['url']['url']
 		if len(url) > CONFIG['redirect_threshold']:
-			return f"Redirecting, just a moment... <meta http-equiv=refresh content='0; {url.replace("'", "%27")}'>"
+			APOS = "'"
+			return f"Redirecting, just a moment... <meta http-equiv=refresh content='0; {url.replace(APOS, '%27')}'>"
 		else:
 			return redirect(song['content']['url']['url']);
 	else:

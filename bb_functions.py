@@ -233,7 +233,7 @@ def bb_filter_song(db, song, detail = []):
 			'desc': bb_filter_text(song['description']),
 			
 			'url': {
-				'url': MODS[song['songmod']]['url'] + "#" + song['songdata'],
+				'url': (MODS[song['songmod']]['url'] + "#" + song['songdata']).replace("\n", "").replace("\r", "").replace(" ", "").replace("\t", ""),
 				'data': song['songdata'],
 				'mod': song['songmod']
 			}

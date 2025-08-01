@@ -24,7 +24,7 @@ CREATE TABLE users (
 	lastlogin INT
 );
 
-CREATE TABLE IF NOT EXISTS "songs" (
+CREATE TABLE songs (
 	"songid"	INTEGER,
 	"userid"	INTEGER NOT NULL,
 	"views"	INTEGER NOT NULL DEFAULT 0,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS "songs" (
 	PRIMARY KEY("songid" AUTOINCREMENT)
 );
 
-CREATE TABLE IF NOT EXISTS "interactions" (
+CREATE TABLE interactions (
 	"interactionid"	INTEGER,
 	"userid"	INTEGER NOT NULL,
 	"songid"	INTEGER NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS "interactions" (
 	FOREIGN KEY("songid") REFERENCES "songs"
 );
 
-CREATE TABLE IF NOT EXISTS "comments" (
+CREATE TABLE comments (
 	"commentid"	INTEGER,
 	"userid"	INTEGER NOT NULL,
 	"songid"	INTEGER NOT NULL,

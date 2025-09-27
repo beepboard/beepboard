@@ -80,3 +80,12 @@
 	border-left: 5px solid #333;
 	padding-left: 10px;
 }
+
+details {
+	display: flex;
+	flex-direction: column;
+}
+
+details summary {
+	font-size: 1.5em;
+}

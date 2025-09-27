@@ -3,21 +3,71 @@
 {% block title %} index {% endblock %}
 
 {% block head %}
-	<style>
-		
-	</style>
+	<link rel="stylesheet" href="/styles/songs.css">
 {% endblock %}
 
 {% block main %}
 <article>
 	<h1>Welcome to Beepboard!</h1>
 	<p>Beepboard is a site where users can share beepbox songs, make playlists,
-		and check the status of the Beepbox radio run by Impasaurus.</p>
+		and <s>check the status of the Beepbox radio run by Impasaurus</s>.</p>
 	
 	<p>It is still in development, and new features are being added every day.</p>
 	
 	<p>We also recommend you join <a href="https://discord.gg/fdZxm5SpAn">the beepbox discord server</a>,
 		where you can talk with other people who make chiptunes such as those found here.</p>
+	
+	<hr>
+	<h2 class="title">Trending Songs</h2>
+	<section class="trending">
+		<div class="songs">
+			{% for song in trending %}
+				<div class="song">
+					<div class="left">
+						<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
+							<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png">
+							<img class="modanchor" src="/assets/mods/link.png">
+						</a>
+						<div class="meta">
+							<p class="name">
+								<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
+							</p>
+							<div class="songtags">
+								{% if song.content.tags %}
+									{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
+								{% else %}
+									(no tags)
+								{% endif %}
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					<div class="right">
+						<p class="author">
+							by <a href="/User/{{song.author.id}}">{{ song.author.username }}</a>
+						</p>
+						<small>
+							{{ song.created.date }}
+							· {{ song.stats.likes  }} likes
+							· {{ song.stats.clicks }} clicks
+							· {{ song.stats.views  }} views
+							· {% if song.type == 'original' %}
+								original
+							{% elif song.type == 'remix' %}
+								remix of #<a href="/Song/{{song.base}}">{{song.base}}</a>
+							{% elif song.type == 'cover' %}
+								cover
+							{% else %}
+								??? {{song.type}}
+							{% endif %}
+						</small>
+					</div>
+				</div>
+			{% else %}
+				<p><em>no songs found ¯\_(ツ)_/¯</em></p>
+			{% endfor %}
+		</div>
+	</section>
 		
 </article>
 {% endblock %}

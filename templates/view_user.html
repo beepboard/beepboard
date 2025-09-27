@@ -45,100 +45,106 @@
 			<div class="bio">
 				{{ user.profile.bio.html | safe}}
 			</div>
-			
-			<h2>
-				Songs
-				{% if myself.id == user.id %}
-					<a title="upload a song" href="/Song/submit"><img class="submit" src="/assets/trans.png"></a>
-				{% endif %}
-			</h2>
-			<div class="songs">
-				{% for song in songs %}
-					<div class="song">
-						<div class="actions">
-							<a class="action delete" href="/api/v1/Song/{{song.id}}/delete" onclick="return confirm('Are you sure you want to delete song \'{{song.content.name}}\' (id {{song.id}})?')">
-								<img src="/assets/trans.png">
-							</a>
-							<a class="action edit" href="/Song/{{song.id}}/edit">
-								<img src="/assets/trans.png">
-							</a>
-						</div>
-						<div class="left">
-							<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
-								<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
-								<img class="modanchor" src="/assets/mods/link.png">
-							</a>
-							<div class="meta">
-								<p class="name">
-									<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
-								</p>
-								<div class="songtags">
-									{% if song.content.tags %}
-										{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
-									{% else %}
-										(no tags)
-									{% endif %}
-									&nbsp;
+
+			<details>
+				<summary>Songs
+					{% if myself.id == user.id %}
+						<a title="upload a song" href="/Song/submit"><img class="submit" src="/assets/trans.png"></a>
+					{% endif %}
+				</summary>
+				
+				<div class="songs">
+					{% for song in songs %}
+						<div class="song">
+							<div class="actions">
+								<a class="action delete" href="/api/v1/Song/{{song.id}}/delete" onclick="return confirm('Are you sure you want to delete song \'{{song.content.name}}\' (id {{song.id}})?')">
+									<img src="/assets/trans.png">
+								</a>
+								<a class="action edit" href="/Song/{{song.id}}/edit">
+									<img src="/assets/trans.png">
+								</a>
+							</div>
+							<div class="left">
+								<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
+									<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
+									<img class="modanchor" src="/assets/mods/link.png">
+								</a>
+								<div class="meta">
+									<p class="name">
+										<a href="/Song/{{song.id}}">{{ song.content.name }}</a>
+									</p>
+									<div class="songtags">
+										{% if song.content.tags %}
+											{{ ' · '.join(song.content.tags.split(','))[3:-2] }}
+										{% else %}
+											(no tags)
+										{% endif %}
+										&nbsp;
+									</div>
 								</div>
 							</div>
+							<div class="right">
+								<p class="author">
+									by <a href="/User/{{user.id}}">{{ user.username }}</a>
+								</p>
+								<small>
+									{{ song.created.date }}
+									· {{ song.stats.likes  }} likes
+									· {{ song.stats.clicks }} clicks
+									· {{ song.stats.views  }} views
+								</small>
+							</div>
 						</div>
-						<div class="right">
-							<p class="author">
-								 by <a href="/User/{{user.id}}">{{ user.username }}</a>
-							</p>
-							<small>
-								{{ song.created.date }}
-								· {{ song.stats.likes  }} likes
-								· {{ song.stats.clicks }} clicks
-								· {{ song.stats.views  }} views
-							</small>
-						</div>
-					</div>
-				{% else %}
-					{% if (myself.id == user.id) and after == 0 %}
-						<p><em>no songs found ¯\_(ツ)_/¯ · try <a href="/Song/submit">uploading</a> some songs!</em></p>
 					{% else %}
-						<p><em>no songs found ¯\_(ツ)_/¯</em></p>
-					{% endif %}
-				{% endfor %}
-			</div>
+						{% if (myself.id == user.id) and after == 0 %}
+							<p><em>no songs found ¯\_(ツ)_/¯ · try <a href="/Song/submit">uploading</a> some songs!</em></p>
+						{% else %}
+							<p><em>no songs found ¯\_(ツ)_/¯</em></p>
+						{% endif %}
+					{% endfor %}
+				</div>
 			
-			<p class="text-centered">
-				<a href="{{
-					'/User/' + user.id | string
-					         + ('?after='  + [after | int - 5, 0] | max | string)
-					}}">&lt;</a>
-							page {{ (after | int) // 5 + 1}}
-							<a href="{{
-					'/User/' + user.id | string
-					         + ('?after='  + (after | int + 5) | string)
-					}}">&gt;</a>
-			</p>
+				<p class="text-centered">
+					<a href="{{
+						'/User/' + user.id | string
+										+ ('?after='  + [after | int - 5, 0] | max | string)
+						}}">&lt;</a>
+								page {{ (after | int) // 5 + 1}}
+								<a href="{{
+						'/User/' + user.id | string
+										+ ('?after='  + (after | int + 5) | string)
+						}}">&gt;</a>
+				</p>
+			</details>
 
-			<h2>Playlists
-				{% if myself.id == user.id %}
-					<a title="create a new playlist" href="/Playlist/new">
-						<img class="submit" src="/assets/trans.png"></a>
-				{% endif %}
-			</h2>
+			<details>
+				<summary>Playlists
+					{% if myself.id == user.id %}
+						<a title="create a new playlist" href="/Playlist/new">
+							<img class="submit" src="/assets/trans.png"></a>
+					{% endif %}
+				</summary>
 
-			<div class="playlists">
-				{% for playlist in playlists %}
-					<div class="playlist">
-						<a href="/Playlist/{{playlist.id}}">
-							<p class="name">{{playlist.name}}</p>
-						</a>
-						<small class="desc">playlist #{{playlist.id}} ·
-							               {{playlist.created.date}}</small>
-					</div>
-					
-				{% else %}
-					<p><em>no playlists found ¯\_(ツ)_/¯</em></p>
-				{% endfor %}
-			</div>
+				<div class="playlists">
+					{% for playlist in playlists %}
+						<div class="playlist">
+							<a href="/Playlist/{{playlist.id}}">
+								<p class="name">{{playlist.name}}</p>
+							</a>
+							<small class="desc">playlist #{{playlist.id}} ·
+												{{playlist.created.date}} ·
+												{{playlist.songs | length}} song(s)</small>
+						</div>
+						
+					{% else %}
+						<p><em>no playlists found ¯\_(ツ)_/¯</em></p>
+					{% endfor %}
+				</div>
+			</details>
 		</div>
 	{% else %}
 		<p>User not found.</p>
 	{% endif %}
 </article>
+
 {% endblock %}

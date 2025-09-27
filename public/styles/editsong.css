@@ -1,9 +1,0 @@
-.editform {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-}
-
-.editform .bio {
-	height: 200px;
-}

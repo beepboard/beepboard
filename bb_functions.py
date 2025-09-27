@@ -1,11 +1,12 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
-import markdown
+import markdown2
 import json
 from typing import *
 from datetime import datetime
 from enum import Enum
 from bb_config import *
+from pprint import pprint
 from bb_database import *
 from html_sanitizer import Sanitizer
 import html_sanitizer
@@ -48,7 +49,7 @@ def bb_date(timestamp):
 	return datetime.utcfromtimestamp(timestamp).strftime("%Y-%m-%d")
 
 def bb_render_markdown(s):
-	return markdown.markdown(s)
+	return markdown2.markdown(s)
 
 def bb_filter_comment(db, comment, detail = []):
 	sanitizer = Sanitizer()
@@ -135,6 +136,7 @@ def bb_get_playlists_by_userid(db, userid):
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()
+	sanitizer.tags.update({'code', 'pre'})
 	
 	if not text:
 		return None

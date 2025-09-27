@@ -14,7 +14,6 @@ def bb_user_view(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 		user = bb_filter_user(db, bb_get_userdata_by_id(db, id))
 		after = request.args.get('after')
 		if not after:
@@ -32,9 +31,8 @@ def bb_user_view(id):
 		             for p in bb_get_playlists_by_userid(db, user['id'])]
 
 	if not user:
-		return render_template("view_user.html", trending=trending, myself=myself, user=user), 404
+		return render_template("view_user.html", myself=myself, user=user), 404
 	return render_template("view_user.html",
-				trending=trending,
 				myself=myself,
 				user=user,
 				songs=songs,
@@ -47,13 +45,12 @@ def bb_profile_edit():
 	
 	with bb_connect_db() as conn:
 		db = conn.cursor()
-		trending = bb_get_trending(db)
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	
 	if not myself:
 		return redirect("/Account/login")
 	else:
-		return render_template("profile_edit.html", trending=trending, myself=myself)
+		return render_template("profile_edit.html", myself=myself)
 
 @app.route('/Users')
 def bb_users_list_redirect():
@@ -86,11 +83,9 @@ def bb_user_list():
 		
 		#filter users
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 	
 	return render_template("users.html",
 		myself=myself,
-		trending=trending,
 		users=users,
 		after=after,
 		GET={'sort':sort,

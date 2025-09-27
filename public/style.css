@@ -11,10 +11,13 @@ html {
 	height: 100%;
 }
 
+p > code {
+	background-color: #333;
+	padding: 5px 10px 5px 10px;
+	white-space: pre;
+}
+
 body {
-	background: url('/assets/background.png');
-	background-repeat: repeat;
-	
 	font-family: 'B612', helvetica, sans-serif;
 	color: white;
 	font-size: 12pt;
@@ -22,8 +25,24 @@ body {
 	margin: 0px;
 	
 	min-height: 100%;
+}
+
+body .page {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	z-index: 1;
 	display: flex;
 	flex-direction: column;
+}
+
+body .background {
+	background: url("/assets/background.png");
+	background-repeat: repeat;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
 }
 
 /* HEADER */
@@ -38,7 +57,7 @@ body {
 	.left {
 		margin-right: auto;
 		display: flex;
-		align-items: flex-end;
+		align-items: flex-end; 
 	}
 	
 	.right {
@@ -135,17 +154,17 @@ body {
 	}
 
 /* MAIN */
-	body > .content {
-		padding: 10px;
+	.page > .content {
+		padding: 20px;
 		
 		display: flex;
 		flex-direction: row;
 		gap: 10px;
-		margin-top: 10px;
+		padding-top: 20px;
 		
 		flex: 1 0 auto;
 		
-		width: 900px;
+		width: 1000px;
 		margin-left: auto;
 		margin-right: auto;
 		background-color: #111;
@@ -307,7 +326,7 @@ body {
 		padding: 10px;
 	}
 	
-	aside article .item {
+	.trending .item {
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
@@ -318,11 +337,11 @@ body {
 		position: relative;
 	}
 	
-	aside article .item p {
+	.trending .item p {
 		margin: 0px;
 	}
 	
-	aside article .item .mod {
+	.trending .item .mod {
 		position: absolute;
 		top: 10px;
 		right: 10px;
@@ -330,7 +349,7 @@ body {
 		height: 32px;
 	}
 	
-	aside article .item .modanchor {
+	.trending .item .modanchor {
 		position: absolute;
 		top: 10px;
 		right: 10px;
@@ -338,21 +357,21 @@ body {
 		height: 14px;
 	}
 	
-	aside article .songname {
+	.trending .songname {
 		word-break: break-all;
 	}
 	
-	aside article .links {
+	.trending .links {
 		padding: 0px;
 		margin: 0px;
 		padding-left: 20px;
 	}
 	
-	aside article .links li {
+	.trending .links li {
 		list-style-type: none;
 	}
 	
-	aside article .links li a {
+	.trending .links li a {
 		text-decoration: none;
 		color: white;
 		font-weight: bold;
@@ -482,4 +501,15 @@ body {
 		height: 16px;
 		background: url("/assets/icons.png") -64px -16px;
 		opacity: 0.5;
+	}
+
+	form div {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	form .bio {
+		height: 200px;
+		margin-bottom: 20px;
 	}

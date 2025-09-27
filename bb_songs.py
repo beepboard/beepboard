@@ -16,7 +16,6 @@ def bb_song_view(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id), ['author', 'comments'])
 		if myself and song:
 			has_interacted = bb_get_interaction(db, "like", myself["id"], song['id'])
@@ -26,10 +25,14 @@ def bb_song_view(id):
 		db.execute("UPDATE songs SET views = views + 1 WHERE songid = :id",
 		           (id,)
 		           )
+		db.execute("UPDATE users SET views = views + 1 WHERE userid = :id",
+		           (song['author']['id'],)
+		           )
+	
 	
 	if not song:
-		return render_template("view_song.html", trending=trending, myself=myself, song=song), 404
-	return render_template("view_song.html", trending=trending, myself=myself, song=song, has_interacted = has_interacted)
+		return render_template("view_song.html",  myself=myself, song=song), 404
+	return render_template("view_song.html",  myself=myself, song=song, has_interacted = has_interacted)
 
 @app.route('/Song/<int:id>/edit')
 def bb_song_edit(id):
@@ -37,7 +40,6 @@ def bb_song_edit(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
 	
 	if not song:
@@ -47,7 +49,7 @@ def bb_song_edit(id):
 	if not (myself['id'] == song['author']):
 		return "You cannot edit this song!", 403
 	
-	return render_template("song_edit.html", trending=trending, myself=myself, song=song)
+	return render_template("song_edit.html",  myself=myself, song=song)
 
 @app.route('/Song/submit')
 def bb_song_submit():
@@ -55,10 +57,9 @@ def bb_song_submit():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 		if not myself:
 			return redirect("/Account/login")
-		return render_template("submit_song.html", trending=trending, myself=myself)
+		return render_template("submit_song.html",  myself=myself)
 
 
 @app.route('/Song/<int:id>/play')
@@ -146,8 +147,6 @@ def bb_song_playlistadd(id):
 		if not song:
 			return "Song not found", 404
 		
-		trending = bb_get_trending(db)
-		
 		playlists = [bb_filter_playlist(db, p)
 		             for p in bb_get_playlists_by_userid(db, myself['id'])]
 		if not playlists:
@@ -155,7 +154,7 @@ def bb_song_playlistadd(id):
 		
 	return render_template("playlist_add.html",
 	                       myself=myself,
-	                       trending=trending,
+	                       
 	                       song=song,
 	                       playlists=playlists)
 
@@ -198,11 +197,9 @@ def bb_songs_list():
 			query = ''
 		
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-		trending = bb_get_trending(db)
 	
 	return render_template("songs.html",
 		myself=myself,
-		trending=trending,
 		songs=songs,
 		GET={'sort':sort,
 		     'after':after,

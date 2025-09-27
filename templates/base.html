@@ -11,13 +11,15 @@
 		<meta name="author" content="fmixolydian">
 		<title>beepboard</title>
 		<link rel="stylesheet" href="/style.css">
-		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
 		
 		<style>
 			html, body {
-				background-color: #220026;
+				background-color: #35002f;
 			}
 		</style>
+
+		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js"></script>
 		
 		{% block head %}{% endblock %}
 		
@@ -53,18 +55,21 @@
 	</head>
 	
 	<body>
+		<img class="background" src="/assets/trans.png">
 		<form name="logout_form" action="/api/v1/Account/logout" method="post"></form> <!-- gosh darn it html -->
+		
+		<div class="page">
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
-				<p>0.6.3</p>
+				<p>0.7</p>
 				<!--
 				<search>
 					<input type="text">
 					<img src="/assets/search.png">
 				</search>
 				--->
-				<!--- pst... site wide search is for 0.7! --->
+				<!--- pst... site wide search is for ?????! --->
 				<p class="account-text">
 				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
@@ -91,38 +96,25 @@
 				<a href="/Jams">         <div class="link red">     <img class="icon" src="/assets/trans.png"> jams  </div></a>
 				<a href="/User/list">    <div class="link magenta"> <img class="icon" src="/assets/trans.png"> users </div></a>
 				<a href="/Song/list">    <div class="link purple">  <img class="icon" src="/assets/trans.png"> songs </div></a>
-				<a href="/Wiki/MainPage"><div class="link blue">    <img class="icon" src="/assets/trans.png"> wiki  </div></a>
+				{# <a href="/Wiki/MainPage"><div class="link blue">    <img class="icon" src="/assets/trans.png"> wiki  </div></a> #}
 			</div>
 		</nav>
 		
 		<div class="content">
+			
 			<aside>
 				<article>
-					<h3 class="title">trending songs</h3>
-					{% for song in trending %}
-						<div class="item song">
-							<p class="songname"><a href="/Song/{{song.id}}">{{song.content.name}}</a></p>
-							<p><small>by <a href="/User/{{song.author.id}}">{{song.author.username}}</a></small></p>
-							<p><small>{{song.created.date}} ·
-							          {{song.stats.clicks}} clicks ·
-							          song #{{song.id}}</small></p>
-							
-							<a target=_blank href="/Song/{{song.id}}/play">
-								<img class="mod"       src="/assets/mods/{{song.content.url.mod}}.png">
-								<img class="modanchor" src="/assets/mods/link.png">
-							</a>
-						</div>
-					{% endfor %}
-					
-					<h3 class="title">quick links</h3>
+					<h2 class="title">quick links</h2>
 					
 					<ul class="links">
 						{# <li><a href="https://tools.beepboard.xyz">beeptools</a></li> #}
 						<li><a href="/Song/submit">submit a song</a></li>
 						<li><a href="/Profile/edit">edit your profile</a></li>
+						<li><a href="/settings">settings</a> <strong>(NEW)</strong></li>
 					</ul>
 				</article>
 			</aside>
+
 			<main>
 				{% block main %}
 				{% endblock %}
@@ -132,5 +124,6 @@
 		<footer>
 			<p>(c) fmixolydian 2025 - licensed under AGPL3.0</p>
 		</footer>
+		</div>
 	</body>
 </html>

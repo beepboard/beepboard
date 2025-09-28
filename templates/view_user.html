@@ -22,9 +22,13 @@
 						                                          title="{{BADGES[badge].name}} ({{BADGES[badge].desc}})"
 						                                          src="/assets/trans.png">{% endfor %}
 						<br>
-						<small>{{ user.created.date }} · user #{{user.id}}</small>
+						<small>created {{ user.created.date }} · user #{{user.id}}</small>
 					</h2>
-					
+					<br>
+					<small>last logged on {{ user.lastlogin.date }}</small>
+					<small>views:  {{user.totalstats.views}};
+						   clicks: {{user.totalstats.clicks}};
+						   likes:  {{user.totalstats.likes}}</small>
 					
 					{% if myself %}
 						<div class="actions">
@@ -56,14 +60,16 @@
 				<div class="songs">
 					{% for song in songs %}
 						<div class="song">
-							<div class="actions">
-								<a class="action delete" href="/api/v1/Song/{{song.id}}/delete" onclick="return confirm('Are you sure you want to delete song \'{{song.content.name}}\' (id {{song.id}})?')">
-									<img src="/assets/trans.png">
-								</a>
-								<a class="action edit" href="/Song/{{song.id}}/edit">
-									<img src="/assets/trans.png">
-								</a>
-							</div>
+							{% if myself.id == user.id %}
+								<div class="actions">
+									<a class="action delete" href="/api/v1/Song/{{song.id}}/delete" onclick="return confirm('Are you sure you want to delete song \'{{song.content.name}}\' (id {{song.id}})?')">
+										<img src="/assets/trans.png">
+									</a>
+									<a class="action edit" href="/Song/{{song.id}}/edit">
+										<img src="/assets/trans.png">
+									</a>
+								</div>
+							{% endif %}
 							<div class="left">
 								<a target=_blank href="/Song/{{song.id}}/play" class="modcontainer">
 									<img class="mod" src="/assets/mods/{{song.content.url.mod}}.png"></img>
@@ -128,6 +134,14 @@
 				<div class="playlists">
 					{% for playlist in playlists %}
 						<div class="playlist">
+							{% if myself.id == user.id %}
+								<div class="actions">
+									<a class="action delete" href="/api/v1/Playlist/{{playlist.id}}/delete" onclick="return confirm('Are you sure you want to delete playlist \'{{playlist.name}}\'?')">
+										<img src="/assets/trans.png">
+									</a>
+								</div>
+							{% endif %}
+
 							<a href="/Playlist/{{playlist.id}}">
 								<p class="name">{{playlist.name}}</p>
 							</a>
@@ -135,7 +149,6 @@
 												{{playlist.created.date}} ·
 												{{playlist.songs | length}} song(s)</small>
 						</div>
-						
 					{% else %}
 						<p><em>no playlists found ¯\_(ツ)_/¯</em></p>
 					{% endfor %}

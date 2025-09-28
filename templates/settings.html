@@ -1,16 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %} user settings {% endblock %}
+{% block title %} index {% endblock %}
 
 {% block head %}
-	
+	<link rel="stylesheet" href="/styles/form.css">
+	<script>
+		function save_settings(data) {
+			for (let k in CONFIG) {
+				CONFIG[k] = data[k];
+			}
+			
+			localStorage.userConfig = JSON.stringify(CONFIG);
+			window.location.reload();
+		}
+
+		function load_settings() {
+			let form = zg.formdata(zg.queryone("#settings"));
+			for (let k in CONFIG) {
+				form[k] = CONFIG[k]
+			}
+		}
+
+		window.onload = load_settings
+	</script>
 {% endblock %}
 
 {% block main %}
-	<article>
-		<h2>user settings</h2>
-		<form>
-			<p>Theme</p>
-		</form>
-	</article>
+<article>
+	<h2>personal settings</h2>
+	<form id="settings" zg-submit="save_settings">
+		<div>
+			<div class="form-item">
+				<label class="flex-u1" for="username">theme</label>
+				<select class="flex-u3" name="theme">
+					<option value="default-dark">  Purpur </option>
+					<option value="beepbox"> Beepbox </option>
+				</select>
+			</div>
+
+			<button>SAVE</button>
+		</div>
+	</form>
+</article>
 {% endblock %}

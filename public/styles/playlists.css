@@ -9,12 +9,21 @@
 .playlist {
 	background-color: #333;
 	display: flex;
+	position: relative;
 	flex-direction: column;
 	gap: 5px;
     padding-left: 10px;
     padding-right: 10px;
     flex-basis: 50%;
     flex: 1;
+}
+
+.playlist .actions {
+	background: none;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	flex-direction: column;
 }
 
 .playlist .name {

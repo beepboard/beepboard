@@ -167,7 +167,8 @@ def bb_filter_user(db, user, detail = []):
 		'id':   user['userid'],
 		'username': user['username'],
 		
-		'created': bb_format_time(user['timestamp']),
+		'created':   bb_format_time(user['timestamp']),
+		'lastlogin': bb_format_time(user['lastlogin']),
 		
 		'totalstats': {
 			'views':  user['views'],

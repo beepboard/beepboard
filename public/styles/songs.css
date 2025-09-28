@@ -66,25 +66,28 @@
 	margin: 0px;
 }
 
-.song .actions {
+.actions {
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
+}
+
+.song .actions {
 	gap: 5px;
 	padding: 5px;
 	height: 64px;
 }
 
-.song .actions .action img {
+.actions .action img {
 	width: 16px;
 	height: 16px;
 }
 
-.song .actions .delete img { background: url('/assets/icons.png') -32px -16px; }
-.song .actions .edit   img { background: url('/assets/icons.png') 0px -16px; }
+.actions .delete img { background: url('/assets/icons.png') -32px -16px; }
+.actions .edit   img { background: url('/assets/icons.png') 0px -16px; }
 
-.song .actions .action {
+.actions .action {
 	flex: 1;
 	flex-basis: 16px;
 	display: flex;

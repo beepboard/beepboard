@@ -68,9 +68,9 @@ def bb_song_play(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
-		db.execute("UPDATE songs SET downloads = downloads + 1 WHERE songid = :id",
-		           (id,)
-		           )
+		print(song['author'])
+		db.execute("UPDATE songs SET downloads = downloads + 1 WHERE songid = :id", (id,))
+		db.execute("UPDATE users SET downloads = downloads + 1 WHERE userid = :id", (song['author'],))
 	if song:
 		url = song['content']['url']['url']
 		if len(url) > CONFIG['redirect_threshold']:
@@ -101,6 +101,10 @@ def bb_song_upvote(id):
 		db.execute("UPDATE songs SET likes = likes + 1 WHERE songid = :id",
 		           (id,)
 		           )
+
+		db.execute("UPDATE users SET likes = likes + 1 WHERE userid = :id",
+		           (song['author'],)
+		           )
 		
 		db.execute("INSERT INTO interactions (type, songid, userid, timestamp) VALUES (?,?,?,?)",
 		           ("like", song["id"], myself['id'], time.time())
@@ -129,6 +133,11 @@ def bb_song_downvote(id):
 		db.execute("UPDATE songs SET likes = likes - 1 WHERE songid = :id",
 		           (id,)
 		           )
+
+		db.execute("UPDATE users SET likes = likes - 1 WHERE userid = :id",
+		           (song['author'],)
+		           )
+
 		db.execute("DELETE FROM interactions WHERE type = ? AND userid = ? AND songid = ?",
 		           ("like", myself['id'], song["id"])
 		           )

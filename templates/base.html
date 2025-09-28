@@ -19,7 +19,7 @@
 		</style>
 
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js" defer></script>
 		
 		{% block head %}{% endblock %}
 		
@@ -45,15 +45,53 @@
 		{% 
 			set BADGES = {
 				"owner":     {'name': 'Owner',       'desc': 'the owner of beepboard (fmixolydian)'},
-				"trial":     {'name': 'Trial Mod',   'desc': 'a moderator on trial'},
+				"trial":     {'namze': 'Trial Mod',   'desc': 'a moderator on trial'},
 				"moderator": {'name': 'Moderator',   'desc': 'a user who moderates the site'},
 				"admin":     {'name': 'Admin',       'desc': 'a user who develops and moderates the site'},
 				"veteran":   {'name': 'Veteran',     'desc': 'a user who created an account before version 0.5'}
 			}
 		%}
 		
+
+		<script>
+
+let CONFIG;
+
+const DEFAULT_CONFIG = {
+	"theme": "default-dark"
+};
+
+function settings_init() {
+	let json_config = localStorage["userConfig"];
+
+	if (!json_config) {
+		localStorage["userConfig"] = JSON.stringify(DEFAULT_CONFIG);
+		return settings_init();
+	}
+
+	try {
+		CONFIG = JSON.parse(json_config)
+	} catch (SyntaxError) {
+		alert("\
+whoops.\n\
+it appears your configuration is corrupted - i've reset it to default values.\n\
+dw, this wont impact any of your songs/playlists/etc;\n\
+although, please report this error to the developers.");
+
+		localStorage["userConfig"] = "";
+		return settings_init();
+	}
+}
+
+settings_init();
+
+		</script>
+
+		<script>
+			replaceScriptWith(HTML.link({'rel': 'stylesheet', 'href': "/themes/" + CONFIG.theme + ".css"}))
+		</script>
 	</head>
-	
+
 	<body>
 		<img class="background" src="/assets/trans.png">
 		<form name="logout_form" action="/api/v1/Account/logout" method="post"></form> <!-- gosh darn it html -->
@@ -110,7 +148,7 @@
 						{# <li><a href="https://tools.beepboard.xyz">beeptools</a></li> #}
 						<li><a href="/Song/submit">submit a song</a></li>
 						<li><a href="/Profile/edit">edit your profile</a></li>
-						<li><a href="/settings">settings</a> <strong>(NEW)</strong></li>
+						<li><a href="/settings">settings</a></li>
 					</ul>
 				</article>
 			</aside>

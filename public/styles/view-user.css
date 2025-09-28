@@ -44,14 +44,14 @@
 	flex: 1;
 }
 
-.viewuser .head .desc .actions {
+.actions {
 	display: flex;
 	flex-direction: row;
 	gap: 5px;
 	margin-top: auto;
 }
 
-.viewuser .head .desc .actions .action {
+.action {
 	width: 24px;
 	height: 24px;
 	padding-bottom: 0px;
@@ -59,13 +59,13 @@
 	background-color: #444;
 }
 
-.viewuser .head .desc .actions .action img {
+.action img {
 	width: 16px;
 	height: 16px;
 	margin: 4px;
 }
 
-.viewuser .head .desc .actions .action img.edit   {background: url("/assets/icons.png")   0px -16px;}
+.action img.edit   {background: url("/assets/icons.png")   0px -16px;}
 
 .submit {
 	width: 16px;
@@ -88,4 +88,5 @@ details {
 
 details summary {
 	font-size: 1.5em;
+	cursor: pointer;
 }

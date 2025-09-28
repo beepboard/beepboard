@@ -131,6 +131,9 @@ def bb_api_login():
 			# add token to DB
 			db.execute("UPDATE users SET token = ? WHERE username = ?",
 						(token, request.form['username']))
+
+			db.execute("UPDATE users SET lastlogin = unixepoch() WHERE username = ?",
+						(token, request.form['username']))
 			
 			return res
 		else:

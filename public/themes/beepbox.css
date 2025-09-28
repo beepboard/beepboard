@@ -1,9 +1,10 @@
-.background {
-	visibility: hidden;
+body .background {
+	background-image: none;
+	background-color: #000;
 }
 
-body {
-	background-color: #000;
+nav {
+	box-shadow: none;
 }
 
 nav .link.orange {

@@ -1,0 +1,27 @@
+.background {
+	visibility: hidden;
+}
+
+body {
+	background-color: #000;
+}
+
+nav .link.orange {
+	border-bottom-color: #25f3ff;
+}
+
+nav .link.red {
+	border-bottom-color: #ffff25;
+}
+
+nav .link.magenta {
+	border-bottom-color: #ff9752;
+}
+
+nav .link.purple {
+	border-bottom-color: #50ff50;
+}
+
+nav .link .icon {
+	filter: saturate(0) brightness(6);
+}

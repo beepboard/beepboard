@@ -19,24 +19,27 @@ def bb_user_view(id):
 			after = 0
 		
 		# update user profile views
-		db.execute("UPDATE users SET profileviews = profileviews + 1 WHERE userid = :id",
-		           (id,)
-		           )
-		songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY timestamp DESC LIMIT 5 OFFSET ?",
-		           (id, after)
-		           ).fetchall()
-		songs = [bb_filter_song(db, song) for song in songs]
-		playlists = [bb_filter_playlist(db, p, {'songs': 1, 'after': 0, 'limit': 500})
-		             for p in bb_get_playlists_by_userid(db, user['id'])]
-
-		return render_template("view_user.html",
-					200 if user else 404,
-					**bb_get_route_vars(db),
-					user=user,
-					songs=songs,
-					playlists=playlists,
-					after=after
+		if user:
+			db.execute("UPDATE users SET profileviews = profileviews + 1 WHERE userid = :id",
+					(id,)
 					)
+			songs = db.execute("SELECT * FROM songs WHERE userid = ? ORDER BY timestamp DESC LIMIT 5 OFFSET ?",
+					(id, after)
+					).fetchall()
+			songs = [bb_filter_song(db, song) for song in songs]
+
+			playlists = [bb_filter_playlist(db, p, {'songs': 1, 'after': 0, 'limit': 500})
+						for p in bb_get_playlists_by_userid(db, user['id'])]
+
+			return render_template("view_user.html",
+						**bb_get_route_vars(db),
+						user=user,
+						songs=songs,
+						playlists=playlists,
+						after=after
+						)
+		else:
+			return render_template("view_user.html", **bb_get_route_vars(db), user=user), 404
 
 @app.route("/Profile/edit")
 def bb_profile_edit():

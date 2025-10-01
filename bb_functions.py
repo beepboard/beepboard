@@ -117,22 +117,22 @@ def bb_filter_comments(db, comments, parent = None, detail = []):
 def bb_get_comments_by_parent(db, parent):
 	q = db.execute("SELECT * FROM comments WHERE parent = ?", (parent,))
 	comments = q.fetchall()
-	return comments if comments else []
+	return comments or []
 		
 def bb_get_comment_by_id(db, id):
 	q = db.execute("SELECT * FROM comments WHERE commentid = ?", (id,))
 	comment = q.fetchone()
-	return comment if comment else None
+	return comment or None
 		
 def bb_get_comments_by_songid(db, song):
 	q = db.execute("SELECT * FROM comments WHERE songid = ?", (song,))
 	comments = q.fetchall()
-	return comments if comments else []
+	return comments or []
 
 def bb_get_playlists_by_userid(db, userid):
 	q = db.execute("SELECT * FROM playlists WHERE userid = ?", (userid,))
 	lists = q.fetchall()
-	return lists if lists else []
+	return lists or []
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()

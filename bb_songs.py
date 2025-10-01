@@ -28,11 +28,10 @@ def bb_song_view(id):
 		db.execute("UPDATE users SET views = views + 1 WHERE userid = :id",
 		           (song['author']['id'],)
 		           )
-	
-	
-	if not song:
-		return render_template("view_song.html",  myself=myself, song=song), 404
-	return render_template("view_song.html",  myself=myself, song=song, has_interacted = has_interacted)
+		
+		if not song:
+			return render_template("view_song.html",  **bb_get_route_vars(db), song=song), 404
+		return render_template("view_song.html",  **bb_get_route_vars(db), song=song, has_interacted = has_interacted)
 
 @app.route('/Song/<int:id>/edit')
 def bb_song_edit(id):
@@ -41,15 +40,15 @@ def bb_song_edit(id):
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
-	
-	if not song:
-		return "No such song.", 404
-	if not myself:
-		return redirect('/Account/login')
-	if not (myself['id'] == song['author']):
-		return "You cannot edit this song!", 403
-	
-	return render_template("song_edit.html",  myself=myself, song=song)
+		
+		if not song:
+			return "No such song.", 404
+		if not myself:
+			return redirect('/Account/login')
+		if not (myself['id'] == song['author']):
+			return "You cannot edit this song!", 403
+		
+		return render_template("song_edit.html", **bb_get_route_vars(db), song=song)
 
 @app.route('/Song/submit')
 def bb_song_submit():
@@ -59,7 +58,7 @@ def bb_song_submit():
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		if not myself:
 			return redirect("/Account/login")
-		return render_template("submit_song.html",  myself=myself)
+		return render_template("submit_song.html", **bb_get_route_vars(db))
 
 
 @app.route('/Song/<int:id>/play')
@@ -161,11 +160,10 @@ def bb_song_playlistadd(id):
 		if not playlists:
 			return redirect('/Playlist/new')
 		
-	return render_template("playlist_add.html",
-	                       myself=myself,
-	                       
-	                       song=song,
-	                       playlists=playlists)
+		return render_template("playlist_add.html",
+							**bb_get_route_vars(db),
+							song=song,
+							playlists=playlists)
 
 @app.route('/Songs')
 def bb_songs_list_redirect():
@@ -204,16 +202,14 @@ def bb_songs_list():
 			tags = ''
 		if not query:
 			query = ''
-		
-		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-	
-	return render_template("songs.html",
-		myself=myself,
-		songs=songs,
-		GET={'sort':sort,
-		     'after':after,
-		     'author':author,
-		     'tags':tags,
-		     'limit':limit,
-		     'q':query},
-	)
+			
+		return render_template("songs.html",
+			**bb_get_route_vars(db),
+			songs=songs,
+			GET={'sort':sort,
+				'after':after,
+				'author':author,
+				'tags':tags,
+				'limit':limit,
+				'q':query},
+		)

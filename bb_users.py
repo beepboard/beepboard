@@ -13,7 +13,6 @@ from bb_functions import *
 def bb_user_view(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
-		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 		user = bb_filter_user(db, bb_get_userdata_by_id(db, id))
 		after = request.args.get('after')
 		if not after:
@@ -30,15 +29,14 @@ def bb_user_view(id):
 		playlists = [bb_filter_playlist(db, p, {'songs': 1, 'after': 0, 'limit': 500})
 		             for p in bb_get_playlists_by_userid(db, user['id'])]
 
-	if not user:
-		return render_template("view_user.html", myself=myself, user=user), 404
-	return render_template("view_user.html",
-				myself=myself,
-				user=user,
-				songs=songs,
-				playlists=playlists,
-				after=after
-				)
+		return render_template("view_user.html",
+					200 if user else 404,
+					**bb_get_route_vars(db),
+					user=user,
+					songs=songs,
+					playlists=playlists,
+					after=after
+					)
 
 @app.route("/Profile/edit")
 def bb_profile_edit():
@@ -47,10 +45,10 @@ def bb_profile_edit():
 		db = conn.cursor()
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	
-	if not myself:
-		return redirect("/Account/login")
-	else:
-		return render_template("profile_edit.html", myself=myself)
+		if not myself:
+			return redirect("/Account/login")
+		else:
+			return render_template("profile_edit.html", **bb_get_route_vars(db))
 
 @app.route('/Users')
 def bb_users_list_redirect():
@@ -80,16 +78,13 @@ def bb_user_list():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		users = bb_search_users(db, sort, after, query, limit)
-		
-		#filter users
-		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
 	
-	return render_template("users.html",
-		myself=myself,
-		users=users,
-		after=after,
-		GET={'sort':sort,
-		     'after':after,
-		     'limit':limit,
-		     'q':query}
-	)
+		return render_template("users.html",
+			**bb_get_route_vars(db),
+			users=users,
+			after=after,
+			GET={'sort':sort,
+				'after':after,
+				'limit':limit,
+				'q':query}
+		)

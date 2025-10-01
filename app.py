@@ -28,7 +28,7 @@ def bb_index():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		trending = bb_get_trending(db)
-		return render_template("welcome.html", **bb_get_route_vars(db), trending = trending)
+		return render_template("index.html", **bb_get_route_vars(db), trending = trending)
 
 @app.route('/welcome')
 @app.route('/settings')
@@ -64,8 +64,8 @@ def bb_playlist_view(id):
 		                              )
 		
 		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-	return render_template("playlist_view.html", 
-	                       myself=myself, playlist=playlist, after=after)
+		return render_template("playlist_view.html", 
+							**bb_get_route_vars(db), playlist=playlist, after=after)
 
 
 if __name__ == '__main__':

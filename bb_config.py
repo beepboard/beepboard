@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
 import json
+from flask_scss import Scss
 import os
 import logging
 from flask_uuid import FlaskUUID
@@ -24,5 +25,7 @@ app = Flask(__name__, static_url_path='',
                       static_folder='public',
                       template_folder='templates')
 
+app.add_template_filter(json.loads, "fromjson")
 flask_uuid = FlaskUUID()
 flask_uuid.init_app(app)
+Scss(app)

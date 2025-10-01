@@ -453,3 +453,7 @@ def bb_get_interaction(db, type, userid, songid):
 def bb_get_trending(db):
 	# get 3 most trending songs
 	return bb_search_songs(db, 'trending', 0, None, None, None, 5)
+
+def bb_get_route_vars(db):
+	myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+	return {'myself': myself, 'cookies': request.cookies}

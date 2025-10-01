@@ -16,7 +16,7 @@
 
 		<style>
 			{% include 'style.css' %}
-			{% include ('themes/' + userconfig.theme + '.css') %}
+			{% include ('themes/' + userconfig.get('theme', 'default-dark') + '.css') %}
 		</style>
 
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>

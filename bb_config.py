@@ -15,6 +15,10 @@ def bb_validate_config(config):
 		config['redirect_threshold'] = 4096
 	return config
 
+def fromjson(data, *args):
+	print(args)
+	return json.loads(data) if type(data) is str else {}
+
 with open('config.json') as fp:
 	CONFIG = json.load(fp)
 	CONFIG = bb_validate_config(CONFIG)
@@ -25,7 +29,7 @@ app = Flask(__name__, static_url_path='',
                       static_folder='public',
                       template_folder='templates')
 
-app.add_template_filter(json.loads, "fromjson")
+app.add_template_filter(fromjson, "fromjson")
 flask_uuid = FlaskUUID()
 flask_uuid.init_app(app)
 Scss(app)

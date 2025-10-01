@@ -456,4 +456,4 @@ def bb_get_trending(db):
 
 def bb_get_route_vars(db):
 	myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-	return {'myself': myself, 'cookies': request.cookies}
+	return {'myself': myself, 'cookies': request.cookies or {}}

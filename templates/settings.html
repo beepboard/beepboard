@@ -4,25 +4,6 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/styles/form.css">
-	<script>
-		function save_settings(data) {
-			for (let k in CONFIG) {
-				CONFIG[k] = data[k];
-			}
-			
-			localStorage.userConfig = JSON.stringify(CONFIG);
-			window.location.reload();
-		}
-
-		function load_settings() {
-			let form = zg.formdata(zg.queryone("#settings"));
-			for (let k in CONFIG) {
-				form[k] = CONFIG[k]
-			}
-		}
-
-		window.onload = load_settings
-	</script>
 {% endblock %}
 
 {% block main %}
@@ -33,7 +14,7 @@
 			<div class="form-item">
 				<label class="flex-u1" for="username">theme</label>
 				<select class="flex-u3" name="theme">
-					<option value="default-dark">  Purpur </option>
+					<option value="default-dark"> Purpur </option>
 					<option value="beepbox"> Beepbox </option>
 				</select>
 			</div>
@@ -42,4 +23,19 @@
 		</div>
 	</form>
 </article>
+{% endblock %}
+
+{% block scripts %}
+	<script>
+		function save_settings(data) {
+			for (let k in CONFIG.v) CONFIG.v[k] = data[k];
+			console.log(CONFIG.v)
+			CONFIG.update();
+			window.location.reload();
+		}
+
+		let form = zg.formdata(zg.queryone("#settings"));
+		console.log(CONFIG.v, form)
+		for (let k in CONFIG.v) form[k] = CONFIG.v[k]
+	</script>
 {% endblock %}

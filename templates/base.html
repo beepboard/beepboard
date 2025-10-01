@@ -17,7 +17,7 @@
 		</style>
 
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js@0.5.1/build/ziggurat.js"></script>
 		
 		{% block head %}{% endblock %}
 		
@@ -43,51 +43,12 @@
 		{% 
 			set BADGES = {
 				"owner":     {'name': 'Owner',       'desc': 'the owner of beepboard (fmixolydian)'},
-				"trial":     {'namze': 'Trial Mod',   'desc': 'a moderator on trial'},
+				"trial":     {'name': 'Trial Mod',   'desc': 'a moderator on trial'},
 				"moderator": {'name': 'Moderator',   'desc': 'a user who moderates the site'},
 				"admin":     {'name': 'Admin',       'desc': 'a user who develops and moderates the site'},
 				"veteran":   {'name': 'Veteran',     'desc': 'a user who created an account before version 0.5'}
 			}
 		%}
-		
-
-		<script>
-
-let CONFIG;
-
-const DEFAULT_CONFIG = {
-	"theme": "default-dark"
-};
-
-function settings_init() {
-	let json_config = localStorage["userConfig"];
-
-	if (!json_config) {
-		localStorage["userConfig"] = JSON.stringify(DEFAULT_CONFIG);
-		return settings_init();
-	}
-
-	try {
-		CONFIG = JSON.parse(json_config)
-	} catch (SyntaxError) {
-		alert("\
-whoops.\n\
-it appears your configuration is corrupted - i've reset it to default values.\n\
-dw, this wont impact any of your songs/playlists/etc;\n\
-although, please report this error to the developers.");
-
-		localStorage["userConfig"] = "";
-		return settings_init();
-	}
-}
-
-settings_init();
-
-		</script>
-
-		<script>
-			replaceScriptWith(HTML.link({'rel': 'stylesheet', 'href': "/themes/" + CONFIG.theme + ".css"}))
-		</script>
 	</head>
 
 	<body>
@@ -156,3 +117,26 @@ settings_init();
 		</div>
 	</body>
 </html>
+
+<script>
+	const DEFAULT_CONFIG = {
+		"theme": "default-dark"
+	};
+
+	function mirror_to_cookie(...args) {
+		console.log("mirror to cookie")
+		zg.mirror_to_cookie(...args)
+	}
+
+	let CONFIG = new zg.mirror("user_config",
+							zg.load_json_cookie("user_config") ?? DEFAULT_CONFIG,
+							[mirror_to_cookie],
+							{"max-age": 6..months().floor(),
+								"path": "/"}
+							);
+
+	zg.init();
+</script>
+
+{% block scripts %}
+{% endblock %}

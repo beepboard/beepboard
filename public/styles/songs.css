@@ -25,6 +25,7 @@
 	display: flex;
 	flex-direction: row;
 	gap: 10px;
+	align-items: center;
 }
 
 .song .left .modcontainer {
@@ -60,6 +61,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: right;
+	justify-content: center;
 }
 
 .song .right .author {
@@ -76,7 +78,6 @@
 .song .actions {
 	gap: 5px;
 	padding: 5px;
-	height: 64px;
 }
 
 .actions .action img {

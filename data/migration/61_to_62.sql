@@ -1,2 +1,0 @@
-ALTER TABLE songs ADD COLUMN songtype TEXT NOT NULL DEFAULT 'original';
-ALTER TABLE songs ADD COLUMN remixof  INT;

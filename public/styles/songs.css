@@ -89,7 +89,7 @@
 
 .actions .action {
 	flex: 1;
-	flex-basis: 16px;
+	flex-basis: 15px;
 	display: flex;
 	align-items: center;
 	background-color: #444;

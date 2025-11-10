@@ -20,7 +20,7 @@
 		</style>
 
 		<script src="https://cdn.jsdelivr.net/npm/imperative-html@0.1/dist/global/elements.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/ziggurat.js@0.5.1/build/ziggurat.js"></script>
+		<script src="https://www.unpkg.com/ziggurat.js@0.8.0/build/ziggurat.min.js"></script>
 		
 		{% block head %}{% endblock %}
 		
@@ -28,18 +28,18 @@
 		
 		{% 
 			set MODS = {
-				"abyssbox":     {'url': 'https://choptop84.github.io/abyssbox-app/'},
-				"beepbox":      {'url': 'https://www.beepbox.co'},
-				"cardboardbox": {'url': 'https://hidden-realm.github.io/cardboardbox/'},
-				"goldbox":      {'url': 'https://aurysystem.github.io/goldbox/'},
-				"jummbox":      {'url': 'https://jummb.us'},
-				"lemmbox":      {'url': 'https://lemmbox.github.io/'},
-				"modbox":       {'url': 'https://moddedbeepbox.github.io/3.0/'},
-				"pandorasbox":  {'url': 'https://paandorasbox.github.io/'},
-				"sandbox":      {'url': 'https://fillygroove.github.io/sandbox-3.1/'},
-				"slarmoosbox":  {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
-				"ultrabox":     {'url': 'https://ultraabox.github.io/'},
-				"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'}
+				"abyssbox":     {'name': 'AbyssBox', 'url': 'https://choptop84.github.io/abyssbox-app/'},
+				"beepbox":      {'name': 'BeepBox', 'url': 'https://www.beepbox.co'},
+				"cardboardbox": {'name': 'CardboardBox', 'url': 'https://hidden-realm.github.io/cardboardbox/'},
+				"goldbox":      {'name': 'GoldBox', 'url': 'https://aurysystem.github.io/goldbox/'},
+				"jummbox":      {'name': 'JummBox', 'url': 'https://jummb.us'},
+				"lemmbox":      {'name': 'LemmBox', 'url': 'https://lemmbox.github.io/'},
+				"modbox":       {'name': 'ModBox', 'url': 'https://moddedbeepbox.github.io/3.0/'},
+				"pandorasbox":  {'name': 'PandorasBox', 'url': 'https://paandorasbox.github.io/'},
+				"sandbox":      {'name': 'SandBox', 'url': 'https://fillygroove.github.io/sandbox-3.1/'},
+				"slarmoosbox":  {'name': 'SlarmoosBox', 'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
+				"ultrabox":     {'name': 'UltraBox', 'url': 'https://ultraabox.github.io/'},
+				"wackybox":     {'name': 'WackyBox', 'url': 'https://bluecatgamer.github.io/Wackybox/'}
 			}
 		%}
 		
@@ -52,6 +52,14 @@
 				"veteran":   {'name': 'Veteran',     'desc': 'a user who created an account before version 0.5'}
 			}
 		%}
+
+		<script>
+			const MODS = {
+				{% for key, value in MODS.items() %}
+					'{{key}}': {{value | tojson}},
+				{% endfor %}
+			};
+		</script>
 	</head>
 
 	<body>
@@ -62,7 +70,7 @@
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
-				<p>0.7.1</p>
+				<p>0.7.2</p>
 				<p class="account-text">
 				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>

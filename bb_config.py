@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, request, jsonify, make_response
 import sqlite3
 import json
-from flask_scss import Scss
 import os
 import logging
 from flask_uuid import FlaskUUID
@@ -9,10 +8,16 @@ from flask_uuid import FlaskUUID
 def bb_validate_config(config):
 	if not ('db' in config):
 		raise Exception("invalid config ('db' missing)")
+
 	if not ('images' in config):
 		raise Exception("invalid config ('images' missing)")
+	
 	if not ('redirect_threshold' in config):
 		config['redirect_threshold'] = 4096
+	
+	if not ('debug_build' in config):
+		config['debug_build'] = False
+
 	return config
 
 def fromjson(data, *args):
@@ -32,4 +37,3 @@ app = Flask(__name__, static_url_path='',
 app.add_template_filter(fromjson, "fromjson")
 flask_uuid = FlaskUUID()
 flask_uuid.init_app(app)
-Scss(app)

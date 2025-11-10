@@ -4,18 +4,38 @@
 
 {% block head %}
 	<link rel="stylesheet" href="/styles/submit-song.css">
+
+	<zg-template id="tp_tag" hidden>
+		<p class="tag">fghfgh<sup class="delete" onclick="this.parentNode.remove()">x</sup></p>
+	</zg-template>
+
+{#
+html_tags.appendChild(
+					HTML.p(
+						html_tagname.value.trim().toLowerCase(),
+						HTML.sup(
+							'x',
+							{'class': 'delete',
+							 'onclick': 'this.parentNode.remove()'}
+						),
+						{'class': 'tag'}
+					)
+				);
+				html_tagname.value = "";
+#}
+
 {% endblock %}
 
 {% block main %}
 <article>
 	<div class="submit">
 		<h2>submit song</h2>
-		<form name="form" action="/api/v1/Song/submit" method="POST" onsubmit="return prepare_submit(this)">
+		<form name="form" zg-submit="song_submit_form">
 		
 			<div class="submitform">
 				<div class="form-item">
 					<label class="flex-u1" for="type">song type</label>
-					<select class="flex-u3 songtype" name="type" id="type" oninput="update_songtype()">
+					<select class="flex-u3 songtype" name="type" id="type" oninput="update_songtype(this)">
 						<option value="original">original</option>
 						<option value="remix"
 							title="remix of a different song on beepboard;
@@ -26,14 +46,16 @@
 					</select>
 				</div>
 				
-				<div class="form-item" id="remixof">
-					<label class="flex-u1" for="remixof">remix of</label>
-					<div class="remix-container flex-u3">
-						song #
-						<input onchange="update_remixname()" type="number" name="remixof" placeholder="song id">
-						<a class="name" id="remixof_name"></a>
+				<zg-when name="song-type" script="this == 'remix'" hidden>
+					<div class="form-item" id="remixof">
+						<label class="flex-u1" for="remixof">remix of</label>
+						<div class="remix-container flex-u3">
+							song #
+							<input onchange="update_remixname(this)" type="number" name="remixof" min=1 placeholder="song id">
+							<a class="name" id="remixof_name"></a>
+						</div>
 					</div>
-				</div>
+				</zg-when>
 				
 				<div class="form-item">
 					<label class="flex-u1" for="title">song title</label>
@@ -46,35 +68,19 @@
 				</div>
 				
 				<input type="hidden" name="data" id="data">
-				
-				<div class="form-item">
-					<label class="flex-u1" for="mod">beepmod used</label>
-					<select class="flex-u3 songmod" name="mod" id="mod">
-						<option value="abyssbox">AbyssBox</option>
-						<option value="beepbox">BeepBox</option>
-						<option value="cardboardbox">CardboardBox</option>
-						<option value="goldbox">GoldBox</option>
-						<option value="jummbox">JummBox</option>
-						<option value="lemmbox">LemmBox</option>
-						<option value="modbox">ModBox</option>
-						<option value="pandorasbox">Pandora's Box</option>
-						<option value="sandbox">SandBox</option>
-						<option value="slarmoosbox">SlarmoosBox</option>
-						<option value="ultrabox">UltraBox</option>
-						<option value="wackybox">WackyBox</option>
-					</select>
-				</div>
+				<input type="hidden" name="songmod" id="songmod">
+
+				<div class="form-item">autodetected mod: <b><zg-bind script="MODS[this]?.name ?? 'Unknown'" name="song-mod"></zg-bind></b></div>
 				
 				<div class="form-item">
 					<label class="flex-u1" for="songurl">song url</label>
-					<textarea class="flex-u3 songdata" name="songurl" id="songurl"></textarea>
+					<textarea oninput="update_mod()" class="flex-u3 songdata" name="songurl" id="songurl"></textarea>
 				</div>
 				
 				<div class="formtags">
 					<p class="title">Tags</p>
 					<div class="tags">
-						<div class="left" id="tags">
-						</div>
+						<zg-multibind name="tags" class="left"></zg-multibind>
 						<div class="right">
 							<input type="text" placeholder="tag name" id="tagname">
 							<button type="button" onclick="add_tag()">+</button>
@@ -89,7 +95,45 @@
 			
 		</form>
 	</div>
+</article>
+{% endblock %}
+
+{% block scripts %}
 	<script>
+		let song_mod  = new zg.mirror("song-mod",  "", [zg.mirror_to_document])
+		let song_type = new zg.mirror("song-type", "", [zg.mirror_to_document])
+		let tags      = new zg.multimirror("tags", "tp_tag")
+
+		function get_submit_form() {
+			return zg.formdata(zg.query("form")[1])
+		}
+
+		function update_mod() {
+			song_mod.v = ""
+			for (let mod in MODS) {
+				if (get_submit_form().songurl.startsWith(MODS[mod].url)) {
+					song_mod.v = mod
+					break;
+				}
+			}
+		}
+
+		function update_songtype() {
+			song_type.v = get_submit_form().type
+		}
+
+		function add_tag() {
+			let tag = zg.queryone("#tagname")
+			tags.push(tag.value)
+			tag.value = ""
+		}
+
+		function song_submit_form() {
+			console.log(zg.queryone('form #tags'))
+		}
+	</script>
+{% endblock %}
+{#<script>
 		html_tags = document.getElementById('tags');
 		html_tagname = document.getElementById('tagname')
 		
@@ -188,6 +232,4 @@
 			
 			return true
 		}
-	</script>
-</article>
-{% endblock %}
+	</script>#}

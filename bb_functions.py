@@ -11,6 +11,7 @@ from bb_database import *
 from html_sanitizer import Sanitizer
 import html_sanitizer
 import re
+from Levenshtein import distance as lev
 
 MODS = {
 	"abyssbox":     {'url': 'https://choptop84.github.io/abyssbox-app/'},
@@ -36,6 +37,7 @@ def bb_flags(f):
 
 def bb_connect_db():
 	conn = sqlite3.connect(CONFIG['db'])
+	conn.create_function("lev", 2, lev)
 	conn.row_factory = bb_rowfactory
 	return conn
 
@@ -145,7 +147,7 @@ def bb_filter_text(text):
 		'raw': text,
 		'html': sanitizer.sanitize(bb_render_markdown(text)),
 		'sanitized': sanitizer.sanitize(text),
-		'preview': text.split('\r\n')[0]
+		'preview': text.split('\n')[0]
 	}
 
 def bb_format_time(timestamp):
@@ -348,25 +350,18 @@ def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = Non
 				))
 			])
 	
-	if query:
-		params['query_exp'] = f"%{query}%"
-		clauses.update([
-			ClauseWhere(ConditionLIKE(
-				Function('LOWER', ValueColumnName('name', 'S')),
-				Function('LOWER', ':query_exp')
-			))
-		])
-	
 	if sort == "popular":
 		clauses.update([
 			ClauseOrder({ValueColumnName('downloads', 'S'): OrderEnum.DESC,
 			             ValueColumnName('likes', 'S'):     OrderEnum.DESC,
 			             ValueColumnName('views', 'S'):     OrderEnum.DESC})
 		])
+	
 	elif sort == "newest":
 		clauses.update([
 			ClauseOrder({ValueColumnName('timestamp', 'S'): OrderEnum.DESC})
 		])
+	
 	elif sort == "trending":
 		clauses.update([
 			ClauseOrder({'date(S.timestamp, "unixepoch")': OrderEnum.DESC,
@@ -374,8 +369,20 @@ def bb_search_songs(db, sort, after = 0, author = None, tags = None, query = Non
 			             ValueColumnName('downloads', 'S'): OrderEnum.DESC,
 			             ValueColumnName('views', 'S'):     OrderEnum.DESC})
 		])
+	
 	else:
 		return None
+	
+	if query:
+		params['query_exp'] = query
+		lev_func = Function('LEV', f"{ValueColumnName('name', 'S')}, :query_exp")
+		clauses.update([
+			ClauseOrder(
+				{
+					lev_func: OrderEnum.DESC
+				}
+			)
+		])
 	
 	song_statement = str(StatementSelect(
 		{ValueColumnName('*', 'S')},
@@ -456,4 +463,4 @@ def bb_get_trending(db):
 
 def bb_get_route_vars(db):
 	myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
-	return {'myself': myself, 'cookies': request.cookies or {}}
+	return {'myself': myself, 'cookies': request.cookies or {}, 'debug': CONFIG['debug_build']}

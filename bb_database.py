@@ -207,14 +207,19 @@ class ClauseOrder(Clause):
 	def __init__(self, cols):
 		self.cols = cols
 	
-	def __str__(self):
-		return "ORDER BY " + \
-			", ".join(list(
-				map(
+	def cols_to_str(self):
+		return ", ".join(
+				list(map(
 					lambda t : str(t[0]) + " " + str(t[1]),
 					self.cols.items()
-				)
-			))
+				))
+			)
+
+	def __strrep__(self):
+		return ", " + self.cols_to_str()
+
+	def __str__(self):
+		return "ORDER BY " + self.cols_to_str()
 	
 class ClauseLimit(Clause):
 	name = 'LIMIT'
@@ -269,5 +274,6 @@ class StatementSelect(Statement):
 			clauses = list(c for c in self.clauses if c.name == q)
 			for i in range(len(clauses)):
 				s = s + clauses[i].tostring(i > 0) + " "
+				print("\033[34m", i, q, ";", s, "\033[0m")
 
 		return s

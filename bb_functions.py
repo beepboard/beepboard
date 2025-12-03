@@ -26,6 +26,7 @@ MODS = {
 	"slarmoosbox":  {'url': 'https://slarmoo.github.io/slarmoosbox/website/'},
 	"ultrabox":     {'url': 'https://ultraabox.github.io/'},
 	"wackybox":     {'url': 'https://bluecatgamer.github.io/Wackybox/'},
+	"edobox":       {"url": "https://unbihexiumfan.github.io/edobox/website/"}
 }
 
 SONGTYPES = ["original", 'remix', 'cover']

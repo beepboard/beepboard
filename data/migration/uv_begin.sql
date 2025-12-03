@@ -1,2 +1,2 @@
 CREATE TABLE IF NOT EXISTS db_version (v);
-UPDATE db_version SET v = 0;
+INSERT INTO db_version VALUES (0);

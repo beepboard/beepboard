@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="/styles/submit-song.css">
 
 	<zg-template id="tp_tag" hidden>
-		<p class="tag">fghfgh<sup class="delete" onclick="this.parentNode.remove()">x</sup></p>
+		<p class="tag">${this}<sup class="delete" onclick="this.parentNode.remove()">x</sup></p>
 	</zg-template>
 
 {#
@@ -30,7 +30,7 @@ html_tags.appendChild(
 <article>
 	<div class="submit">
 		<h2>submit song</h2>
-		<form name="form" zg-submit="song_submit_form">
+		<form id="song-form" zg-submit="song_submit_form">
 		
 			<div class="submitform">
 				<div class="form-item">
@@ -38,11 +38,9 @@ html_tags.appendChild(
 					<select class="flex-u3 songtype" name="type" id="type" oninput="update_songtype(this)">
 						<option value="original">original</option>
 						<option value="remix"
-							title="remix of a different song on beepboard;
-							       you must provide the song's ID (song #...)">remix</option>
+							title="remix of a different song on beepboard; you must provide the song's ID (song #...)">remix</option>
 						<option value="cover"
-							title="cover of a different song, outside of beepboard; 
-									you must provide a link to the original song in the description.">cover</option>
+							title="cover of a different song, outside of beepboard; you must provide a link to the original song in the description.">cover</option>
 					</select>
 				</div>
 				
@@ -73,7 +71,7 @@ html_tags.appendChild(
 				<div class="form-item">autodetected mod: <b><zg-bind script="MODS[this]?.name ?? 'Unknown'" name="song-mod"></zg-bind></b></div>
 				
 				<div class="form-item">
-					<label class="flex-u1" for="songurl">song url</label>
+					<label class="flex-u1" for="songurl">song url <small title="full song URL in song editor (no song player, no link shorteners)">(?)</small></label>
 					<textarea oninput="update_mod()" class="flex-u3 songdata" name="songurl" id="songurl"></textarea>
 				</div>
 				
@@ -93,6 +91,10 @@ html_tags.appendChild(
 			
 			<input type="hidden" name="tags"> <!-- tags are computed onsubmit-->
 			
+			<div class="upload-error">
+				<zg-bind >
+			</div>
+
 		</form>
 	</div>
 </article>
@@ -105,7 +107,7 @@ html_tags.appendChild(
 		let tags      = new zg.multimirror("tags", "tp_tag")
 
 		function get_submit_form() {
-			return zg.formdata(zg.query("form")[1])
+			return zg.formdata(zg.queryone("#song-form"))
 		}
 
 		function update_mod() {
@@ -128,8 +130,21 @@ html_tags.appendChild(
 			tag.value = ""
 		}
 
-		function song_submit_form() {
-			console.log(zg.queryone('form #tags'))
+		function song_submit_form(form) {
+			form.data = form.songurl.split('#')[1]
+			let data = form.toObject()
+
+			fetch("/api/v1/Song/submit", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: data
+			}).catch((reason) => {
+
+			}).then((response) => {
+				window.location =
+			})
 		}
 	</script>
 {% endblock %}

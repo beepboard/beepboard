@@ -225,7 +225,7 @@ def bb_api_songsubmit():
 	or request.form["type"] not in SONGTYPES \
 	or len(request.form["desc"]) > 1000:
 		return (
-			"Bad request. You're not supposed to see this - if you do, there's a bug. Report it to @fmixolydian",
+			"Bad request. You're not supposed to see this - if you do, there's a bug.",
 			400
 		)
 	

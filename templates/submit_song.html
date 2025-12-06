@@ -50,18 +50,9 @@
 				<div class="form-item">
 					<label class="flex-u1" for="mod">beepmod used</label>
 					<select class="flex-u3 songmod" name="mod" id="mod">
-						<option value="abyssbox">AbyssBox</option>
-						<option value="beepbox">BeepBox</option>
-						<option value="cardboardbox">CardboardBox</option>
-						<option value="goldbox">GoldBox</option>
-						<option value="jummbox">JummBox</option>
-						<option value="lemmbox">LemmBox</option>
-						<option value="modbox">ModBox</option>
-						<option value="pandorasbox">Pandora's Box</option>
-						<option value="sandbox">SandBox</option>
-						<option value="slarmoosbox">SlarmoosBox</option>
-						<option value="ultrabox">UltraBox</option>
-						<option value="wackybox">WackyBox</option>
+						{% for modid, mod in MODS.items() %}
+							<option value="{{modid}}"> {{mod.name}}
+						{% endfor %}
 					</select>
 				</div>
 				

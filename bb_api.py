@@ -627,7 +627,7 @@ def bb_playlist_add(songid):
 		if not playlist['author'] == myself['id']:
 			return "cannot add songs to other user's playlist", 403
 		
-		db.execute("INSERT INTO playlist_songs (playlistid, songid) VALUES (?,?)",
-		           (playlist['id'], songid))
+		db.execute("INSERT INTO playlist_songs (playlistid, songid, timestamp) VALUES (?,?,?)",
+		           (playlist['id'], songid, time.time()))
 	
 	return redirect('/Playlist/' + str(playlist['id']))

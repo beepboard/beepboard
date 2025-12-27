@@ -357,6 +357,9 @@ def bb_api_songdelete(songid):
 		
 		# delete all interactions
 		db.execute("DELETE FROM interactions WHERE songid = ?", (songid,))
+
+		# remove from playlists
+		db.execute("DELETE FROM playlist_songs WHERE songid = ?", (songid,))
 		
 		return redirect('/User/' + str(myself["id"]))
 

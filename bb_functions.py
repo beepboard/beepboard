@@ -272,7 +272,8 @@ def bb_filter_playlist(db, playlist, filter = {'limit': 5}):
 		'songs': [({**bb_filter_song(db, bb_get_songdata_by_id(db, song['songid']), filter),
 		            'added': bb_format_time(song['timestamp'])})
 		          for song in bb_get_playlistsongs_by_id(db,
-				  	playlist['playlistid'], 5, filter['after'])]
+				  	playlist['playlistid'], 5, filter['after'])
+				  if bb_get_songdata_by_id(db, song['songid'])]
 				  if 'songs' in filter else None
 	}
 

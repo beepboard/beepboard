@@ -22,16 +22,18 @@ def bb_song_view(id):
 		else:
 			has_interacted = None
 		
-		db.execute("UPDATE songs SET views = views + 1 WHERE songid = :id",
-		           (id,)
-		           )
-		db.execute("UPDATE users SET views = views + 1 WHERE userid = :id",
-		           (song['author']['id'],)
-		           )
-		
-		if not song:
+		if song:
+			db.execute("UPDATE songs SET views = views + 1 WHERE songid = :id",
+					(id,)
+					)
+			db.execute("UPDATE users SET views = views + 1 WHERE userid = :id",
+					(song['author']['id'],)
+					)
+
+			return render_template("view_song.html",  **bb_get_route_vars(db), song=song, has_interacted = has_interacted)
+		else:
 			return render_template("view_song.html",  **bb_get_route_vars(db), song=song), 404
-		return render_template("view_song.html",  **bb_get_route_vars(db), song=song, has_interacted = has_interacted)
+		
 
 @app.route('/Song/<int:id>/edit')
 def bb_song_edit(id):

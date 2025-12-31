@@ -1,0 +1,16 @@
+gem 'acrylic', path: '../acrylic'
+
+gem "rack", "~> 3.2"
+
+gem "rackup", "~> 2.2"
+
+
+gem "puma", "~> 6.6"
+
+gem "markaby", "~> 0.9.4"
+
+gem "ostruct", "~> 0.6.3"
+
+gem "rbs", "~> 3.10"
+
+gem "yaml", "~> 0.3.0"

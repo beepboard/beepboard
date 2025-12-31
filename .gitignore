@@ -1,0 +1,3 @@
+site/data/config.yml
+site/data/*.yml
+site/Gemfile.lock

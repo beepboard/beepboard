@@ -1,0 +1,3 @@
+[submodule "acrylic"]
+	path = acrylic
+	url = https://git.disroot.org/fmixolydian/acrylic.git

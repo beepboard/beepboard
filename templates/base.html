@@ -63,7 +63,7 @@
 		<header>
 			<div class="left">
 				<h1>beepboard</h1>
-				<p>0.7.1</p>
+				<p>0.7.2</p>
 				<p class="account-text">
 				  {% if myself %}
 				  	<a onclick="document.logout_form.submit()" href="javascript:void(0)">Logout</a>
@@ -105,6 +105,9 @@
 						<li><a href="/Song/submit">submit a song</a></li>
 						<li><a href="/Profile/edit">edit your profile</a></li>
 						<li><a href="/settings">settings</a></li>
+						{% if myself and 'admin' in myself.badges %}
+							<li><a href="/Admin">super secret admin portal!!!</a></li>
+						{% endif %}
 					</ul>
 				</article>
 			</aside>
@@ -116,7 +119,11 @@
 		</div>
 		
 		<footer>
-			<p>(c) fmixolydian 2025 - licensed under AGPL3.0</p>
+			<p>(c) fmixolydian 2025-2026; licensed under AGPL3.0.</p>
+			<div class="icons">
+				<a href="https://codeberg.org/fmixolydian/beepboard"><img class="icon codeberg" src="/assets/trans.png"></a>
+				<a href="https://www.youtube.com/@beepboardxyz"><img class="icon youtube" src="/assets/trans.png"></a>
+			</div>
 		</footer>
 		</div>
 	</body>

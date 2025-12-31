@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %} statistical metrics {% endblock %}
+
+{% block head %}
+	<link rel="stylesheet" href="/styles/stats.css">
+{% endblock %}
+
+{% block main %}
+	<article>
+        <h2>website stats</h2>
+        <p>no. users: {{no_users}}</p>
+        <p>no. songs: {{no_songs}}</p>
+	</article>
+{% endblock %}

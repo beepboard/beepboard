@@ -69,9 +69,9 @@ def bb_song_play(id):
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		song = bb_filter_song(db, bb_get_songdata_by_id(db, id))
-		print(song['author'])
 		db.execute("UPDATE songs SET downloads = downloads + 1 WHERE songid = :id", (id,))
 		db.execute("UPDATE users SET downloads = downloads + 1 WHERE userid = :id", (song['author'],))
+		
 	if song:
 		url = song['content']['url']['url']
 		if len(url) > CONFIG['redirect_threshold']:

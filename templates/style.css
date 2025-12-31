@@ -381,14 +381,27 @@ body .background {
 /* FOOTER */
 	footer {
 		display: flex;
+		flex-direction: column;
 		padding-left: 20px;
 		padding-right: 20px;
-		padding-bottom: 20px;
+		padding-bottom: 10px;
 		background-color: #222;
 		
 		width: 100%;
 		box-sizing: border-box;
 	}
+
+	footer p {
+		margin-bottom: 5px;
+	}
+
+	footer img.icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	footer img.icon.codeberg { background: url('/assets/icons.png') 0 -56px; }
+	footer img.icon.youtube  { background: url('/assets/icons.png') -16px -56px; }
 
 /* FORMS */
 	.form-item {

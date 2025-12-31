@@ -21,6 +21,7 @@ STATIC_ROUTE_TEMPLATES = {
 	'/Account/login':    'login.html',
 	'/Account/logout':   'logout.html',
 	'/Account/register': 'register.html',
+	'/Admin':            'admin/index.html',
 }
 
 @app.route('/')
@@ -38,11 +39,26 @@ def bb_index():
 @app.route('/Account/login')
 @app.route('/Account/register')
 @app.route('/Account/logout')
+@app.route('/Admin')
 def bbr_static():
 	with bb_connect_db() as conn:
 		db = conn.cursor()
 		return render_template(STATIC_ROUTE_TEMPLATES[request.path], **bb_get_route_vars(db))
 
+@app.route('/Admin/Stats')
+def bb_stats_get():
+	with bb_connect_db() as conn:
+		db = conn.cursor()
+		myself = bb_filter_user(db, bb_get_userdata_by_token(db, request.cookies.get('token')))
+
+		if not myself or ('admin' not in myself['badges']):
+			return (render_template('admin/nope.html', **bb_get_route_vars(db)), 403)
+		
+		no_users = db.execute('SELECT COUNT(*) as c FROM users;').fetchone()['c']
+		no_songs = db.execute('SELECT COUNT(*) as c FROM songs;').fetchone()['c']
+		stats = {'no_users': no_users, 'no_songs': no_songs}
+
+		return render_template('admin/stats.html', **bb_get_route_vars(db), **stats)
 
 @app.route('/Picture/<uuid:id>')
 def bb_picture_get(id):

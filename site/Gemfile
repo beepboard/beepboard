@@ -14,3 +14,9 @@ gem "ostruct", "~> 0.6.3"
 gem "rbs", "~> 3.10"
 
 gem "yaml", "~> 0.3.0"
+
+gem "sequel", "~> 5.99"
+
+gem "sqlite3", "~> 2.7"
+
+gem "rake", "~> 13.3"

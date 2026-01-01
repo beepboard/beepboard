@@ -1,0 +1,7 @@
+task :migrate do
+    sh "sequel -m history sqlite://data/beepboard.db"
+end
+
+task :initialize do
+    sh "mkdir -p data/storage/samples"
+end

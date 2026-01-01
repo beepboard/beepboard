@@ -1,3 +1,2 @@
-site/data/config.yml
-site/data/*.yml
+site/data
 site/Gemfile.lock

@@ -1,10 +1,10 @@
 Sequel.migration do
     up do
         create_table :tokens do
-            String      :id,           primary_key: true
-            foreign_key :user, :users, null: false
-            Integer     :permissions,  null: false
-            DateTime    :created,      null: false
+            String      :id,              primary_key: true
+            foreign_key :user_id, :users, null: false
+            Integer     :permissions,     null: false
+            DateTime    :created,         null: false
         end
 
         create_table :users do

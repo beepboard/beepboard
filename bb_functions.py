@@ -134,7 +134,7 @@ def bb_get_playlists_by_userid(db, userid):
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()
-	sanitizer.tags.update({'strike', 'img', 'code', 'pre'})
+	sanitizer.tags.update({'strike', 'img', 'code', 'pre', 'small'})
 	
 	if not text:
 		return None

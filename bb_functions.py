@@ -53,8 +53,6 @@ def bb_render_markdown(s):
 	return markdown2.markdown(s)
 
 def bb_filter_comment(db, comment, detail = []):
-	sanitizer = Sanitizer()
-	
 	if not comment:
 		return None
 	
@@ -85,7 +83,6 @@ def bb_filter_comment(db, comment, detail = []):
 	}
 
 def bb_filter_comments(db, comments, parent = None, detail = []):
-	sanitizer = Sanitizer()
 	result = []
 	
 	if not comments:
@@ -137,7 +134,7 @@ def bb_get_playlists_by_userid(db, userid):
 
 def bb_filter_text(text):
 	sanitizer = Sanitizer()
-	sanitizer.tags.update({'code', 'pre'})
+	sanitizer.tags.update({'strike', 'img', 'code', 'pre'})
 	
 	if not text:
 		return None
